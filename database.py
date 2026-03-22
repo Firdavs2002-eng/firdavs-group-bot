@@ -5,31 +5,41 @@ def init_db():
     conn = sqlite3.connect("firdavs_group.db")
     cursor = conn.cursor()
     
-    # Mahsulotlar jadvali
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS products (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             category TEXT,
             name TEXT,
-            description TEXT,
             price INTEGER,
+            size TEXT,
+            color TEXT,
             image_url TEXT
         )
     """)
-    
+    conn.commit()
+    conn.close()
+
+def add_product(category, name, price, size, color, image_url):
+    """Admin tomonidan mahsulot qo'shish"""
+    conn = sqlite3.connect("firdavs_group.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO products (category, name, price, size, color, image_url)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, (category, name, price, size, color, image_url))
     conn.commit()
     conn.close()
 
 def get_products_by_category(category_name):
-    """Tanlangan toifa bo'yicha mahsulotlarni bazadan olish"""
+    """Kategoriya bo'yicha mahsulotlarni olish"""
     conn = sqlite3.connect("firdavs_group.db")
     cursor = conn.cursor()
-    cursor.execute("SELECT id, name, price FROM products WHERE category = ?", (category_name,))
+    cursor.execute("SELECT id, name, price, size, color, image_url FROM products WHERE category = ?", (category_name,))
     products = cursor.fetchall()
     conn.close()
     return products
 
-# Dastlabki ishga tushirish uchun
 if __name__ == "__main__":
     init_db()
     print("Ma'lumotlar bazasi tayyor!")
+    
