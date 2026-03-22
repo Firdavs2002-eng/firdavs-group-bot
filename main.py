@@ -7,8 +7,10 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton, InputMediaPhoto
+from aiohttp import web
 from database import init_db, get_products_by_category, add_product, add_to_cart, get_cart_items, clear_cart, toggle_wishlist
 
+# --- SOZLAMALAR ---
 load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 ADMIN_ID = os.getenv("ADMIN_ID")
@@ -80,7 +82,6 @@ payment_menu = ReplyKeyboardMarkup(
 # ==========================================
 
 def get_product_markup(product_id, current_index, total_count, category):
-    """Wildberries uslubidagi mahsulot kartochkasi tugmalari"""
     return InlineKeyboardMarkup(inline_keyboard=[
         [
             InlineKeyboardButton(text="🛒 Savatga qo'shish", callback_data=f"add_cart_{product_id}"),
@@ -136,7 +137,6 @@ async def category_selected(callback: types.CallbackQuery, state: FSMContext):
         await callback.answer(f"Hozircha {category.capitalize()} bo'limida mahsulot yo'q", show_alert=True)
         return
 
-    # Katalog tanlanganda birinchi mahsulotni ochish
     await show_product_step(callback.message, products, 0, category, edit=False)
     await callback.answer()
 
@@ -189,7 +189,7 @@ async def view_cart(message: types.Message):
 
 @dp.callback_query(F.data == "clear_cart")
 async def clear_cart_handler(callback: types.CallbackQuery):
-    clear_cart(callback.fromuser.id)
+    clear_cart(callback.from_user.id)
     await callback.message.edit_text("Savat tozalandi. 🗑")
     await callback.answer()
 
@@ -226,7 +226,6 @@ async def process_payment(message: types.Message, state: FSMContext):
     items = get_cart_items(message.from_user.id)
     total = sum(qty * price for name, price, qty, pid in items)
     
-    # Adminga xabar yuborish
     order_text = f"📦 <b>YANGI BUYURTMA!</b>\n\n"
     order_text += f"👤 Mijoz: {message.from_user.full_name} (@{message.from_user.username})\n"
     order_text += f"📍 Manzil: {address}\n"
@@ -241,7 +240,6 @@ async def process_payment(message: types.Message, state: FSMContext):
     except Exception as e:
         print("Admin topilmadi:", e)
 
-    # Mijozga javob va savatni tozalash
     clear_cart(message.from_user.id)
     await state.clear()
     await message.answer("✅ Buyurtmangiz muvaffaqiyatli qabul qilindi! Tez orada kuryerimiz siz bilan bog'lanadi.", reply_markup=main_menu)
@@ -320,9 +318,23 @@ async def finish_add(message: types.Message, state: FSMContext):
     await message.answer("✅ Mahsulot katalogga qo'shildi!", reply_markup=admin_menu)
     await state.clear()
 
+# --- RENDER UCHUN YOLG'ONCHI SERVER ---
+async def handle(request):
+    return web.Response(text="FIRDAVS GROUP Boti 24/7 ishlamoqda!")
+
 async def main():
     init_db()
     logging.basicConfig(level=logging.INFO)
+    
+    # Server yaratish (Render xato bermasligi uchun)
+    app = web.Application()
+    app.router.add_get('/', handle)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    port = int(os.environ.get("PORT", 10000))
+    site = web.TCPSite(runner, '0.0.0.0', port)
+    await site.start()
+
     print("FIRDAVS GROUP (WB-Style) ishga tushdi...")
     await dp.start_polling(bot)
 
