@@ -6,7 +6,7 @@ from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton, InputMediaPhoto
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton, InputMediaPhoto, WebAppInfo
 from aiohttp import web
 from database import init_db, get_products_by_category, add_product, add_to_cart, get_cart_items, clear_cart, toggle_wishlist
 
@@ -33,12 +33,13 @@ class AdminAddProduct(StatesGroup):
 
 NO_SIZE_CATEGORIES = ["ayollar kosmetikasi", "ayollar taqinchoqlari", "telefon aksessuarlar"]
 
-# --- KLAVIATURALAR ---
+# --- KLAVIATURALAR (Web App ulangan YANGLI MENYU) ---
 main_menu = ReplyKeyboardMarkup(
     keyboard=[
-        [KeyboardButton(text="🛍 Katalog")],
-        [KeyboardButton(text="🛒 Savat"), KeyboardButton(text="❤️ Sevimlilar")],
-        [KeyboardButton(text="ℹ️ FIRDAVS GROUP"), KeyboardButton(text="📞 Aloqa")]
+        # Web App (Mini ilova) ni ochadigan katta tugma (Ninioshop uslubida)
+        [KeyboardButton(text="🏪 Do'kon", web_app=WebAppInfo(url="https://firdavs2002-eng.github.io/firdavs-group-bot/"))],
+        [KeyboardButton(text="📦 Mening buyurtmalarim")],
+        [KeyboardButton(text="⚙️ Tilni o'zgartirish"), KeyboardButton(text="💬 Chat")]
     ], resize_keyboard=True
 )
 
@@ -78,7 +79,7 @@ payment_menu = ReplyKeyboardMarkup(
 )
 
 # ==========================================
-#             WILDBERRIES LOGIKASI
+#        WILDBERRIES LOGIKASI (Ichki qism)
 # ==========================================
 
 def get_product_markup(product_id, current_index, total_count, category):
@@ -115,45 +116,6 @@ async def show_product_step(message, products, index, category, edit=False):
     else:
         await message.answer_photo(photo=product[5], caption=caption, reply_markup=markup, parse_mode="HTML")
 
-# --- KATALOG VA KARUSEL ---
-@dp.message(F.text == "🛍 Katalog")
-async def show_catalog_msg(message: types.Message):
-    await message.answer("🛒 Bo'limni tanlang:", reply_markup=catalog_menu)
-
-@dp.callback_query(F.data == "back_to_cats")
-async def back_to_categories(callback: types.CallbackQuery):
-    await callback.message.delete()
-    await callback.message.answer("🛒 Bo'limni tanlang:", reply_markup=catalog_menu)
-    await callback.answer()
-
-@dp.callback_query(F.data.startswith("cat_"))
-async def category_selected(callback: types.CallbackQuery, state: FSMContext):
-    if await state.get_state() == AdminAddProduct.category: return
-    
-    category = callback.data.split("_")[1]
-    products = get_products_by_category(category)
-    
-    if not products:
-        await callback.answer(f"Hozircha {category.capitalize()} bo'limida mahsulot yo'q", show_alert=True)
-        return
-
-    await show_product_step(callback.message, products, 0, category, edit=False)
-    await callback.answer()
-
-@dp.callback_query(F.data.startswith("next_") | F.data.startswith("prev_"))
-async def navigate_products(callback: types.CallbackQuery):
-    data = callback.data.split("_")
-    action, category, current_index = data[0], data[1], int(data[2])
-    products = get_products_by_category(category)
-    
-    if action == "next":
-        new_index = (current_index + 1) % len(products)
-    else:
-        new_index = (current_index - 1) % len(products)
-        
-    await show_product_step(callback.message, products, new_index, category, edit=True)
-    await callback.answer()
-
 # --- SAVAT VA SEVIMLILAR MANTIQI ---
 @dp.callback_query(F.data.startswith("add_cart_"))
 async def add_to_cart_handler(callback: types.CallbackQuery):
@@ -171,7 +133,7 @@ async def add_to_wishlist_handler(callback: types.CallbackQuery):
 async def view_cart(message: types.Message):
     items = get_cart_items(message.from_user.id)
     if not items:
-        await message.answer("Savat bo'sh. Katalogdan o'zingizga yoqqan mahsulotlarni tanlang! 😊")
+        await message.answer("Savat bo'sh. Do'kondan o'zingizga yoqqan mahsulotlarni tanlang! 😊")
         return
 
     res = "🛒 <b>Sizning savatingiz:</b>\n\n"
@@ -320,13 +282,12 @@ async def finish_add(message: types.Message, state: FSMContext):
 
 # --- RENDER UCHUN YOLG'ONCHI SERVER ---
 async def handle(request):
-    return web.Response(text="FIRDAVS GROUP Boti 24/7 ishlamoqda!")
+    return web.Response(text="FIRDAVS GROUP Web App Boti 24/7 ishlamoqda!")
 
 async def main():
     init_db()
     logging.basicConfig(level=logging.INFO)
     
-    # Server yaratish (Render xato bermasligi uchun)
     app = web.Application()
     app.router.add_get('/', handle)
     runner = web.AppRunner(app)
@@ -335,9 +296,9 @@ async def main():
     site = web.TCPSite(runner, '0.0.0.0', port)
     await site.start()
 
-    print("FIRDAVS GROUP (WB-Style) ishga tushdi...")
+    print("FIRDAVS GROUP Web App Boti ishga tushdi...")
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
     asyncio.run(main())
-    
+            
