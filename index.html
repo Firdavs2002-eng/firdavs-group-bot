@@ -337,6 +337,67 @@
                 let resp = await fetch(`${API_URL}/api/send_code?uid=${uid}&phone=${encodeURIComponent(phone)}`);
                 let result = await resp.json();
                 
-                if(result.success) {
+                            if(result.success) {
                     tg.showAlert("✅ Kod yuborildi!");
-                    switchAuthStep(2); // 2-qadamga (Kod kiritishga) o'tam
+                    switchAuthStep(2); // 2-qadamga (Kod kiritishga) o'tamiz
+                } else {
+                    tg.showAlert("❌ " + (result.error || "Xatolik"));
+                }
+            } catch(e) {
+                tg.showAlert("❌ Server xatosi yuz berdi. Qaytadan urinib ko'ring.");
+            }
+            btn.innerText = dict[currentLang].getCode;
+        }
+
+        // --- KODNI TASDIQLASH ---
+        function verifyCode() {
+            let code = document.getElementById("codeInput").value;
+            if(code.length >= 4) { 
+                switchAuthStep(3); // 3-qadamga (Ism-familiya kiritishga) o'tamiz
+            } else {
+                tg.showAlert("Kodni to'liq kiriting!");
+            }
+        }
+
+        // --- MA'LUMOTLARNI SAQLASH ---
+        function saveUserInfo() {
+            let fname = document.getElementById("fnameInput").value;
+            let lname = document.getElementById("lnameInput").value;
+            let dob = document.getElementById("dobInput").value;
+            let phone = document.getElementById("phoneInput").value;
+
+            if(!fname || !lname || !dob) {
+                tg.showAlert("Hamma maydonlarni to'ldiring!");
+                return;
+            }
+
+            // Tayyor profilni ko'rsatish
+            document.getElementById("txt-auth").innerText = dict[currentLang].prof; 
+            document.getElementById("display-name").innerText = fname + " " + lname;
+            document.getElementById("display-phone").innerText = phone;
+            switchAuthStep(4); 
+            tg.showAlert("✅ Ro'yxatdan o'tdingiz!");
+        }
+
+        // --- MODALLAR (DASTAVKA VA TO'LOV OYNALARI) ---
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        function setDelivery(name) {
+            document.getElementById('val-delivery').innerText = name + " >";
+            closeModal('deliveryModal');
+        }
+        function setPayment(name) {
+            document.getElementById('val-payment').innerText = name + " >";
+            closeModal('paymentModal');
+        }
+
+        // Ishga tushirish funksiyalari
+        applyLanguage();
+        fetchCategoriesAndRender();
+        
+        // Tavsiya bo'limi uchun vaqtinchalik yozuv
+        document.getElementById('home-grid').innerHTML = '<div style="grid-column: span 2; text-align:center; padding: 20px; color: #888;">Katalogdan tanlang</div>';
+    </script>
+</body>
+</html>
