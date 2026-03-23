@@ -29,15 +29,38 @@ def init_db():
             FOREIGN KEY (product_id) REFERENCES products (id)
         )
     """)
-    # 4. Foydalanuvchilar (Tilni saqlash uchun)
+    # 4. Foydalanuvchilar (Tilni saqlash)
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
             user_id INTEGER PRIMARY KEY,
             lang TEXT DEFAULT 'uz'
         )
     """)
+    # 5. Kategoriyalar rasmlari uchun API jadvali (Aynan shu yetishmayotgan edi!)
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS categories (
+            name TEXT PRIMARY KEY,
+            image_url TEXT
+        )
+    """)
     conn.commit()
     conn.close()
+
+# --- KATEGORIYALAR API UCHUN ---
+def set_category_image(name, image_url):
+    conn = sqlite3.connect("firdavs_group.db")
+    cursor = conn.cursor()
+    cursor.execute("INSERT OR REPLACE INTO categories (name, image_url) VALUES (?, ?)", (name, image_url))
+    conn.commit()
+    conn.close()
+
+def get_all_categories():
+    conn = sqlite3.connect("firdavs_group.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT name, image_url FROM categories")
+    cats = cursor.fetchall()
+    conn.close()
+    return [{"name": row[0], "image_url": row[1]} for row in cats]
 
 # --- FOYDALANUVCHILAR VA TIL ---
 def set_user_lang(user_id, lang):
@@ -55,7 +78,7 @@ def get_user_lang(user_id):
     conn.close()
     return res[0] if res else 'uz'
 
-# --- MAHSULOTLAR ---
+# --- MAHSULOTLAR, SAVAT VA SEVIMLILAR ---
 def add_product(category, name, price, size, color, image_url):
     conn = sqlite3.connect("firdavs_group.db")
     cursor = conn.cursor()
@@ -74,7 +97,6 @@ def get_products_by_category(category_name):
     conn.close()
     return products
 
-# --- SAVAT (KORZINA) ---
 def add_to_cart(user_id, product_id):
     conn = sqlite3.connect("firdavs_group.db")
     cursor = conn.cursor()
@@ -106,7 +128,6 @@ def clear_cart(user_id):
     conn.commit()
     conn.close()
 
-# --- SEVIMLILAR (IZBRANNOYE) ---
 def toggle_wishlist(user_id, product_id):
     conn = sqlite3.connect("firdavs_group.db")
     cursor = conn.cursor()
