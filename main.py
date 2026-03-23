@@ -25,7 +25,6 @@ class AdminCatImage(StatesGroup):
     category_name = State()
     photo = State()
 
-# --- TILLAR LUG'ATI ---
 LANGS = {
     'uz': {
         'welcome': "Assalomu alaykum, {name}!\n<b>FIRDAVS GROUP</b> onlayn do'koniga xush kelibsiz!",
@@ -35,7 +34,7 @@ LANGS = {
         'orders_info': "Sizda hozircha faol buyurtmalar yo'q.", 'choose_lang': "🇺🇿 O'zingizga qulay tilni tanlang:"
     },
     'ru': {
-        'welcome': "Здравствуйте, {name}!\nДобро пожаловать в магазин <b>FIRDAVS GROUP</b>!",
+        'welcome': "Здравствуйте, {name}!\nДобро пожаловать в <b>FIRDAVS GROUP</b>!",
         'shop': "🏪 Магазин", 'game': "🎮 Игра (Clicker)", 'orders': "📦 Мои заказы", 
         'lang': "⚙️ Изменить язык", 'chat': "💬 Чат",
         'chat_info': "🧑‍💻 <b>Служба поддержки:</b>\nНапишите @admin.",
@@ -43,7 +42,7 @@ LANGS = {
     }
 }
 
-# --- ALOHIDA TUGMALAR (NINIOSHOP USLUBI) ---
+# --- NINIOSHOP TUGMALARI (Alohida-alohida) ---
 def get_main_menu(user_id, lang):
     ts = int(time.time())
     shop_url = f"https://firdavs2002-eng.github.io/firdavs-group-bot/?app=shop&lang={lang}&uid={user_id}&v={ts}"
@@ -69,7 +68,6 @@ async def cmd_start(message: types.Message):
     text = LANGS[lang]['welcome'].format(name=message.from_user.first_name)
     await message.answer(text, reply_markup=get_main_menu(message.from_user.id, lang), parse_mode="HTML")
 
-# --- TIL O'ZGARTIRISH ---
 @dp.message(F.text.in_(["⚙️ Tilni o'zgartirish", "⚙️ Изменить язык"]))
 async def change_lang_cmd(message: types.Message):
     lang = get_lang(message.from_user.id)
@@ -87,7 +85,6 @@ async def set_lang_handler(callback: types.CallbackQuery):
     text = LANGS[new_lang]['welcome'].format(name=callback.from_user.first_name)
     await callback.message.answer(text, reply_markup=get_main_menu(callback.from_user.id, new_lang), parse_mode="HTML")
 
-# --- CHAT VA BUYURTMALAR ---
 @dp.message(F.text.in_(["💬 Chat", "💬 Чат"]))
 async def chat_cmd(message: types.Message):
     lang = get_lang(message.from_user.id)
@@ -98,7 +95,7 @@ async def orders_cmd(message: types.Message):
     lang = get_lang(message.from_user.id)
     await message.answer(LANGS[lang]['orders_info'], parse_mode="HTML")
 
-# --- ADMIN PANEL ---
+# --- QOLGAN KODLAR (Admin, API) BIR XIL ---
 @dp.message(Command("admin"))
 async def cmd_admin(message: types.Message):
     if str(message.from_user.id) == ADMIN_ID:
@@ -153,17 +150,12 @@ async def process_cat_photo(message: types.Message, state: FSMContext):
         await wait_msg.edit_text("❌ Xatolik yuz berdi.")
     await state.clear()
 
-# --- API SERVER ---
-def set_cors():
-    return {"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "GET", "Access-Control-Allow-Headers": "Content-Type"}
+def set_cors(): return {"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "GET", "Access-Control-Allow-Headers": "Content-Type"}
 
-async def api_categories(request): 
-    return web.json_response(get_all_categories(), headers=set_cors())
-
+async def api_categories(request): return web.json_response(get_all_categories(), headers=set_cors())
 async def api_products(request):
     cat = request.query.get('category')
     return web.json_response([{"id": p[0], "name": p[1], "price": p[2], "image_url": p[5]} for p in get_products_by_category(cat)], headers=set_cors())
-
 async def api_send_code(request):
     uid = request.query.get('uid')
     phone = request.query.get('phone')
