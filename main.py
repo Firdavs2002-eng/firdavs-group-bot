@@ -3,6 +3,8 @@ import io
 import asyncio
 import logging
 import aiohttp
+import random
+import time
 from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import Command
@@ -15,7 +17,8 @@ from database import init_db, get_products_by_category, add_product, set_user_la
 # --- SOZLAMALAR ---
 load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-ADMIN_ID = os.getenv("ADMIN_ID")
+# Diqqat: Sizning ID raqamingiz qat'iy qilib belgilandi!
+ADMIN_ID = "7723220237" 
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
@@ -47,9 +50,11 @@ LANGS = {
     }
 }
 
-# --- DINAMIK MENYU ---
-def get_main_menu(lang):
-    web_app_url = f"https://firdavs2002-eng.github.io/firdavs-group-bot/?lang={lang}"
+# --- ANTI-CACHE VA DINAMIK URL ---
+def get_main_menu(user_id, lang):
+    ts = int(time.time())
+    web_app_url = f"https://firdavs2002-eng.github.io/firdavs-group-bot/?lang={lang}&uid={user_id}&v={ts}"
+    
     return ReplyKeyboardMarkup(
         keyboard=[
             [KeyboardButton(text=LANGS[lang]['shop'], web_app=WebAppInfo(url=web_app_url))],
@@ -65,18 +70,16 @@ admin_menu = ReplyKeyboardMarkup(
     ], resize_keyboard=True
 )
 
-catalog_menu = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text="🛍 Ayollar kiyimlari", callback_data="catimg_Ayollar kiyimlari")],
-        [InlineKeyboardButton(text="👠 Ayollar oyoq kiyimlari", callback_data="catimg_Ayollar oyoq kiyimlari")],
-        [InlineKeyboardButton(text="💄 Ayollar kosmetikasi", callback_data="catimg_Ayollar kosmetikasi")],
-        [InlineKeyboardButton(text="👜 Ayollar taqinchoqlari", callback_data="catimg_Ayollar taqinchoqlari")],
-        [InlineKeyboardButton(text="👔 Erkaklar kiyimlari", callback_data="catimg_Erkaklar kiyimlari")],
-        [InlineKeyboardButton(text="👞 Erkaklar oyoq kiyimlari", callback_data="catimg_Erkaklar oyoq kiyimlari")],
-        [InlineKeyboardButton(text="👶 Bolalar uchun", callback_data="catimg_Bolalar uchun")],
-        [InlineKeyboardButton(text="📱 Telefon aksessuarlar", callback_data="catimg_Telefon aksessuarlar")]
-    ]
-)
+catalog_menu = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text="🛍 Ayollar kiyimlari", callback_data="catimg_Ayollar kiyimlari")],
+    [InlineKeyboardButton(text="👠 Ayollar oyoq kiyimlari", callback_data="catimg_Ayollar oyoq kiyimlari")],
+    [InlineKeyboardButton(text="💄 Ayollar kosmetikasi", callback_data="catimg_Ayollar kosmetikasi")],
+    [InlineKeyboardButton(text="👜 Ayollar taqinchoqlari", callback_data="catimg_Ayollar taqinchoqlari")],
+    [InlineKeyboardButton(text="👔 Erkaklar kiyimlari", callback_data="catimg_Erkaklar kiyimlari")],
+    [InlineKeyboardButton(text="👞 Erkaklar oyoq kiyimlari", callback_data="catimg_Erkaklar oyoq kiyimlari")],
+    [InlineKeyboardButton(text="👶 Bolalar uchun", callback_data="catimg_Bolalar uchun")],
+    [InlineKeyboardButton(text="📱 Telefon aksessuarlar", callback_data="catimg_Telefon aksessuarlar")]
+])
 
 lang_menu = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="🇺🇿 O'zbekcha", callback_data="setlang_uz")],
@@ -92,18 +95,21 @@ def btn_filter(btn_key):
 async def cmd_start(message: types.Message):
     lang = get_user_lang(message.from_user.id)
     text = LANGS[lang]['welcome'].format(name=message.from_user.first_name)
-    await message.answer(text, reply_markup=get_main_menu(lang), parse_mode="HTML")
+    await message.answer(text, reply_markup=get_main_menu(message.from_user.id, lang), parse_mode="HTML")
 
 @dp.message(Command("admin"))
 async def cmd_admin(message: types.Message):
-    if str(message.from_user.id) == str(ADMIN_ID):
-        await message.answer("👨‍💻 Admin panel:", reply_markup=admin_menu)
+    # Bu yerda bot sizning raqamingizni qat'iy tekshiradi
+    if str(message.from_user.id) == ADMIN_ID:
+        await message.answer("👨‍💻 Admin panelga xush kelibsiz, Firdavs:", reply_markup=admin_menu)
+    else:
+        await message.answer("Sizda admin huquqi yo'q.")
 
 @dp.message(F.text == "⬅️ Asosiy menyuga qaytish")
 async def back_main(message: types.Message, state: FSMContext):
     await state.clear()
     lang = get_user_lang(message.from_user.id)
-    await message.answer("Asosiy menyu:", reply_markup=get_main_menu(lang))
+    await message.answer("Asosiy menyu:", reply_markup=get_main_menu(message.from_user.id, lang))
 
 @dp.message(btn_filter('lang'))
 async def change_lang_cmd(message: types.Message):
@@ -116,7 +122,7 @@ async def set_lang_handler(callback: types.CallbackQuery):
     set_user_lang(callback.from_user.id, new_lang)
     await callback.message.delete()
     text = LANGS[new_lang]['welcome'].format(name=callback.from_user.first_name)
-    await callback.message.answer(text, reply_markup=get_main_menu(new_lang), parse_mode="HTML")
+    await callback.message.answer(text, reply_markup=get_main_menu(callback.from_user.id, new_lang), parse_mode="HTML")
 
 @dp.message(btn_filter('chat'))
 async def chat_cmd(message: types.Message):
@@ -131,7 +137,7 @@ async def orders_cmd(message: types.Message):
 # --- KATEGORIYA RASMINI YUKLASH (TELEGRAPH API) ---
 @dp.message(F.text == "🖼 Toifa rasmini o'zgartirish")
 async def start_cat_img(message: types.Message, state: FSMContext):
-    if str(message.from_user.id) == str(ADMIN_ID):
+    if str(message.from_user.id) == ADMIN_ID:
         await message.answer("Qaysi toifaga rasm qo'ymoqchisiz?", reply_markup=catalog_menu)
         await state.set_state(AdminCatImage.category_name)
 
@@ -145,28 +151,23 @@ async def process_cat_name(callback: types.CallbackQuery, state: FSMContext):
 
 @dp.message(AdminCatImage.photo, F.photo)
 async def process_cat_photo(message: types.Message, state: FSMContext):
-    wait_msg = await message.answer("⏳ Rasm serverga yuklanmoqda...")
+    wait_msg = await message.answer("⏳ Yuklanmoqda...")
     data = await state.get_data()
     cat_name = data['category_name']
-    
     photo_io = io.BytesIO()
     await bot.download(message.photo[-1], destination=photo_io)
     photo_io.seek(0)
-    
     form = FormData()
     form.add_field('file', photo_io.read(), filename='image.jpg', content_type='image/jpeg')
-    
     try:
         async with aiohttp.ClientSession() as session:
             async with session.post('https://telegra.ph/upload', data=form) as resp:
                 res = await resp.json()
                 img_url = "https://telegra.ph" + res[0]['src']
-                
         set_category_image(cat_name, img_url)
-        await wait_msg.edit_text(f"✅ Tayyor! <b>{cat_name}</b> rasmi Web App katalogida yangilandi.", parse_mode="HTML")
-    except Exception as e:
-        await wait_msg.edit_text("❌ Xatolik yuz berdi. Qaytadan urinib ko'ring.")
-    
+        await wait_msg.edit_text(f"✅ <b>{cat_name}</b> rasmi o'zgardi.", parse_mode="HTML")
+    except Exception:
+        await wait_msg.edit_text("❌ Xatolik yuz berdi.")
     await state.clear()
 
 # ==========================================
@@ -180,17 +181,27 @@ def set_cors_headers():
     }
 
 async def api_categories(request):
-    cats = get_all_categories()
-    return web.json_response(cats, headers=set_cors_headers())
+    return web.json_response(get_all_categories(), headers=set_cors_headers())
 
 async def api_products(request):
     category = request.query.get('category')
-    if not category:
-        return web.json_response({"error": "Kategoriya kiritilmadi"}, status=400, headers=set_cors_headers())
-    
     products = get_products_by_category(category)
     prod_list = [{"id": p[0], "name": p[1], "price": p[2], "size": p[3], "color": p[4], "image_url": p[5]} for p in products]
     return web.json_response(prod_list, headers=set_cors_headers())
+
+async def api_send_code(request):
+    uid = request.query.get('uid')
+    phone = request.query.get('phone')
+    if not uid or not phone:
+        return web.json_response({"error": "Parametrlar yetishmayapti"}, status=400, headers=set_cors_headers())
+
+    code = random.randint(1000, 9999) 
+    text = f"🔐 <b>FIRDAVS GROUP</b>\n\nSizning tasdiqlash kodingiz: <b>{code}</b>\nHech kimga bermang!"
+    try:
+        await bot.send_message(chat_id=uid, text=text, parse_mode="HTML")
+        return web.json_response({"success": True}, headers=set_cors_headers())
+    except Exception as e:
+        return web.json_response({"error": "Botga yuborib bo'lmadi."}, status=500, headers=set_cors_headers())
 
 async def handle(request):
     return web.Response(text="FIRDAVS GROUP Web App Boti 24/7 ishlamoqda!")
@@ -202,7 +213,8 @@ async def main():
     app = web.Application()
     app.router.add_get('/', handle)
     app.router.add_get('/api/categories', api_categories) 
-    app.router.add_get('/api/products', api_products) # <-- Mahsulotlarni tortuvchi YANGI API
+    app.router.add_get('/api/products', api_products)
+    app.router.add_get('/api/send_code', api_send_code) 
     
     runner = web.AppRunner(app)
     await runner.setup()
@@ -210,9 +222,8 @@ async def main():
     site = web.TCPSite(runner, '0.0.0.0', port)
     await site.start()
 
-    print("FIRDAVS GROUP Pro API Boti ishga tushdi...")
+    print("FIRDAVS GROUP API ishga tushdi...")
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
     asyncio.run(main())
-    
