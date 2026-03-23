@@ -16,36 +16,31 @@
         * { box-sizing: border-box; font-family: -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background-color: var(--bg-color); padding-bottom: 70px; user-select: none; }
 
-        /* Header */
-        .header {
-            position: sticky; top: 0; background-color: var(--wb-main); color: white;
-            padding: 15px; text-align: center; font-weight: bold; font-size: 18px; z-index: 100;
-        }
+        .header { position: sticky; top: 0; background-color: var(--wb-main); color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 18px; z-index: 100; display: flex; align-items: center; justify-content: center; }
+        .back-btn { position: absolute; left: 15px; top: 15px; color: white; font-size: 18px; cursor: pointer; display: none; }
 
-        /* Sahifalar */
         .page { display: none; padding: 15px; animation: fadeIn 0.3s; }
         .page.active { display: block; }
-
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Mahsulotlar (Do'kon) */
+        /* Mahsulotlar */
         .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
         .product-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .p-img { width: 100%; height: 140px; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 40px;}
+        .p-img { width: 100%; height: 160px; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 40px; overflow: hidden;}
+        .p-img img { width: 100%; height: 100%; object-fit: cover;}
         .p-info { padding: 10px; }
-        .p-title { font-size: 13px; font-weight: bold; color: var(--text-dark); margin: 0 0 5px 0; }
+        .p-title { font-size: 13px; font-weight: bold; color: var(--text-dark); margin: 0 0 5px 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;}
         .p-price { font-size: 15px; color: #e91e63; font-weight: bold; margin-bottom: 10px; }
         .btn-add { background: var(--wb-main); color: #fff; border: none; padding: 8px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-        /* KATALOG GRID (Ninioshop uslubidagi dumaloq kategoriyalar) */
+        /* Katalog */
         .category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px 5px; margin-top: 15px; }
         .cat-card { display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer; }
-        .cat-img { width: 65px; height: 65px; background: #fff; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center; font-size: 30px; margin-bottom: 6px; overflow: hidden; border: 2px solid transparent; transition: border 0.2s;}
-        .cat-card:active .cat-img { border-color: var(--wb-main); }
+        .cat-img { width: 65px; height: 65px; background: #fff; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center; font-size: 30px; margin-bottom: 6px; border: 2px solid transparent; overflow: hidden;}
         .cat-img img { width: 100%; height: 100%; object-fit: cover; }
         .cat-name { font-size: 11px; color: var(--text-dark); font-weight: bold; line-height: 1.2; padding: 0 2px;}
 
-        /* PROFIL VA REGISTRATSIYA */
+        /* Profil */
         .profile-container { background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); text-align: center; }
         .profile-icon { font-size: 50px; margin-bottom: 10px; }
         .auth-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: var(--text-dark); }
@@ -62,14 +57,20 @@
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #888; font-size: 11px; font-weight: bold; cursor: pointer; }
         .nav-item.active { color: var(--wb-main); }
         .nav-icon { font-size: 22px; margin-bottom: 3px; }
+
+        /* Loader */
+        .loader { text-align: center; padding: 20px; color: #888; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <div class="header">FIRDAVS GROUP</div>
+    <div class="header">
+        <span class="back-btn" id="backBtn" onclick="goBack()">⬅️</span>
+        <span id="header-title">FIRDAVS GROUP</span>
+    </div>
 
     <div id="home" class="page active">
-        <h3 style="margin-top:0; color: #555;">Tavsiya etamiz</h3>
+        <h3 id="txt-recommend" style="margin-top:0; color: #555;">Tavsiya etamiz</h3>
         <div class="product-grid">
             <div class="product-card">
                 <div class="p-img">👟</div>
@@ -79,93 +80,51 @@
                     <button class="btn-add" onclick="tg.showAlert('Savatga qo\'shildi!')">Savatga</button>
                 </div>
             </div>
-            <div class="product-card">
-                <div class="p-img">👗</div>
-                <div class="p-info">
-                    <h3 class="p-title">Ayollar ko'ylagi</h3>
-                    <div class="p-price">180 000 UZS</div>
-                    <button class="btn-add" onclick="tg.showAlert('Savatga qo\'shildi!')">Savatga</button>
-                </div>
-            </div>
         </div>
     </div>
 
     <div id="catalog" class="page">
-        <h2 style="margin-top:0; color: #333;">Katalog</h2>
-        
-        <div class="category-grid">
-            <div class="cat-card" onclick="tg.showAlert('Ayollar kiyimlari bo\'limi')">
-                <div class="cat-img">🛍️</div>
-                <div class="cat-name">Ayollar kiyimlari</div>
+        <h2 id="txt-catalog-title" style="margin-top:0; color: #333;">Katalog</h2>
+        <div class="category-grid" id="cat-grid">
             </div>
-            <div class="cat-card" onclick="tg.showAlert('Ayollar oyoq kiyimlari bo\'limi')">
-                <div class="cat-img">👠</div>
-                <div class="cat-name">Ayollar oyoq kiyimlari</div>
+    </div>
+
+    <div id="category-products" class="page">
+        <h2 id="cat-prod-title" style="margin-top:0; color: #333;">Mahsulotlar</h2>
+        <div class="product-grid" id="prod-grid">
             </div>
-            <div class="cat-card" onclick="tg.showAlert('Ayollar kosmetikasi bo\'limi')">
-                <div class="cat-img">💄</div>
-                <div class="cat-name">Ayollar kosmetikasi</div>
-            </div>
-            <div class="cat-card" onclick="tg.showAlert('Ayollar taqinchoqlari bo\'limi')">
-                <div class="cat-img">👜</div>
-                <div class="cat-name">Ayollar taqinchoqlari</div>
-            </div>
-            <div class="cat-card" onclick="tg.showAlert('Erkaklar oyoq kiyimlari bo\'limi')">
-                <div class="cat-img">👞</div>
-                <div class="cat-name">Erkaklar oyoq kiyimlari</div>
-            </div>
-            <div class="cat-card" onclick="tg.showAlert('Erkaklar kiyimlari bo\'limi')">
-                <div class="cat-img">👔</div>
-                <div class="cat-name">Erkaklar kiyimlari</div>
-            </div>
-            <div class="cat-card" onclick="tg.showAlert('Bolalar uchun bo\'limi')">
-                <div class="cat-img">👶</div>
-                <div class="cat-name">Bolalar uchun</div>
-            </div>
-            <div class="cat-card" onclick="tg.showAlert('Telefon aksessuarlar bo\'limi')">
-                <div class="cat-img">📱</div>
-                <div class="cat-name">Telefon aksessuarlar</div>
-            </div>
-        </div>
     </div>
 
     <div id="cart" class="page" style="text-align: center; padding-top: 50px;">
         <span style="font-size: 60px;">🛒</span>
-        <h3>Savatingiz bo'sh</h3>
-        <p style="color: #777; font-size: 14px;">Do'kondan mahsulot tanlang</p>
+        <h3 id="txt-cart-empty">Savatingiz bo'sh</h3>
+        <p id="txt-cart-desc" style="color: #777; font-size: 14px;">Do'kondan mahsulot tanlang</p>
     </div>
 
     <div id="profile" class="page">
         <div class="profile-container">
             <div class="profile-icon">👤</div>
-            <div class="auth-title">Tizimga kirish</div>
-            
+            <div class="auth-title" id="txt-auth">Tizimga kirish</div>
             <div class="input-group">
-                <label>Telefon raqamingiz</label>
+                <label id="txt-phone-lbl">Telefon raqamingiz</label>
                 <input type="tel" id="phoneInput" placeholder="+998 XX XXX XX XX" value="+998 ">
             </div>
-            
-            <button class="btn-primary" onclick="sendCode()">Kod olish</button>
-        </div>
-
-        <div class="settings-list">
-            <div class="setting-item">📍 Dastavka manzili <span style="color:#aaa;">O'rnatilmagan ></span></div>
-            <div class="setting-item">💳 To'lov usuli <span style="color:#aaa;">Naqd ></span></div>
+            <button class="btn-primary" id="btn-get-code" onclick="sendCode()">Kod olish</button>
         </div>
     </div>
 
     <nav class="bottom-nav">
         <div class="nav-item active" onclick="switchPage('home', this)">
-            <span class="nav-icon">🏠</span><span>Do'kon</span>
+            <span class="nav-icon">🏠</span><span id="nav-shop">Do'kon</span>
         </div>
         <div class="nav-item" onclick="switchPage('catalog', this)">
-            <span class="nav-icon">🗂</span><span>Katalog</span>
+            <span class="nav-icon">🗂</span><span id="nav-cat">Katalog</span>
         </div>
         <div class="nav-item" onclick="switchPage('cart', this)">
-            <span class="nav-icon">🛒</span><span>Savat</span>
+            <span class="nav-icon">🛒</span><span id="nav-cart">Savat</span>
         </div>
         <div class="nav-item" onclick="switchPage('profile', this)">
-            <span class="nav-icon">👤</span><span>Profil</span>
+            <span class="nav-icon">👤</span><span id="nav-prof">Profil</span>
         </div>
     </nav>
 
@@ -173,22 +132,137 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
+        // Diqqat! Buni o'zgartirishingiz shart emas, agar Render URL to'g'ri bo'lsa avtomat topadi
+        const API_URL = "https://firdavs-group-bot.onrender.com"; // <-- O'zingizni Render manzilingiz
+
+        const dict = {
+            uz: {
+                shop: "Do'kon", cat: "Katalog", cart: "Savat", prof: "Profil",
+                rec: "Tavsiya etamiz", empty: "Savatingiz bo'sh", emptyDesc: "Do'kondan mahsulot tanlang",
+                auth: "Tizimga kirish", phone: "Telefon raqamingiz", getCode: "Kod olish",
+            },
+            ru: {
+                shop: "Магазин", cat: "Каталог", cart: "Корзина", prof: "Профиль",
+                rec: "Рекомендуем", empty: "Ваша корзина пуста", emptyDesc: "Выберите товары в магазине",
+                auth: "Войти в систему", phone: "Ваш номер телефона", getCode: "Получить код",
+            },
+            en: {
+                shop: "Shop", cat: "Catalog", cart: "Cart", prof: "Profile",
+                rec: "Recommended", empty: "Your cart is empty", emptyDesc: "Choose products from the shop",
+                auth: "Log In", phone: "Your phone number", getCode: "Get Code",
+            }
+        };
+
+        const urlParams = new URLSearchParams(window.location.search);
+        let currentLang = urlParams.get('lang') || 'uz';
+        if (!dict[currentLang]) currentLang = 'uz';
+
+        function applyLanguage() {
+            let t = dict[currentLang];
+            document.getElementById('nav-shop').innerText = t.shop;
+            document.getElementById('nav-cat').innerText = t.cat;
+            document.getElementById('nav-cart').innerText = t.cart;
+            document.getElementById('nav-prof').innerText = t.prof;
+            document.getElementById('txt-recommend').innerText = t.rec;
+            document.getElementById('txt-catalog-title').innerText = t.cat;
+            document.getElementById('txt-cart-empty').innerText = t.empty;
+            document.getElementById('txt-cart-desc').innerText = t.emptyDesc;
+            document.getElementById('txt-auth').innerText = t.auth;
+            document.getElementById('txt-phone-lbl').innerText = t.phone;
+            document.getElementById('btn-get-code').innerText = t.getCode;
+        }
+
+        // Boshlang'ich Kategoriyalar (API yuklanguncha ko'rinib turadi)
+        let categories = [
+            { icon: '🛍️', name: 'Ayollar kiyimlari' }, { icon: '👠', name: 'Ayollar oyoq kiyimlari' },
+            { icon: '💄', name: 'Ayollar kosmetikasi' }, { icon: '👜', name: 'Ayollar taqinchoqlari' },
+            { icon: '👞', name: 'Erkaklar oyoq kiyimlari' }, { icon: '👔', name: 'Erkaklar kiyimlari' },
+            { icon: '👶', name: 'Bolalar uchun' }, { icon: '📱', name: 'Telefon aksessuarlar' }
+        ];
+
+        function renderCategories() {
+            let catHtml = '';
+            categories.forEach(c => {
+                // Agar rasmi bo'lsa rasmni chiqaradi, yo'q bo'lsa emojini
+                let imgContent = c.image_url ? `<img src="${c.image_url}">` : c.icon;
+                catHtml += `
+                    <div class="cat-card" onclick="openCategory('${c.name}')">
+                        <div class="cat-img">${imgContent}</div>
+                        <div class="cat-name">${c.name}</div>
+                    </div>`;
+            });
+            document.getElementById('cat-grid').innerHTML = catHtml;
+        }
+
+        // MAHSULOTLARNI SERVERDAN OLIB KELISH (YANGI FUNKSIYA)
+        async function openCategory(categoryName) {
+            // Katalogdan mahsulotlar sahifasiga o'tish
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById('category-products').classList.add('active');
+            
+            // Orqaga tugmasini yoqish
+            document.getElementById('backBtn').style.display = 'block';
+            document.getElementById('cat-prod-title').innerText = categoryName;
+            document.getElementById('prod-grid').innerHTML = '<div class="loader">Yuklanmoqda...</div>';
+
+            try {
+                // API ga murojaat qilib, shu toifadagi narsalarni so'raymiz
+                let response = await fetch(`${API_URL}/api/products?category=${categoryName}`);
+                let products = await response.json();
+                
+                if (products.length === 0) {
+                    document.getElementById('prod-grid').innerHTML = '<div class="loader">Bu bo\'limda hozircha mahsulot yo\'q.</div>';
+                    return;
+                }
+
+                let html = '';
+                products.forEach(p => {
+                    // Agar maxsus rasm (Telegraph ssilkasi bo'lsa) uni ishlatamiz
+                    let imgHtml = p.image_url && p.image_url.startsWith('http') 
+                        ? `<img src="${p.image_url}">` 
+                        : '🛍'; // Topilmasa oddiy belgi
+
+                    html += `
+                        <div class="product-card">
+                            <div class="p-img">${imgHtml}</div>
+                            <div class="p-info">
+                                <h3 class="p-title">${p.name}</h3>
+                                <div style="font-size: 11px; color:#888; margin-bottom:5px;">R: ${p.size} | ${p.color}</div>
+                                <div class="p-price">${p.price.toLocaleString()} UZS</div>
+                                <button class="btn-add" onclick="tg.showAlert('Savatga qo\\'shildi!')">Savatga</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                document.getElementById('prod-grid').innerHTML = html;
+            } catch (error) {
+                document.getElementById('prod-grid').innerHTML = '<div class="loader">Xatolik yuz berdi. Internetni tekshiring.</div>';
+            }
+        }
+
+        function goBack() {
+            document.getElementById('category-products').classList.remove('active');
+            document.getElementById('catalog').classList.add('active');
+            document.getElementById('backBtn').style.display = 'none';
+        }
+
         function switchPage(pageId, element) {
             document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-            
             document.getElementById(pageId).classList.add('active');
             element.classList.add('active');
+            document.getElementById('backBtn').style.display = 'none'; // Boshqa tabga o'tsa orqaga tugmasi yashirinadi
         }
 
         function sendCode() {
             let phone = document.getElementById("phoneInput").value;
-            if (phone.length < 13) {
-                tg.showAlert("Iltimos, to'g'ri raqam kiriting!");
-            } else {
-                tg.showAlert("Kod " + phone + " raqamiga yuborildi!");
-            }
+            if (phone.length < 13) { tg.showAlert("Noto'g'ri raqam!"); } 
+            else { tg.showAlert("SMS kod yuborildi!"); }
         }
+
+        // Ishga tushganda bajariladigan ishlar
+        applyLanguage();
+        renderCategories();
     </script>
 </body>
 </html>
