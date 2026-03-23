@@ -8,49 +8,45 @@
     <script src="https://api-maps.yandex.ru/2.1/?lang=uz_UZ&apikey=YOUR_API_KEY" type="text/javascript"></script>
     <style>
         :root { --main: #9c27b0; --bg: #f4f6f9; --text: #2c3e50; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; -webkit-tap-highlight-color: transparent; outline: none; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; outline: none; }
         body { background-color: var(--bg); color: var(--text); padding-bottom: 70px; user-select: none; }
         
-        .header { position: sticky; top: 0; background: var(--main); color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 18px; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header { position: sticky; top: 0; background: var(--main); color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 18px; z-index: 100; }
         .back-btn { position: absolute; left: 15px; top: 15px; font-size: 18px; cursor: pointer; display: none; }
         
         .page { display: none; padding: 15px; animation: fadeIn 0.2s; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Mahsulotlar */
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .card { background: #fff; border-radius: 12px; padding: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #eee; }
         .p-img { width: 100%; height: 140px; background: #f8f9fa; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-size: 40px; overflow: hidden; }
         .p-img img { width: 100%; height: 100%; object-fit: cover; }
         .p-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .p-price { font-size: 14px; color: var(--main); font-weight: 700; margin-bottom: 10px; }
-        .btn { background: var(--main); color: white; border: none; padding: 10px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn { background: var(--main); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .btn:active { transform: scale(0.96); opacity: 0.9; }
 
-        /* Kategoriyalar */
         .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 25px; }
         .cat-item { display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer; }
         .cat-icon { width: 60px; height: 60px; background: #fff; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 6px; overflow: hidden; }
         .cat-icon img { width: 100%; height: 100%; object-fit: cover; }
         .cat-text { font-size: 10px; font-weight: 600; color: #555; }
 
-        /* Profil va Registratsiya */
-        .auth-step { display: none; background: white; padding: 25px 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); text-align: center; }
+        /* Profil / Ninioshop Style */
+        .auth-step { display: none; }
         .auth-step.active { display: block; }
         .input-group { margin-bottom: 15px; text-align: left; }
         .input-group label { font-size: 12px; color: #888; font-weight: bold; margin-bottom: 5px; display: block; }
-        .input-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; transition: 0.2s; background: #fafafa;}
+        .input-group input, .input-group select { width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 12px; font-size: 15px; background: #f9f9f9;}
         .input-group input:focus { border-color: var(--main); background: #fff;}
         
-        .list-item { padding: 16px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; font-weight: 600; cursor: pointer; background: #fff; margin-bottom: 8px; border-radius: 12px;}
+        .list-item { padding: 18px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; font-weight: 600; cursor: pointer; background: #fff; margin-bottom: 10px; border-radius: 12px;}
         
-        /* Modallar */
-        .modal { display: none; position: fixed; bottom: -100%; left: 0; width: 100%; background: white; border-radius: 20px 20px 0 0; padding: 20px; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2000; box-shadow: 0 -5px 20px rgba(0,0,0,0.15); }
+        .modal { display: none; position: fixed; bottom: -100%; left: 0; width: 100%; background: white; border-radius: 20px 20px 0 0; padding: 20px; transition: 0.3s; z-index: 2000; box-shadow: 0 -5px 20px rgba(0,0,0,0.15); }
         .modal.active { display: block; bottom: 0; }
         #map { width: 100%; height: 300px; border-radius: 12px; margin: 10px 0; background: #e0e0e0; }
         
-        /* To'lov Tizimi (4 blok) */
         .pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .pay-card { border: 2px solid #eee; border-radius: 12px; padding: 15px; display: flex; align-items: center; justify-content: space-between; font-weight: 700; cursor: pointer; transition: 0.2s;}
         .pay-card.active { border-color: var(--main); background-color: #fcf4ff; }
@@ -59,11 +55,10 @@
 
         /* O'yin */
         #game-app { display: none; text-align: center; padding: 50px 20px; }
-        .click-coin { font-size: 90px; background: #FFD700; width: 220px; height: 220px; display: flex; align-items: center; justify-content: center; border-radius: 50%; margin: 0 auto 40px auto; box-shadow: 0 15px 30px rgba(255, 215, 0, 0.4); border: 8px solid #F5B041; transition: 0.1s; cursor: pointer; user-select: none;}
+        .click-coin { font-size: 90px; background: #FFD700; width: 220px; height: 220px; display: flex; align-items: center; justify-content: center; border-radius: 50%; margin: 0 auto 40px auto; box-shadow: 0 15px 30px rgba(255, 215, 0, 0.4); border: 8px solid #F5B041; transition: 0.1s; cursor: pointer;}
         .click-coin:active { transform: scale(0.9); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4); }
 
-        /* Bottom Nav */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 60px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eaeaea; z-index: 1000; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 60px; background: rgba(255,255,255,0.98); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eaeaea; z-index: 1000; }
         .nav-btn { display: flex; flex-direction: column; align-items: center; color: #a0a0a0; font-size: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; }
         .nav-btn.active { color: var(--main); transform: translateY(-2px); }
         .nav-icon { font-size: 22px; margin-bottom: 3px; }
@@ -97,48 +92,62 @@
         </div>
 
         <div id="profile" class="page">
-            <div id="step-1" class="auth-step active">
+            
+            <div id="step-1" class="auth-step active" style="background: white; padding: 20px; border-radius: 16px; text-align: center;">
                 <div style="font-size: 50px; margin-bottom: 15px;">👤</div>
                 <h3 style="margin-bottom: 15px;">Tizimga kirish</h3>
                 <div class="input-group">
                     <label>Telefon raqamingiz</label>
-                    <input type="tel" id="phoneInput" value="+998" placeholder="+998 90 123 45 67">
+                    <input type="tel" id="loginPhone" value="+998">
                 </div>
                 <button class="btn" id="btn-get-code" onclick="sendCode()">Kod olish</button>
             </div>
             
-            <div id="step-2" class="auth-step">
-                <h3 style="margin-bottom: 15px;">Kodni tasdiqlash</h3>
+            <div id="step-2" class="auth-step" style="background: white; padding: 20px; border-radius: 16px; text-align: center;">
+                <h3 style="margin-bottom: 15px;">SMS Kodni kiriting</h3>
                 <div class="input-group">
-                    <label>SMS orqali kelgan kod</label>
-                    <input type="number" id="codeInput" placeholder="----">
+                    <input type="number" id="codeInput" placeholder="----" style="text-align: center; font-size: 20px; letter-spacing: 10px;">
                 </div>
                 <button class="btn" onclick="verifyCode()">Tasdiqlash</button>
             </div>
 
-            <div id="step-3" class="auth-step">
-                <h3 style="margin-bottom: 15px;">Shaxsiy ma'lumotlar</h3>
-                <div class="input-group"><label>Ism</label><input type="text" id="fnameInput"></div>
-                <div class="input-group"><label>Familiya</label><input type="text" id="lnameInput"></div>
+            <div id="step-3" class="auth-step" style="background: white; padding: 20px; border-radius: 16px;">
+                <h3 style="margin-bottom: 15px; text-align: center;">Mening ma'lumotlarim</h3>
+                <div class="input-group"><label>Ism va familiya</label><input type="text" id="fnameInput" placeholder="Ism Familiya"></div>
+                <div class="input-group"><label>Telefon raqami</label><input type="tel" id="regPhone" disabled style="background: #eee;"></div>
+                <div class="input-group"><label>Elektron pochta</label><input type="email" id="emailInput" placeholder="Misol@gmail.com"></div>
+                <div class="input-group"><label>Tug'ilgan sana</label><input type="date" id="dobInput"></div>
+                <div style="text-align: left; margin-bottom: 20px; font-weight: bold; color: #555; font-size: 14px;">
+                    <label style="font-size: 12px; color: #888; display: block; margin-bottom: 5px;">Jins</label>
+                    <input type="radio" name="gender" value="Erkak" id="g1"> <label for="g1" style="display:inline; color:#333; font-size:14px;">Erkak</label>
+                    <input type="radio" name="gender" value="Ayol" id="g2" style="margin-left: 20px;"> <label for="g2" style="display:inline; color:#333; font-size:14px;">Ayol</label>
+                </div>
                 <button class="btn" onclick="saveInfo()">Saqlash</button>
             </div>
 
-            <div id="step-4" class="auth-step" style="background: transparent; box-shadow: none; padding: 0;">
-                <div style="background: white; padding: 20px; border-radius: 16px; margin-bottom: 15px; text-align: left;">
-                    <div style="font-size: 40px; float: left; margin-right: 15px;">👤</div>
-                    <h2 id="p-name" style="color: var(--text); padding-top: 5px;">Ism Familiya</h2>
-                    <p id="p-phone" style="color: #888; font-size: 13px;">+998 -- --- -- --</p>
-                    <div style="clear: both;"></div>
+            <div id="step-4" class="auth-step" style="background: transparent; padding: 0;">
+                <div style="background: white; padding: 20px; border-radius: 16px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center;">
+                        <div style="font-size: 40px; margin-right: 15px; background: #f0f0f0; border-radius: 50%; width: 60px; height: 60px; display:flex; justify-content:center; align-items:center;">👤</div>
+                        <div>
+                            <h2 id="p-name" style="color: var(--text); font-size: 18px; margin-bottom: 2px;">Ism Familiya</h2>
+                            <p id="p-phone" style="color: #888; font-size: 13px;">+998 -- --- -- --</p>
+                        </div>
+                    </div>
+                    <div style="color: var(--main); cursor: pointer; padding: 10px; background: #fcf4ff; border-radius: 8px;" onclick="editProfile()">✏️</div>
                 </div>
                 
+                <div class="list-item" onclick="tg.showAlert('Sizda hozircha buyurtmalar yo\\'q')">
+                    <span>📦 Buyurtmalarim</span><span style="color: #bbb;">></span>
+                </div>
                 <div class="list-item" onclick="openMapModal()">
-                    <span>📍 Yetkazib berish manzili</span>
-                    <span id="v-del" style="color: var(--main); font-size: 13px;">Tanlang ></span>
+                    <span>📍 Yetkazib berish manzili</span><span id="v-del" style="color: var(--main); font-size: 13px;">Tanlang ></span>
                 </div>
                 <div class="list-item" onclick="openModal('paymentModal')">
-                    <span>💳 To'lov usuli</span>
-                    <span id="v-pay" style="color: var(--main); font-size: 13px;">Tanlang ></span>
+                    <span>💳 To'lov usuli</span><span id="v-pay" style="color: var(--main); font-size: 13px;">Tanlang ></span>
                 </div>
+
+                <button class="btn" style="background: white; color: red; margin-top: 15px; border: 1px solid #ffcccc;" onclick="logout()">Chiqish</button>
             </div>
         </div>
 
@@ -153,37 +162,27 @@
     <div id="game-app">
         <h2 style="font-size: 28px; margin-bottom: 10px; color: #333;">Firdavs Clicker</h2>
         <p style="color: #888; margin-bottom: 40px; font-weight: bold;">Tangalar yig'ing!</p>
-        
         <div class="click-coin" onclick="clickCoin()">🪙</div>
-        
         <div style="background: white; padding: 15px 40px; border-radius: 16px; display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-            <p style="color: #aaa; font-size: 11px; text-transform: uppercase; font-weight: bold; margin-bottom: 5px;">Sizning hisobingiz</p>
+            <p style="color: #aaa; font-size: 11px; text-transform: uppercase; font-weight: bold; margin-bottom: 5px;">Balans</p>
             <h1 id="balance" style="font-size: 45px; color: var(--main); margin: 0;">0</h1>
         </div>
     </div>
 
     <div id="mapModal" class="modal">
         <h3 style="text-align: center; margin-bottom: 8px;">Manzilni belgilang</h3>
-        <p id="addressText" style="font-size: 12px; color: var(--main); text-align: center; font-weight: bold;">Xaritadan kerakli joyni bosing</p>
+        <p id="addressText" style="font-size: 12px; color: var(--main); text-align: center; font-weight: bold;">Xaritadan bosing</p>
         <div id="map"></div>
         <button class="btn" onclick="closeMapModal()">Shu manzilga yetkazish</button>
     </div>
 
     <div id="paymentModal" class="modal">
-        <h3 style="text-align: center; margin-bottom: 15px;">To'lov usulini tanlang</h3>
+        <h3 style="text-align: center; margin-bottom: 15px;">To'lov usuli</h3>
         <div class="pay-grid">
-            <div class="pay-card active" onclick="setPay(this, 'Naqd pul')">
-                <span>💵 Naqd</span><div class="radio-circle"></div>
-            </div>
-            <div class="pay-card" onclick="setPay(this, 'Click')">
-                <span style="color: #00a5ff;">🔵 Click</span><div class="radio-circle"></div>
-            </div>
-            <div class="pay-card" onclick="setPay(this, 'Payme')">
-                <span style="color: #33cccc;">🟢 Payme</span><div class="radio-circle"></div>
-            </div>
-            <div class="pay-card" onclick="setPay(this, 'Uzum To\'lov')">
-                <span style="color: #7b1fa2;">🟣 Uzum</span><div class="radio-circle"></div>
-            </div>
+            <div class="pay-card active" onclick="setPay(this, 'Naqd pul')"><span>💵 Naqd</span><div class="radio-circle"></div></div>
+            <div class="pay-card" onclick="setPay(this, 'Click')"><span style="color: #00a5ff;">🔵 Click</span><div class="radio-circle"></div></div>
+            <div class="pay-card" onclick="setPay(this, 'Payme')"><span style="color: #33cccc;">🟢 Payme</span><div class="radio-circle"></div></div>
+            <div class="pay-card" onclick="setPay(this, 'Uzum To\'lov')"><span style="color: #7b1fa2;">🟣 Uzum</span><div class="radio-circle"></div></div>
         </div>
         <button class="btn" style="background: #f0f0f0; color: #555;" onclick="closeModal('paymentModal')">Yopish</button>
     </div>
@@ -192,29 +191,26 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
         const API_URL = "https://firdavs-group-bot.onrender.com";
-
-        // URL ni tekshirish: Mijoz Do'konga kirdimi yoki O'yinga?
         const urlParams = new URLSearchParams(window.location.search);
         const appMode = urlParams.get('app') || 'shop';
         let uid = urlParams.get('uid') || '';
 
-        // O'YIN LOGIKASI
+        // O'YIN
         if(appMode === 'game') {
             document.getElementById('shop-app').style.display = 'none';
             document.getElementById('game-app').style.display = 'block';
-            document.body.style.backgroundColor = '#fdfdfd'; // O'yin uchun ochroq fon
-            let coins = localStorage.getItem('f_coins') || 0;
+            let coins = localStorage.getItem('fg_coins') || 0;
             document.getElementById('balance').innerText = coins;
             
             window.clickCoin = function() {
-                let current = parseInt(localStorage.getItem('f_coins')) || 0;
+                let current = parseInt(localStorage.getItem('fg_coins')) || 0;
                 current++;
                 document.getElementById('balance').innerText = current;
-                localStorage.setItem('f_coins', current);
+                localStorage.setItem('fg_coins', current);
                 try { tg.HapticFeedback.impactOccurred('medium'); } catch(e){}
             }
         } 
-        // DO'KON LOGIKASI
+        // DO'KON
         else {
             const categories = [
                 { icon: '🛍️', name: 'Ayollar kiyimlari' }, { icon: '👠', name: 'Ayollar oyoq kiyimlari' },
@@ -241,9 +237,9 @@
                 }
             }
             fetchCats();
+            checkLogin(); // Saytga kirganda ma'lumotni tekshiramiz
         }
 
-        // Sahifalarni o'zgartirish
         function switchPage(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -255,28 +251,25 @@
             document.getElementById('header-title').innerText = "FIRDAVS GROUP";
         }
 
-        // Katalog ichiga kirish
         async function openCat(name) {
             document.getElementById('home').classList.remove('active');
             document.getElementById('cat-detail').classList.add('active');
             document.getElementById('backBtn').style.display = 'block';
             document.getElementById('header-title').innerText = name;
-            
             let list = document.getElementById('cat-products');
             list.innerHTML = '<div style="grid-column: span 2; text-align:center; padding:30px; color:#888;">Yuklanmoqda...</div>';
             
             try {
                 let res = await fetch(`${API_URL}/api/products?category=${name}`);
                 let products = await res.json();
-                if(products.length === 0) { list.innerHTML = '<div style="grid-column: span 2; text-align:center; padding:30px; color:#888;">Hozircha mahsulot yo\'q</div>'; return; }
-                
+                if(products.length === 0) { list.innerHTML = '<div style="grid-column: span 2; text-align:center; padding:30px; color:#888;">Bo\'sh</div>'; return; }
                 let html = '';
                 products.forEach(p => {
                     let img = p.image_url ? `<img src="${p.image_url}">` : '🛍';
-                    html += `<div class="card"><div class="p-img">${img}</div><div class="p-title">${p.name}</div><div class="p-price">${p.price.toLocaleString()} UZS</div><button class="btn" onclick="tg.showAlert('Savatga qo\\'shildi!')">Savatga</button></div>`;
+                    html += `<div class="card"><div class="p-img">${img}</div><div class="p-title">${p.name}</div><div class="p-price">${p.price.toLocaleString()} UZS</div><button class="btn" onclick="tg.showAlert('Savatga tushdi')">Savatga</button></div>`;
                 });
                 list.innerHTML = html;
-            } catch(e) { list.innerHTML = '<div style="grid-column: span 2; text-align:center; color:red;">Xatolik yuz berdi</div>'; }
+            } catch(e) { list.innerHTML = '<div style="grid-column: span 2; text-align:center; color:red;">Xato</div>'; }
         }
 
         function goBack() {
@@ -286,38 +279,71 @@
             document.getElementById('header-title').innerText = "FIRDAVS GROUP";
         }
 
-        // REGISTRATSIYA QADAMLARI
+        // MA'LUMOTLARNI SAQLASH (LOCALSTORAGE)
+        function checkLogin() {
+            if(localStorage.getItem('fg_logged') === 'true') {
+                document.getElementById('p-name').innerText = localStorage.getItem('fg_name');
+                document.getElementById('p-phone').innerText = localStorage.getItem('fg_phone');
+                setStep(4);
+            } else { setStep(1); }
+        }
+
         function setStep(step) {
             document.querySelectorAll('.auth-step').forEach(s => s.classList.remove('active'));
             document.getElementById('step-' + step).classList.add('active');
         }
 
         async function sendCode() {
-            let phone = document.getElementById("phoneInput").value;
-            if(phone.length < 9) { tg.showAlert("Raqamni to'liq kiriting!"); return; }
-            if(!uid) { tg.showAlert("Iltimos, bot orqali kiring."); return; }
-            
-            document.getElementById("btn-get-code").innerText = "⏳ Kutib turing...";
+            let phone = document.getElementById("loginPhone").value;
+            if(phone.length < 9) { tg.showAlert("Raqam xato!"); return; }
+            if(!uid) { tg.showAlert("Bot orqali kiring!"); return; }
+            document.getElementById("btn-get-code").innerText = "⏳...";
             try {
                 let res = await fetch(`${API_URL}/api/send_code?uid=${uid}&phone=${encodeURIComponent(phone)}`);
                 let json = await res.json();
-                if(json.success) { setStep(2); } else { tg.showAlert("Xatolik yuz berdi."); }
-            } catch(e) { tg.showAlert("Server ulanmadi."); }
+                if(json.success) { 
+                    document.getElementById('regPhone').value = phone;
+                    setStep(2); 
+                }
+            } catch(e) {}
             document.getElementById("btn-get-code").innerText = "Kod olish";
         }
 
         function verifyCode() { setStep(3); }
         
         function saveInfo() {
-            let f = document.getElementById("fnameInput").value;
-            let l = document.getElementById("lnameInput").value;
-            if(!f || !l) { tg.showAlert("Ism va familiyani yozing."); return; }
-            document.getElementById("p-name").innerText = f + " " + l;
-            document.getElementById("p-phone").innerText = document.getElementById("phoneInput").value;
+            let fname = document.getElementById("fnameInput").value;
+            let phone = document.getElementById("regPhone").value;
+            let email = document.getElementById("emailInput").value;
+            let dob = document.getElementById("dobInput").value;
+            
+            if(!fname) { tg.showAlert("Ismni kiriting"); return; }
+            
+            // Xotiraga yozamiz
+            localStorage.setItem('fg_logged', 'true');
+            localStorage.setItem('fg_name', fname);
+            localStorage.setItem('fg_phone', phone);
+            localStorage.setItem('fg_email', email);
+            localStorage.setItem('fg_dob', dob);
+            
+            document.getElementById("p-name").innerText = fname;
+            document.getElementById("p-phone").innerText = phone;
             setStep(4);
         }
 
-        // MODALLAR VA TO'LOV
+        function editProfile() {
+            document.getElementById("fnameInput").value = localStorage.getItem('fg_name') || '';
+            document.getElementById("emailInput").value = localStorage.getItem('fg_email') || '';
+            document.getElementById("dobInput").value = localStorage.getItem('fg_dob') || '';
+            setStep(3);
+        }
+
+        function logout() {
+            localStorage.removeItem('fg_logged');
+            document.getElementById("loginPhone").value = "+998";
+            setStep(1);
+        }
+
         function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
@@ -328,27 +354,24 @@
             setTimeout(() => closeModal('paymentModal'), 200);
         }
 
-        // YANDEX XARITA LOGIKASI
         let myMap;
         window.openMapModal = function() {
             openModal('mapModal');
             if(myMap) return;
             ymaps.ready(() => {
-                myMap = new ymaps.Map("map", { center: [41.2995, 69.2401], zoom: 12, controls: ['zoomControl'] }); // Toshkent markazi
+                myMap = new ymaps.Map("map", { center: [41.2995, 69.2401], zoom: 12, controls: ['zoomControl'] });
                 myMap.events.add('click', function (e) {
                     let coords = e.get('coords');
                     myMap.geoObjects.removeAll();
                     myMap.geoObjects.add(new ymaps.Placemark(coords, {}, { preset: 'islands#violetDotIcon' }));
-                    
                     ymaps.geocode(coords).then(function (res) {
-                        let obj = res.geoObjects.get(0);
-                        document.getElementById('addressText').innerText = obj.getAddressLine();
+                        document.getElementById('addressText').innerText = res.geoObjects.get(0).getAddressLine();
                     });
                 });
             });
         }
         window.closeMapModal = function() {
-            document.getElementById('v-del').innerText = "Kuryer orqali >";
+            document.getElementById('v-del').innerText = "Belgilandi >";
             closeModal('mapModal');
         }
     </script>
