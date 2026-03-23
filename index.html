@@ -5,206 +5,171 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Firdavs Group Super App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
-    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #F3F4F6; -webkit-tap-highlight-color: transparent; }
-        .wb-gradient { background: linear-gradient(135deg, #9c27b0 0%, #673ab7 100%); }
-        .page { display: none; animation: slideUp 0.3s ease-out; }
+        :root { --main: #9c27b0; }
+        body { background-color: #f6f6f6; font-family: -apple-system, sans-serif; }
+        .wb-gradient { background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%); }
+        .page { display: none; animation: fadeIn 0.3s ease; }
         .page.active { display: block; }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 65px; background: white; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #E5E7EB; z-index: 50; }
-        .coin-bounce { animation: bounce 0.5s infinite alternate; }
-        @keyframes bounce { from { transform: scale(1); } to { transform: scale(1.1); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 65px; background: white; border-top: 1px solid #eee; display: flex; justify-content: space-around; align-items: center; z-index: 1000; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: bold; color: #888; cursor: pointer; }
+        .nav-item.active { color: var(--main); }
+        .cat-card { display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer; }
+        .cat-img { width: 60px; height: 60px; background: white; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 5px; }
     </style>
 </head>
 <body class="pb-20">
 
-    <header class="wb-gradient text-white p-4 sticky top-0 z-50 flex items-center justify-between shadow-lg">
-        <button id="backBtn" class="hidden text-xl" onclick="goBack()">⬅️</button>
-        <h1 class="font-bold text-lg mx-auto">FIRDAVS GROUP</h1>
-        <div class="w-6"></div>
+    <header class="wb-gradient text-white p-4 sticky top-0 z-50 flex items-center shadow-md">
+        <h1 class="font-bold text-lg w-full text-center">FIRDAVS GROUP</h1>
     </header>
 
     <div id="home" class="page active p-4">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="font-bold text-gray-800">Tavsiya etamiz</h2>
-            <span class="text-xs text-purple-600 font-bold">Hammasi ></span>
-        </div>
-        <div class="grid grid-cols-2 gap-3" id="product-list">
-            <div class="bg-white rounded-xl shadow-sm overflow-hidden p-2">
-                <div class="h-32 bg-gray-100 rounded-lg mb-2 flex items-center justify-center text-3xl">👟</div>
-                <h3 class="text-xs font-bold text-gray-700 truncate">Premium Krossovka</h3>
-                <p class="text-purple-600 font-bold text-sm">450,000 UZS</p>
-                <button class="w-full wb-gradient text-white text-xs py-2 mt-2 rounded-lg">Savatga</button>
+        <h2 class="font-bold text-gray-700 mb-4">Kategoriyalar</h2>
+        <div class="grid grid-cols-4 gap-4 mb-8" id="cat-grid">
             </div>
-        </div>
-    </div>
 
-    <div id="support" class="page p-4 h-[80vh] flex flex-col">
-        <div class="flex items-center gap-2 mb-4 bg-purple-100 p-3 rounded-xl text-purple-800">
-            <span class="text-2xl">🤖</span>
-            <div>
-                <p class="text-xs font-bold">AI Asistent</p>
-                <p class="text-[10px]">Sizga qanday yordam bera olaman?</p>
-            </div>
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="font-bold text-gray-700">Tavsiya etamiz</h2>
         </div>
-        <div id="chat-box" class="flex-grow overflow-y-auto space-y-3 mb-4 text-sm">
-            <div class="bg-white p-3 rounded-tr-2xl rounded-bl-2xl rounded-br-2xl shadow-sm max-w-[80%]">
-                Salom! Men Firdavs Group AI asistentiman. Mahsulotlar yoki dastavka haqida so'rang.
+        <div class="grid grid-cols-2 gap-3" id="home-products">
+            <div class="bg-white p-3 rounded-xl shadow-sm text-center border">
+                <div class="h-32 bg-gray-50 rounded-lg mb-2 flex items-center justify-center text-3xl">👟</div>
+                <h3 class="text-xs font-bold truncate text-gray-600">Premium Krossovka</h3>
+                <p class="text-purple-600 font-bold text-sm">450,000 UZS</p>
+                <button class="w-full wb-gradient text-white text-xs py-2 mt-2 rounded-lg" onclick="tg.showAlert('Savatga tushdi!')">Savatga</button>
             </div>
-        </div>
-        <div class="flex gap-2">
-            <input id="ai-input" type="text" class="flex-grow p-3 rounded-xl border border-gray-200 outline-none" placeholder="Xabaringizni yozing...">
-            <button onclick="sendToAI()" class="wb-gradient text-white p-3 rounded-xl">➡️</button>
         </div>
     </div>
 
     <div id="game" class="page p-6 text-center">
         <h2 class="text-xl font-bold mb-2">Firdavs Clicker</h2>
-        <p class="text-gray-500 text-sm mb-6">Tanganing ustiga bosing va yutuq yuting!</p>
-        <div class="relative inline-block">
-            <div id="coin" onclick="clickCoin(event)" class="w-48 h-48 bg-yellow-400 rounded-full border-8 border-yellow-500 flex items-center justify-center text-6xl shadow-2xl cursor-pointer active:scale-95 transition-transform select-none">
-                🪙
-            </div>
+        <p class="text-gray-500 text-sm mb-10">Tanganing ustiga bosing!</p>
+        <div class="relative inline-block mb-10">
+            <div id="coin" onclick="clickCoin(event)" class="w-44 h-44 bg-yellow-400 rounded-full border-8 border-yellow-500 flex items-center justify-center text-6xl shadow-2xl active:scale-90 transition-transform cursor-pointer mx-auto">🪙</div>
         </div>
-        <div class="mt-8">
-            <p class="text-gray-400 uppercase text-xs tracking-widest">Sizning balansingiz</p>
+        <div class="bg-white p-4 rounded-2xl shadow-inner inline-block px-10">
+            <p class="text-xs text-gray-400 uppercase font-bold">Balans</p>
             <h2 id="balance" class="text-4xl font-black text-purple-800">0</h2>
         </div>
     </div>
 
-    <div id="profile" class="page p-4">
-        <div id="auth-section" class="bg-white p-6 rounded-2xl shadow-sm text-center">
-            <div class="text-5xl mb-4">👤</div>
-            <h2 class="font-bold text-lg mb-4">Tizimga kirish</h2>
-            <div class="mb-4 text-left">
-                <input id="phone" type="tel" class="w-full p-3 border rounded-xl outline-none">
-            </div>
-            <button id="authBtn" onclick="handleAuth()" class="w-full wb-gradient text-white font-bold py-3 rounded-xl">Kirish</button>
+    <div id="ai" class="page p-4 h-[75vh] flex flex-col">
+        <div class="bg-purple-50 p-3 rounded-xl mb-4 text-purple-800 flex items-center gap-3 border border-purple-100">
+            <span class="text-2xl">🤖</span>
+            <p class="text-xs font-bold">AI Asistent: Sizga qanday yordam bera olaman?</p>
         </div>
+        <div id="chat-box" class="flex-grow overflow-y-auto space-y-3 mb-4 text-sm flex flex-col p-2">
+            <div class="bg-white p-3 rounded-2xl shadow-sm border max-w-[80%]">Salom! Men Firdavs Group AI yordamchisiman.</div>
+        </div>
+        <div class="flex gap-2 p-2 bg-white rounded-2xl shadow-lg">
+            <input id="ai-input" type="text" class="flex-grow p-2 outline-none text-sm" placeholder="Xabar...">
+            <button onclick="sendAI()" class="wb-gradient text-white px-4 py-2 rounded-xl">➡️</button>
+        </div>
+    </div>
 
-        <div id="user-info" class="hidden space-y-4">
-            <div class="bg-white p-4 rounded-2xl flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-xl">👨‍💼</div>
-                    <div>
-                        <h3 id="user-name" class="font-bold">Firdavs Ruziboyev</h3>
-                        <p id="user-phone" class="text-xs text-gray-500">+998 99 123 45 67</p>
-                    </div>
+    <div id="profile" class="page p-4">
+        <div class="bg-white p-8 rounded-3xl shadow-sm text-center border">
+            <div class="text-6xl mb-4">👤</div>
+            <h2 class="font-bold text-xl mb-2">Firdavs Ruziboyev</h2>
+            <p class="text-gray-400 text-sm mb-6">+998 90 123 45 67</p>
+            <div class="space-y-3 text-left">
+                <div class="p-4 bg-gray-50 rounded-2xl flex justify-between items-center" onclick="tg.showAlert('Tez orada...')">
+                    <span class="font-medium text-gray-700">📦 Buyurtmalarim</span>
+                    <span class="text-purple-600 font-bold">></span>
                 </div>
-                <button class="text-purple-600 font-bold text-sm">Tahrirlash</button>
-            </div>
-            
-            <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
-                <div class="p-4 border-b flex justify-between items-center" onclick="tg.showAlert('Xarita yuklanmoqda...')">
-                    <span class="font-medium">📍 Yetkazib berish manzili</span>
-                    <span class="text-xs text-gray-400">></span>
-                </div>
-                <div class="p-4 border-b flex justify-between items-center">
-                    <span class="font-medium">💳 To'lov usullari</span>
-                    <span class="text-purple-600 text-xs">Uzum To'lov</span>
+                <div class="p-4 bg-gray-50 rounded-2xl flex justify-between items-center" onclick="tg.showAlert('Dastavka sozlamalari')">
+                    <span class="font-medium text-gray-700">📍 Manzillarim</span>
+                    <span class="text-purple-600 font-bold">></span>
                 </div>
             </div>
+            <button class="w-full mt-6 py-3 text-red-500 font-bold text-sm" onclick="tg.close()">Chiqish</button>
         </div>
     </div>
 
     <nav class="bottom-nav">
-        <div onclick="switchPage('home')" class="flex flex-col items-center text-purple-600">
-            <span class="text-xl">🏠</span><span class="text-[10px] font-bold">Do'kon</span>
-        </div>
-        <div onclick="switchPage('game')" class="flex flex-col items-center text-gray-400">
-            <span class="text-xl">🎮</span><span class="text-[10px] font-bold">O'yin</span>
-        </div>
-        <div onclick="switchPage('support')" class="flex flex-col items-center text-gray-400">
-            <span class="text-xl">🤖</span><span class="text-[10px] font-bold">AI Chat</span>
-        </div>
-        <div onclick="switchPage('profile')" class="flex flex-col items-center text-gray-400">
-            <span class="text-xl">👤</span><span class="text-[10px] font-bold">Profil</span>
-        </div>
+        <div onclick="switchPage('home', this)" class="nav-item active"><span>🏠</span><span>Do'kon</span></div>
+        <div onclick="switchPage('game', this)" class="nav-item"><span>🎮</span><span>O'yin</span></div>
+        <div onclick="switchPage('ai', this)" class="nav-item"><span>🤖</span><span>AI Chat</span></div>
+        <div onclick="switchPage('profile', this)" class="nav-item"><span>👤</span><span>Profil</span></div>
     </nav>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // 1. GLOBAL PHONE INPUT
-        const phoneInput = document.querySelector("#phone");
-        const iti = window.intlTelInput(phoneInput, {
-            utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js",
-            initialCountry: "uz",
-            separateDialCode: true
+        // 1. KATEGORIYALARNI CHIZISH (8 ta bo'lim)
+        const categories = [
+            { icon: '🛍️', name: 'Ayollar kiyimlari' }, { icon: '👠', name: 'Ayollar oyoq kiyimlari' },
+            { icon: '💄', name: 'Ayollar kosmetikasi' }, { icon: '👜', name: 'Ayollar taqinchoqlari' },
+            { icon: '👞', name: 'Erkaklar oyoq kiyimlari' }, { icon: '👔', name: 'Erkaklar kiyimlari' },
+            { icon: '👶', name: 'Bolalar uchun' }, { icon: '📱', name: 'Telefon aksessuarlar' }
+        ];
+
+        let catGrid = document.getElementById('cat-grid');
+        categories.forEach(c => {
+            catGrid.innerHTML += `
+                <div class="cat-card" onclick="tg.showAlert('${c.name} bo\\'limi tez orada ochiladi')">
+                    <div class="cat-img">${c.icon}</div>
+                    <div class="cat-name text-[10px] text-gray-600 font-bold">${c.name}</div>
+                </div>`;
         });
 
-        // 2. PAGE SWITCHER
-        function switchPage(pageId) {
+        // 2. NAVIGATION (Sahifalar o'rtasida almashish)
+        function switchPage(pageId, element) {
+            // Hamma sahifalarni yashirish
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            // Tanlanganini ko'rsatish
             document.getElementById(pageId).classList.add('active');
             
-            document.querySelectorAll('.bottom-nav div').forEach(nav => nav.classList.replace('text-purple-600', 'text-gray-400'));
-            event.currentTarget.classList.replace('text-gray-400', 'text-purple-600');
+            // Navigatsiya rangini o'zgartirish
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            element.classList.add('active');
+            
+            tg.HapticFeedback.impactOccurred('light');
         }
 
-        // 3. AI CHAT LOGIC
-        async function sendToAI() {
-            const input = document.getElementById('ai-input');
-            const chatBox = document.getElementById('chat-box');
-            if(!input.value) return;
-
-            chatBox.innerHTML += `<div class="bg-purple-600 text-white p-3 rounded-tl-2xl rounded-bl-2xl rounded-br-2xl shadow-sm max-w-[80%] self-end ml-auto">${input.value}</div>`;
-            
-            // Bu yerda keyinchalik haqiqiy OpenAI/Gemini ulaymiz
-            setTimeout(() => {
-                chatBox.innerHTML += `<div class="bg-white p-3 rounded-tr-2xl rounded-bl-2xl rounded-br-2xl shadow-sm max-w-[80%]">Sizning so'rovingiz bo'yicha ma'lumot qidiryapman...</div>`;
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }, 1000);
-            
-            input.value = "";
-        }
-
-        // 4. TREND CLICKER GAME
-        let coins = localStorage.getItem('coins') || 0;
+        // 3. O'YIN (CLICKER)
+        let coins = parseInt(localStorage.getItem('f_coins')) || 0;
         document.getElementById('balance').innerText = coins;
-
+        
         function clickCoin(e) {
             coins++;
             document.getElementById('balance').innerText = coins;
-            localStorage.setItem('coins', coins);
+            localStorage.setItem('f_coins', coins);
+            tg.HapticFeedback.impactOccurred('medium');
             
-            // Animatsiya (+1 effekti)
-            const x = e.clientX;
-            const y = e.clientY;
-            const plus = document.createElement('div');
+            // +1 effekti
+            let plus = document.createElement('div');
             plus.innerText = "+1";
-            plus.className = "fixed text-purple-600 font-black text-xl pointer-events-none animation-float";
-            plus.style.left = x + 'px';
-            plus.style.top = y + 'px';
+            plus.style.cssText = `position:fixed; left:${e.clientX}px; top:${e.clientY}px; color:#9c27b0; font-weight:bold; pointer-events:none; z-index:2000; animation: float 0.8s forwards;`;
             document.body.appendChild(plus);
-            
             setTimeout(() => plus.remove(), 800);
-            
-            if(coins % 50 === 0) tg.HapticFeedback.notificationOccurred('success');
-            else tg.HapticFeedback.impactOccurred('light');
         }
 
-        // 5. AUTH LOGIC
-        function handleAuth() {
-            const number = iti.getNumber();
-            if(iti.isValidNumber()) {
-                document.getElementById('auth-section').classList.add('hidden');
-                document.getElementById('user-info').classList.remove('hidden');
-                document.getElementById('user-phone').innerText = number;
-                tg.showAlert("Muvaffaqiyatli kirdingiz!");
-            } else {
-                tg.showScanQrPopup({text: "Raqam noto'g'ri!"});
-            }
+        // 4. AI CHAT
+        async function sendAI() {
+            let inp = document.getElementById('ai-input');
+            let box = document.getElementById('chat-box');
+            if(!inp.value) return;
+
+            box.innerHTML += `<div class="bg-purple-600 text-white p-3 rounded-2xl self-end ml-auto max-w-[80%] mb-2 shadow-sm">${inp.value}</div>`;
+            
+            // Sun'iy javob (haqiqiy API ga bog'lanmaguncha)
+            setTimeout(() => {
+                box.innerHTML += `<div class="bg-white p-3 rounded-2xl shadow-sm border max-w-[80%] mb-2">Sizning so'rovingiz bo'yicha ma'lumot qidiryapman...</div>`;
+                box.scrollTop = box.scrollHeight;
+            }, 600);
+            
+            inp.value = "";
+            box.scrollTop = box.scrollHeight;
         }
     </script>
 
     <style>
-        .animation-float { animation: floatUp 0.8s forwards; opacity: 0; }
-        @keyframes floatUp { 
+        @keyframes float {
             0% { transform: translateY(0); opacity: 1; }
             100% { transform: translateY(-100px); opacity: 0; }
         }
