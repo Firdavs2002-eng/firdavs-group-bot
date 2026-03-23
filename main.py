@@ -17,13 +17,13 @@ from database import init_db, get_products_by_category, add_product, set_user_la
 # --- SOZLAMALAR ---
 load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-# Diqqat: Sizning ID raqamingiz qat'iy qilib belgilandi!
+# Diqqat: Sizning ID raqamingiz qat'iy qilib belgilandi! (Bot sizni 100% taniydi)
 ADMIN_ID = "7723220237" 
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
-# --- FSM HOLATLARI ---
+# --- FSM HOLATLARI (Admin uchun) ---
 class AdminCatImage(StatesGroup):
     category_name = State()
     photo = State()
@@ -50,9 +50,10 @@ LANGS = {
     }
 }
 
-# --- ANTI-CACHE VA DINAMIK URL ---
+# --- DINAMIK MENYU VA ANTI-CACHE ---
 def get_main_menu(user_id, lang):
-    ts = int(time.time())
+    ts = int(time.time()) # Xotirani tozalash uchun vaqt muhri
+    # URL ga til va user_id ni qo'shib yuboramiz (SMS yuborish uchun kerak!)
     web_app_url = f"https://firdavs2002-eng.github.io/firdavs-group-bot/?lang={lang}&uid={user_id}&v={ts}"
     
     return ReplyKeyboardMarkup(
@@ -99,7 +100,6 @@ async def cmd_start(message: types.Message):
 
 @dp.message(Command("admin"))
 async def cmd_admin(message: types.Message):
-    # Bu yerda bot sizning raqamingizni qat'iy tekshiradi
     if str(message.from_user.id) == ADMIN_ID:
         await message.answer("👨‍💻 Admin panelga xush kelibsiz, Firdavs:", reply_markup=admin_menu)
     else:
@@ -189,6 +189,7 @@ async def api_products(request):
     prod_list = [{"id": p[0], "name": p[1], "price": p[2], "size": p[3], "color": p[4], "image_url": p[5]} for p in products]
     return web.json_response(prod_list, headers=set_cors_headers())
 
+# --- SMS KOD YUBORISH API ---
 async def api_send_code(request):
     uid = request.query.get('uid')
     phone = request.query.get('phone')
@@ -203,6 +204,7 @@ async def api_send_code(request):
     except Exception as e:
         return web.json_response({"error": "Botga yuborib bo'lmadi."}, status=500, headers=set_cors_headers())
 
+# --- ASOSIY ISHGA TUSHIRISH ---
 async def handle(request):
     return web.Response(text="FIRDAVS GROUP Web App Boti 24/7 ishlamoqda!")
 
@@ -227,3 +229,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+    
