@@ -3,147 +3,353 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Firdavs Group Super App</title>
+    <title>Firdavs Group</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://api-maps.yandex.ru/2.1/?lang=uz_UZ&apikey=YOUR_API_KEY" type="text/javascript"></script>
     <style>
-        :root { --main: #9c27b0; --bg: #f4f6f9; }
-        body { background-color: var(--bg); font-family: -apple-system, sans-serif; }
-        .wb-btn { background-color: var(--main); color: white; border-radius: 12px; font-weight: 600; transition: 0.2s; }
-        .wb-btn:active { transform: scale(0.98); opacity: 0.9; }
-        .page { display: none; animation: fadeIn 0.3s ease; }
+        :root { --main: #9c27b0; --bg: #f4f6f9; --text: #2c3e50; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; -webkit-tap-highlight-color: transparent; outline: none; }
+        body { background-color: var(--bg); color: var(--text); padding-bottom: 70px; user-select: none; }
+        
+        .header { position: sticky; top: 0; background: var(--main); color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 18px; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .back-btn { position: absolute; left: 15px; top: 15px; font-size: 18px; cursor: pointer; display: none; }
+        
+        .page { display: none; padding: 15px; animation: fadeIn 0.2s; }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .card { background: white; border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 1px solid #eee; }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 65px; background: white; border-top: 1px solid #eee; display: flex; justify-content: space-around; align-items: center; z-index: 1000; }
-        #map { width: 100%; height: 300px; border-radius: 12px; margin-top: 10px; }
-        .select-item { border: 2px solid #eee; border-radius: 12px; padding: 12px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-        .select-item.active { border-color: var(--main); background-color: #f3e5f5; }
-        .radio-circle { width: 18px; height: 18px; border: 2px solid #ddd; border-radius: 50%; }
-        .select-item.active .radio-circle { border-color: var(--main); background-color: var(--main); box-shadow: inset 0 0 0 3px white; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Mahsulotlar */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .card { background: #fff; border-radius: 12px; padding: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #eee; }
+        .p-img { width: 100%; height: 140px; background: #f8f9fa; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-size: 40px; overflow: hidden; }
+        .p-img img { width: 100%; height: 100%; object-fit: cover; }
+        .p-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .p-price { font-size: 14px; color: var(--main); font-weight: 700; margin-bottom: 10px; }
+        .btn { background: var(--main); color: white; border: none; padding: 10px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn:active { transform: scale(0.96); opacity: 0.9; }
+
+        /* Kategoriyalar */
+        .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 25px; }
+        .cat-item { display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer; }
+        .cat-icon { width: 60px; height: 60px; background: #fff; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 6px; overflow: hidden; }
+        .cat-icon img { width: 100%; height: 100%; object-fit: cover; }
+        .cat-text { font-size: 10px; font-weight: 600; color: #555; }
+
+        /* Profil va Registratsiya */
+        .auth-step { display: none; background: white; padding: 25px 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); text-align: center; }
+        .auth-step.active { display: block; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { font-size: 12px; color: #888; font-weight: bold; margin-bottom: 5px; display: block; }
+        .input-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; transition: 0.2s; background: #fafafa;}
+        .input-group input:focus { border-color: var(--main); background: #fff;}
+        
+        .list-item { padding: 16px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; font-weight: 600; cursor: pointer; background: #fff; margin-bottom: 8px; border-radius: 12px;}
+        
+        /* Modallar */
+        .modal { display: none; position: fixed; bottom: -100%; left: 0; width: 100%; background: white; border-radius: 20px 20px 0 0; padding: 20px; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2000; box-shadow: 0 -5px 20px rgba(0,0,0,0.15); }
+        .modal.active { display: block; bottom: 0; }
+        #map { width: 100%; height: 300px; border-radius: 12px; margin: 10px 0; background: #e0e0e0; }
+        
+        /* To'lov Tizimi (4 blok) */
+        .pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .pay-card { border: 2px solid #eee; border-radius: 12px; padding: 15px; display: flex; align-items: center; justify-content: space-between; font-weight: 700; cursor: pointer; transition: 0.2s;}
+        .pay-card.active { border-color: var(--main); background-color: #fcf4ff; }
+        .radio-circle { width: 20px; height: 20px; border: 2px solid #ddd; border-radius: 50%; transition: 0.2s;}
+        .pay-card.active .radio-circle { border-color: var(--main); background: var(--main); box-shadow: inset 0 0 0 4px white; }
+
+        /* O'yin */
+        #game-app { display: none; text-align: center; padding: 50px 20px; }
+        .click-coin { font-size: 90px; background: #FFD700; width: 220px; height: 220px; display: flex; align-items: center; justify-content: center; border-radius: 50%; margin: 0 auto 40px auto; box-shadow: 0 15px 30px rgba(255, 215, 0, 0.4); border: 8px solid #F5B041; transition: 0.1s; cursor: pointer; user-select: none;}
+        .click-coin:active { transform: scale(0.9); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4); }
+
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 60px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eaeaea; z-index: 1000; }
+        .nav-btn { display: flex; flex-direction: column; align-items: center; color: #a0a0a0; font-size: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .nav-btn.active { color: var(--main); transform: translateY(-2px); }
+        .nav-icon { font-size: 22px; margin-bottom: 3px; }
     </style>
 </head>
-<body class="pb-24">
+<body>
 
-    <div id="home" class="page active p-4">
-        <h1 class="text-xl font-bold mb-4 text-purple-800">FIRDAVS GROUP</h1>
-        <div class="grid grid-cols-2 gap-3" id="product-list">
-            <div class="bg-white p-3 rounded-xl border" onclick="openCheckout('Premium Krossovka', 450000)">
-                <div class="h-32 bg-gray-100 rounded-lg mb-2 flex items-center justify-center text-3xl">👟</div>
-                <h3 class="text-xs font-bold truncate">Premium Krossovka</h3>
-                <p class="text-purple-600 font-bold text-sm">450,000 UZS</p>
-                <button class="w-full wb-btn text-[10px] py-2 mt-2">Sotib olish</button>
+    <div id="shop-app">
+        <div class="header">
+            <span class="back-btn" id="backBtn" onclick="goBack()">⬅️</span>
+            <span id="header-title">FIRDAVS GROUP</span>
+        </div>
+
+        <div id="home" class="page active">
+            <h3 style="margin-bottom: 12px; font-size: 15px;">Katalog</h3>
+            <div class="cat-grid" id="cat-grid"></div>
+
+            <h3 style="margin-bottom: 12px; font-size: 15px;">Tavsiya etamiz</h3>
+            <div class="grid-2" id="home-products">
+                <div style="grid-column: span 2; text-align:center; padding: 20px; color: #888;">Yuklanmoqda...</div>
             </div>
+        </div>
+
+        <div id="cat-detail" class="page">
+            <div class="grid-2" id="cat-products"></div>
+        </div>
+
+        <div id="cart" class="page" style="text-align: center; padding-top: 60px;">
+            <div style="font-size: 70px; margin-bottom: 15px;">🛒</div>
+            <h3 style="color: #555;">Savatingiz bo'sh</h3>
+        </div>
+
+        <div id="profile" class="page">
+            <div id="step-1" class="auth-step active">
+                <div style="font-size: 50px; margin-bottom: 15px;">👤</div>
+                <h3 style="margin-bottom: 15px;">Tizimga kirish</h3>
+                <div class="input-group">
+                    <label>Telefon raqamingiz</label>
+                    <input type="tel" id="phoneInput" value="+998" placeholder="+998 90 123 45 67">
+                </div>
+                <button class="btn" id="btn-get-code" onclick="sendCode()">Kod olish</button>
+            </div>
+            
+            <div id="step-2" class="auth-step">
+                <h3 style="margin-bottom: 15px;">Kodni tasdiqlash</h3>
+                <div class="input-group">
+                    <label>SMS orqali kelgan kod</label>
+                    <input type="number" id="codeInput" placeholder="----">
+                </div>
+                <button class="btn" onclick="verifyCode()">Tasdiqlash</button>
+            </div>
+
+            <div id="step-3" class="auth-step">
+                <h3 style="margin-bottom: 15px;">Shaxsiy ma'lumotlar</h3>
+                <div class="input-group"><label>Ism</label><input type="text" id="fnameInput"></div>
+                <div class="input-group"><label>Familiya</label><input type="text" id="lnameInput"></div>
+                <button class="btn" onclick="saveInfo()">Saqlash</button>
+            </div>
+
+            <div id="step-4" class="auth-step" style="background: transparent; box-shadow: none; padding: 0;">
+                <div style="background: white; padding: 20px; border-radius: 16px; margin-bottom: 15px; text-align: left;">
+                    <div style="font-size: 40px; float: left; margin-right: 15px;">👤</div>
+                    <h2 id="p-name" style="color: var(--text); padding-top: 5px;">Ism Familiya</h2>
+                    <p id="p-phone" style="color: #888; font-size: 13px;">+998 -- --- -- --</p>
+                    <div style="clear: both;"></div>
+                </div>
+                
+                <div class="list-item" onclick="openMapModal()">
+                    <span>📍 Yetkazib berish manzili</span>
+                    <span id="v-del" style="color: var(--main); font-size: 13px;">Tanlang ></span>
+                </div>
+                <div class="list-item" onclick="openModal('paymentModal')">
+                    <span>💳 To'lov usuli</span>
+                    <span id="v-pay" style="color: var(--main); font-size: 13px;">Tanlang ></span>
+                </div>
+            </div>
+        </div>
+
+        <nav class="bottom-nav">
+            <div onclick="switchPage('home', this)" class="nav-btn active"><span class="nav-icon">🏠</span><span>Do'kon</span></div>
+            <div onclick="switchPage('cat-detail', this)" class="nav-btn" style="display:none;"><span class="nav-icon">🗂</span><span>Katalog</span></div>
+            <div onclick="switchPage('cart', this)" class="nav-btn"><span class="nav-icon">🛒</span><span>Savat</span></div>
+            <div onclick="switchPage('profile', this)" class="nav-btn"><span class="nav-icon">👤</span><span>Profil</span></div>
+        </nav>
+    </div>
+
+    <div id="game-app">
+        <h2 style="font-size: 28px; margin-bottom: 10px; color: #333;">Firdavs Clicker</h2>
+        <p style="color: #888; margin-bottom: 40px; font-weight: bold;">Tangalar yig'ing!</p>
+        
+        <div class="click-coin" onclick="clickCoin()">🪙</div>
+        
+        <div style="background: white; padding: 15px 40px; border-radius: 16px; display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+            <p style="color: #aaa; font-size: 11px; text-transform: uppercase; font-weight: bold; margin-bottom: 5px;">Sizning hisobingiz</p>
+            <h1 id="balance" style="font-size: 45px; color: var(--main); margin: 0;">0</h1>
         </div>
     </div>
 
-    <div id="checkout" class="page p-4">
-        <div class="flex items-center mb-4">
-            <button onclick="switchPage('home')" class="text-gray-400 mr-4 text-xl">⬅️</button>
-            <h2 class="font-bold text-lg">Buyurtmani rasmiylashtirish</h2>
-        </div>
+    <div id="mapModal" class="modal">
+        <h3 style="text-align: center; margin-bottom: 8px;">Manzilni belgilang</h3>
+        <p id="addressText" style="font-size: 12px; color: var(--main); text-align: center; font-weight: bold;">Xaritadan kerakli joyni bosing</p>
+        <div id="map"></div>
+        <button class="btn" onclick="closeMapModal()">Shu manzilga yetkazish</button>
+    </div>
 
-        <div class="card">
-            <h3 class="font-bold text-sm mb-3">Yetkazib berish turi</h3>
-            <div class="select-item active" onclick="selectType(this, 'delivery')">
-                <span class="text-sm font-medium">Do'kon yetkazib berish xizmati</span>
-                <div class="radio-circle"></div>
+    <div id="paymentModal" class="modal">
+        <h3 style="text-align: center; margin-bottom: 15px;">To'lov usulini tanlang</h3>
+        <div class="pay-grid">
+            <div class="pay-card active" onclick="setPay(this, 'Naqd pul')">
+                <span>💵 Naqd</span><div class="radio-circle"></div>
             </div>
-            <div class="select-item" onclick="selectType(this, 'pickup')">
-                <span class="text-sm font-medium">Do'kon filialidan olib ketish</span>
-                <div class="radio-circle"></div>
+            <div class="pay-card" onclick="setPay(this, 'Click')">
+                <span style="color: #00a5ff;">🔵 Click</span><div class="radio-circle"></div>
             </div>
-        </div>
-
-        <div class="card" id="mapSection">
-            <h3 class="font-bold text-sm">Yetkazib berish manzili</h3>
-            <p class="text-[11px] text-gray-500 mt-1" id="addressText">Xaritadan tanlang...</p>
-            <div id="map"></div>
-            <button class="w-full bg-purple-50 text-purple-600 font-bold text-xs py-3 mt-3 rounded-xl border border-purple-100" onclick="tg.showAlert('Manzil tasdiqlandi')">Manzilni o'zgartirish</button>
-        </div>
-
-        <div class="card">
-            <h3 class="font-bold text-sm mb-3">To'lov usuli</h3>
-            <div class="grid grid-cols-2 gap-2">
-                <div class="select-item active" onclick="selectType(this)">
-                    <span class="text-[11px] font-bold">💵 Naqd pul</span>
-                    <div class="radio-circle"></div>
-                </div>
-                <div class="select-item" onclick="selectType(this)">
-                    <span class="text-[11px] font-bold text-blue-600">click</span>
-                    <div class="radio-circle"></div>
-                </div>
-                <div class="select-item" onclick="selectType(this)">
-                    <span class="text-[11px] font-bold text-blue-400">Payme</span>
-                    <div class="radio-circle"></div>
-                </div>
-                <div class="select-item" onclick="selectType(this)">
-                    <span class="text-[11px] font-bold text-purple-700">uzum</span>
-                    <div class="radio-circle"></div>
-                </div>
+            <div class="pay-card" onclick="setPay(this, 'Payme')">
+                <span style="color: #33cccc;">🟢 Payme</span><div class="radio-circle"></div>
+            </div>
+            <div class="pay-card" onclick="setPay(this, 'Uzum To\'lov')">
+                <span style="color: #7b1fa2;">🟣 Uzum</span><div class="radio-circle"></div>
             </div>
         </div>
-
-        <div class="fixed bottom-0 left-0 w-100 bg-white p-4 flex items-center justify-between border-t z-50 w-full">
-            <div>
-                <p class="text-xs text-gray-400">To'lov miqdori:</p>
-                <p class="text-lg font-black text-purple-900" id="totalPrice">450,000 UZS</p>
-            </div>
-            <button class="wb-btn px-8 py-3" onclick="tg.showAlert('Buyurtma qabul qilindi!')">Buyurtmani tasdiqlash</button>
-        </div>
+        <button class="btn" style="background: #f0f0f0; color: #555;" onclick="closeModal('paymentModal')">Yopish</button>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
+        const API_URL = "https://firdavs-group-bot.onrender.com";
 
-        function switchPage(id) {
+        // URL ni tekshirish: Mijoz Do'konga kirdimi yoki O'yinga?
+        const urlParams = new URLSearchParams(window.location.search);
+        const appMode = urlParams.get('app') || 'shop';
+        let uid = urlParams.get('uid') || '';
+
+        // O'YIN LOGIKASI
+        if(appMode === 'game') {
+            document.getElementById('shop-app').style.display = 'none';
+            document.getElementById('game-app').style.display = 'block';
+            document.body.style.backgroundColor = '#fdfdfd'; // O'yin uchun ochroq fon
+            let coins = localStorage.getItem('f_coins') || 0;
+            document.getElementById('balance').innerText = coins;
+            
+            window.clickCoin = function() {
+                let current = parseInt(localStorage.getItem('f_coins')) || 0;
+                current++;
+                document.getElementById('balance').innerText = current;
+                localStorage.setItem('f_coins', current);
+                try { tg.HapticFeedback.impactOccurred('medium'); } catch(e){}
+            }
+        } 
+        // DO'KON LOGIKASI
+        else {
+            const categories = [
+                { icon: '🛍️', name: 'Ayollar kiyimlari' }, { icon: '👠', name: 'Ayollar oyoq kiyimlari' },
+                { icon: '💄', name: 'Ayollar kosmetikasi' }, { icon: '👜', name: 'Ayollar taqinchoqlari' },
+                { icon: '👔', name: 'Erkaklar kiyimlari' }, { icon: '👞', name: 'Erkaklar oyoq kiyimlari' },
+                { icon: '👶', name: 'Bolalar uchun' }, { icon: '📱', name: 'Telefon aksessuarlar' }
+            ];
+
+            async function fetchCats() {
+                try {
+                    let res = await fetch(API_URL + '/api/categories');
+                    let dbCats = await res.json();
+                    let html = '';
+                    categories.forEach(c => {
+                        let found = dbCats.find(x => x.name === c.name);
+                        let img = (found && found.image_url) ? `<img src="${found.image_url}">` : c.icon;
+                        html += `<div class="cat-item" onclick="openCat('${c.name}')"><div class="cat-icon">${img}</div><div class="cat-text">${c.name}</div></div>`;
+                    });
+                    document.getElementById('cat-grid').innerHTML = html;
+                } catch(e) {
+                    let html = '';
+                    categories.forEach(c => { html += `<div class="cat-item" onclick="openCat('${c.name}')"><div class="cat-icon">${c.icon}</div><div class="cat-text">${c.name}</div></div>`; });
+                    document.getElementById('cat-grid').innerHTML = html;
+                }
+            }
+            fetchCats();
+        }
+
+        // Sahifalarni o'zgartirish
+        function switchPage(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            if(id === 'checkout') initMap();
+            if(el) {
+                document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
+                el.classList.add('active');
+            }
+            document.getElementById('backBtn').style.display = 'none';
+            document.getElementById('header-title').innerText = "FIRDAVS GROUP";
         }
 
-        function openCheckout(name, price) {
-            document.getElementById('totalPrice').innerText = price.toLocaleString() + " UZS";
-            switchPage('checkout');
+        // Katalog ichiga kirish
+        async function openCat(name) {
+            document.getElementById('home').classList.remove('active');
+            document.getElementById('cat-detail').classList.add('active');
+            document.getElementById('backBtn').style.display = 'block';
+            document.getElementById('header-title').innerText = name;
+            
+            let list = document.getElementById('cat-products');
+            list.innerHTML = '<div style="grid-column: span 2; text-align:center; padding:30px; color:#888;">Yuklanmoqda...</div>';
+            
+            try {
+                let res = await fetch(`${API_URL}/api/products?category=${name}`);
+                let products = await res.json();
+                if(products.length === 0) { list.innerHTML = '<div style="grid-column: span 2; text-align:center; padding:30px; color:#888;">Hozircha mahsulot yo\'q</div>'; return; }
+                
+                let html = '';
+                products.forEach(p => {
+                    let img = p.image_url ? `<img src="${p.image_url}">` : '🛍';
+                    html += `<div class="card"><div class="p-img">${img}</div><div class="p-title">${p.name}</div><div class="p-price">${p.price.toLocaleString()} UZS</div><button class="btn" onclick="tg.showAlert('Savatga qo\\'shildi!')">Savatga</button></div>`;
+                });
+                list.innerHTML = html;
+            } catch(e) { list.innerHTML = '<div style="grid-column: span 2; text-align:center; color:red;">Xatolik yuz berdi</div>'; }
         }
 
-        function selectType(el, type) {
-            const parent = el.parentElement;
-            parent.querySelectorAll('.select-item').forEach(i => i.classList.remove('active'));
+        function goBack() {
+            document.getElementById('cat-detail').classList.remove('active');
+            document.getElementById('home').classList.add('active');
+            document.getElementById('backBtn').style.display = 'none';
+            document.getElementById('header-title').innerText = "FIRDAVS GROUP";
+        }
+
+        // REGISTRATSIYA QADAMLARI
+        function setStep(step) {
+            document.querySelectorAll('.auth-step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step-' + step).classList.add('active');
+        }
+
+        async function sendCode() {
+            let phone = document.getElementById("phoneInput").value;
+            if(phone.length < 9) { tg.showAlert("Raqamni to'liq kiriting!"); return; }
+            if(!uid) { tg.showAlert("Iltimos, bot orqali kiring."); return; }
+            
+            document.getElementById("btn-get-code").innerText = "⏳ Kutib turing...";
+            try {
+                let res = await fetch(`${API_URL}/api/send_code?uid=${uid}&phone=${encodeURIComponent(phone)}`);
+                let json = await res.json();
+                if(json.success) { setStep(2); } else { tg.showAlert("Xatolik yuz berdi."); }
+            } catch(e) { tg.showAlert("Server ulanmadi."); }
+            document.getElementById("btn-get-code").innerText = "Kod olish";
+        }
+
+        function verifyCode() { setStep(3); }
+        
+        function saveInfo() {
+            let f = document.getElementById("fnameInput").value;
+            let l = document.getElementById("lnameInput").value;
+            if(!f || !l) { tg.showAlert("Ism va familiyani yozing."); return; }
+            document.getElementById("p-name").innerText = f + " " + l;
+            document.getElementById("p-phone").innerText = document.getElementById("phoneInput").value;
+            setStep(4);
+        }
+
+        // MODALLAR VA TO'LOV
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        window.setPay = function(el, name) {
+            document.querySelectorAll('.pay-card').forEach(i => i.classList.remove('active'));
             el.classList.add('active');
-            if(type === 'pickup') document.getElementById('mapSection').style.opacity = '0.5';
-            else document.getElementById('mapSection').style.opacity = '1';
+            document.getElementById('v-pay').innerText = name + " >";
+            setTimeout(() => closeModal('paymentModal'), 200);
         }
 
-        // XARITA LOGIKASI
+        // YANDEX XARITA LOGIKASI
         let myMap;
-        function initMap() {
+        window.openMapModal = function() {
+            openModal('mapModal');
             if(myMap) return;
             ymaps.ready(() => {
-                myMap = new ymaps.Map("map", {
-                    center: [41.2995, 69.2401], // Toshkent markazi
-                    zoom: 12,
-                    controls: ['zoomControl', 'fullscreenControl']
-                });
-
-                // Xarita bosilganda nuqta qo'yish
+                myMap = new ymaps.Map("map", { center: [41.2995, 69.2401], zoom: 12, controls: ['zoomControl'] }); // Toshkent markazi
                 myMap.events.add('click', function (e) {
                     let coords = e.get('coords');
                     myMap.geoObjects.removeAll();
-                    let placemark = new ymaps.Placemark(coords, {
-                        balloonContent: 'Yetkazish manzili'
-                    }, { preset: 'islands#violetDotIcon' });
-                    myMap.geoObjects.add(placemark);
-
-                    // Manzilni matn ko'rinishida olish (Reverse Geocoding)
+                    myMap.geoObjects.add(new ymaps.Placemark(coords, {}, { preset: 'islands#violetDotIcon' }));
+                    
                     ymaps.geocode(coords).then(function (res) {
-                        let firstGeoObject = res.geoObjects.get(0);
-                        document.getElementById('addressText').innerText = firstGeoObject.getAddressLine();
+                        let obj = res.geoObjects.get(0);
+                        document.getElementById('addressText').innerText = obj.getAddressLine();
                     });
                 });
             });
+        }
+        window.closeMapModal = function() {
+            document.getElementById('v-del').innerText = "Kuryer orqali >";
+            closeModal('mapModal');
         }
     </script>
 </body>
