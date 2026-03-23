@@ -3,401 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Firdavs Group</title>
+    <title>Firdavs Group Super App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/css/intlTelInput.css">
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/intlTelInput.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { --wb-main: #9c27b0; --bg-color: #f6f6f6; --text-dark: #333; }
-        * { box-sizing: border-box; font-family: -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; background-color: var(--bg-color); padding-bottom: 70px; user-select: none; }
-        
-        .header { position: sticky; top: 0; background-color: var(--wb-main); color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 18px; z-index: 100; display: flex; justify-content: center; align-items: center;}
-        .back-btn { position: absolute; left: 15px; top: 15px; font-size: 18px; cursor: pointer; display: none; }
-        
-        .page { display: none; padding: 15px; animation: fadeIn 0.3s; }
+        body { background-color: #F3F4F6; -webkit-tap-highlight-color: transparent; }
+        .wb-gradient { background: linear-gradient(135deg, #9c27b0 0%, #673ab7 100%); }
+        .page { display: none; animation: slideUp 0.3s ease-out; }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* Mahsulot grid */
-        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .product-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .p-img { width: 100%; height: 160px; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 40px; overflow: hidden;}
-        .p-img img { width: 100%; height: 100%; object-fit: cover;}
-        .p-info { padding: 10px; }
-        .p-title { font-size: 13px; font-weight: bold; color: var(--text-dark); margin: 0 0 5px 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;}
-        .p-price { font-size: 15px; color: #e91e63; font-weight: bold; margin-bottom: 10px; }
-        .btn-add { background: var(--wb-main); color: #fff; border: none; padding: 8px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; }
-
-        /* Katalog Grid */
-        .category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px 5px; margin-top: 15px; }
-        .cat-card { display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer; }
-        .cat-img { width: 65px; height: 65px; background: #fff; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center; font-size: 30px; margin-bottom: 6px; overflow: hidden;}
-        .cat-img img { width: 100%; height: 100%; object-fit: cover; }
-        .cat-name { font-size: 11px; color: var(--text-dark); font-weight: bold; line-height: 1.2; padding: 0 2px;}
-
-        /* Profil va Registratsiya */
-        .profile-container { background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); text-align: center; }
-        .profile-icon { font-size: 50px; margin-bottom: 10px; }
-        .auth-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: var(--text-dark); }
-        .input-group { margin-bottom: 15px; text-align: left; }
-        .input-group label { font-size: 12px; color: #777; font-weight: bold; margin-bottom: 5px; display: block; }
-        .input-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; outline: none; }
-        .input-group input:focus { border-color: var(--wb-main); }
-        .btn-primary { background: var(--wb-main); color: #fff; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px;}
-        
-        .settings-list { margin-top: 20px; background: #fff; border-radius: 12px; overflow: hidden; text-align: left;}
-        .setting-item { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; font-weight: bold; color: var(--text-dark); cursor: pointer;}
-        
-        /* Auth qadamlari */
-        .auth-step { display: none; animation: fadeIn 0.3s; }
-        .auth-step.active { display: block; }
-
-        /* Bottom Nav */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 60px; background: #fff; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #ddd; z-index: 1000; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #888; font-size: 11px; font-weight: bold; cursor: pointer; }
-        .nav-item.active { color: var(--wb-main); }
-        .nav-icon { font-size: 22px; margin-bottom: 3px; }
-        .loader { text-align: center; padding: 30px; font-weight: bold; color: #888; }
-
-        /* Modal Bottom Sheet */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; opacity: 0; transition: opacity 0.3s; }
-        .modal-overlay.active { display: block; opacity: 1; }
-        .modal-content { position: absolute; bottom: -100%; left: 0; width: 100%; background: #fff; border-radius: 20px 20px 0 0; padding: 20px; transition: bottom 0.3s; }
-        .modal-overlay.active .modal-content { bottom: 0; }
-        .modal-header { font-size: 18px; font-weight: bold; margin-bottom: 15px; text-align: center; color: var(--text-dark);}
-        .modal-option { padding: 15px; border-bottom: 1px solid #eee; font-size: 16px; font-weight: bold; display: flex; align-items: center; cursor: pointer;}
-        .modal-icon { font-size: 24px; margin-right: 15px; }
-        .btn-close { width: 100%; padding: 12px; background: #eee; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; margin-top: 15px; cursor: pointer;}
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 65px; background: white; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #E5E7EB; z-index: 50; }
+        .coin-bounce { animation: bounce 0.5s infinite alternate; }
+        @keyframes bounce { from { transform: scale(1); } to { transform: scale(1.1); } }
     </style>
 </head>
-<body>
+<body class="pb-20">
 
-    <div class="header">
-        <span class="back-btn" id="backBtn" onclick="goBack()">⬅️</span>
-        <span id="header-title">FIRDAVS GROUP</span>
-    </div>
+    <header class="wb-gradient text-white p-4 sticky top-0 z-50 flex items-center justify-between shadow-lg">
+        <button id="backBtn" class="hidden text-xl" onclick="goBack()">⬅️</button>
+        <h1 class="font-bold text-lg mx-auto">FIRDAVS GROUP</h1>
+        <div class="w-6"></div>
+    </header>
 
-    <div id="home" class="page active">
-        <h3 id="txt-recommend" style="margin-top:0; color: #555;">Tavsiya etamiz</h3>
-        <div class="product-grid" id="home-grid">
-            <div class="loader">Yuklanmoqda...</div>
+    <div id="home" class="page active p-4">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="font-bold text-gray-800">Tavsiya etamiz</h2>
+            <span class="text-xs text-purple-600 font-bold">Hammasi ></span>
+        </div>
+        <div class="grid grid-cols-2 gap-3" id="product-list">
+            <div class="bg-white rounded-xl shadow-sm overflow-hidden p-2">
+                <div class="h-32 bg-gray-100 rounded-lg mb-2 flex items-center justify-center text-3xl">👟</div>
+                <h3 class="text-xs font-bold text-gray-700 truncate">Premium Krossovka</h3>
+                <p class="text-purple-600 font-bold text-sm">450,000 UZS</p>
+                <button class="w-full wb-gradient text-white text-xs py-2 mt-2 rounded-lg">Savatga</button>
+            </div>
         </div>
     </div>
 
-    <div id="catalog" class="page">
-        <h2 id="txt-catalog-title" style="margin-top:0;">Katalog</h2>
-        <div class="category-grid" id="cat-grid"></div>
+    <div id="support" class="page p-4 h-[80vh] flex flex-col">
+        <div class="flex items-center gap-2 mb-4 bg-purple-100 p-3 rounded-xl text-purple-800">
+            <span class="text-2xl">🤖</span>
+            <div>
+                <p class="text-xs font-bold">AI Asistent</p>
+                <p class="text-[10px]">Sizga qanday yordam bera olaman?</p>
+            </div>
+        </div>
+        <div id="chat-box" class="flex-grow overflow-y-auto space-y-3 mb-4 text-sm">
+            <div class="bg-white p-3 rounded-tr-2xl rounded-bl-2xl rounded-br-2xl shadow-sm max-w-[80%]">
+                Salom! Men Firdavs Group AI asistentiman. Mahsulotlar yoki dastavka haqida so'rang.
+            </div>
+        </div>
+        <div class="flex gap-2">
+            <input id="ai-input" type="text" class="flex-grow p-3 rounded-xl border border-gray-200 outline-none" placeholder="Xabaringizni yozing...">
+            <button onclick="sendToAI()" class="wb-gradient text-white p-3 rounded-xl">➡️</button>
+        </div>
     </div>
 
-    <div id="category-products" class="page">
-        <h2 id="cat-prod-title" style="margin-top:0;">Mahsulotlar</h2>
-        <div class="product-grid" id="prod-grid"></div>
+    <div id="game" class="page p-6 text-center">
+        <h2 class="text-xl font-bold mb-2">Firdavs Clicker</h2>
+        <p class="text-gray-500 text-sm mb-6">Tanganing ustiga bosing va yutuq yuting!</p>
+        <div class="relative inline-block">
+            <div id="coin" onclick="clickCoin(event)" class="w-48 h-48 bg-yellow-400 rounded-full border-8 border-yellow-500 flex items-center justify-center text-6xl shadow-2xl cursor-pointer active:scale-95 transition-transform select-none">
+                🪙
+            </div>
+        </div>
+        <div class="mt-8">
+            <p class="text-gray-400 uppercase text-xs tracking-widest">Sizning balansingiz</p>
+            <h2 id="balance" class="text-4xl font-black text-purple-800">0</h2>
+        </div>
     </div>
 
-    <div id="cart" class="page" style="text-align: center; padding-top: 50px;">
-        <span style="font-size: 60px;">🛒</span>
-        <h3 id="txt-cart-empty">Savatingiz bo'sh</h3>
-    </div>
+    <div id="profile" class="page p-4">
+        <div id="auth-section" class="bg-white p-6 rounded-2xl shadow-sm text-center">
+            <div class="text-5xl mb-4">👤</div>
+            <h2 class="font-bold text-lg mb-4">Tizimga kirish</h2>
+            <div class="mb-4 text-left">
+                <input id="phone" type="tel" class="w-full p-3 border rounded-xl outline-none">
+            </div>
+            <button id="authBtn" onclick="handleAuth()" class="w-full wb-gradient text-white font-bold py-3 rounded-xl">Kirish</button>
+        </div>
 
-    <div id="profile" class="page">
-        <div class="profile-container">
-            <div class="profile-icon">👤</div>
-            <div class="auth-title" id="txt-auth">Tizimga kirish</div>
+        <div id="user-info" class="hidden space-y-4">
+            <div class="bg-white p-4 rounded-2xl flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-xl">👨‍💼</div>
+                    <div>
+                        <h3 id="user-name" class="font-bold">Firdavs Ruziboyev</h3>
+                        <p id="user-phone" class="text-xs text-gray-500">+998 99 123 45 67</p>
+                    </div>
+                </div>
+                <button class="text-purple-600 font-bold text-sm">Tahrirlash</button>
+            </div>
             
-            <div id="step-1" class="auth-step active">
-                <div class="input-group">
-                    <label id="txt-phone-lbl">Telefon raqamingiz</label>
-                    <input type="tel" id="phoneInput" placeholder="+998" value="+998">
+            <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
+                <div class="p-4 border-b flex justify-between items-center" onclick="tg.showAlert('Xarita yuklanmoqda...')">
+                    <span class="font-medium">📍 Yetkazib berish manzili</span>
+                    <span class="text-xs text-gray-400">></span>
                 </div>
-                <button class="btn-primary" id="btn-get-code" onclick="sendCode()">Kod olish</button>
-            </div>
-
-            <div id="step-2" class="auth-step">
-                <div class="input-group">
-                    <label id="txt-code-lbl">SMS Kodni kiriting</label>
-                    <input type="number" id="codeInput" placeholder="----">
-                </div>
-                <button class="btn-primary" id="btn-verify" onclick="verifyCode()">Tasdiqlash</button>
-            </div>
-
-            <div id="step-3" class="auth-step">
-                <div class="input-group">
-                    <label id="txt-fname-lbl">Ism</label>
-                    <input type="text" id="fnameInput" placeholder="Ismingizni kiriting">
-                </div>
-                <div class="input-group">
-                    <label id="txt-lname-lbl">Familiya</label>
-                    <input type="text" id="lnameInput" placeholder="Familiyangizni kiriting">
-                </div>
-                <div class="input-group">
-                    <label id="txt-dob-lbl">Tug'ilgan sana</label>
-                    <input type="date" id="dobInput">
-                </div>
-                <button class="btn-primary" id="btn-save-info" onclick="saveUserInfo()">Saqlash</button>
-            </div>
-
-            <div id="step-4" class="auth-step">
-                <h3 id="display-name" style="margin:0; color:var(--wb-main);"></h3>
-                <p id="display-phone" style="color:#888; margin-top:5px; font-size:14px;"></p>
-                
-                <div class="settings-list">
-                    <div class="setting-item" onclick="openModal('deliveryModal')">
-                        <span id="txt-delivery">📍 Dastavka manzili</span> 
-                        <span id="val-delivery" style="color:var(--wb-main);">Tanlang ></span>
-                    </div>
-                    <div class="setting-item" onclick="openModal('paymentModal')">
-                        <span id="txt-payment">💳 To'lov usuli</span> 
-                        <span id="val-payment" style="color:var(--wb-main);">Tanlang ></span>
-                    </div>
+                <div class="p-4 border-b flex justify-between items-center">
+                    <span class="font-medium">💳 To'lov usullari</span>
+                    <span class="text-purple-600 text-xs">Uzum To'lov</span>
                 </div>
             </div>
-
-        </div>
-    </div>
-
-    <div id="deliveryModal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header" id="mod-del-title">Yetkazib berish usulini tanlang</div>
-            <div class="modal-option" onclick="setDelivery('Yandex Dostavka')"><span class="modal-icon">🚕</span> Yandex Dostavka</div>
-            <div class="modal-option" onclick="setDelivery('BTS Logistics')"><span class="modal-icon">🚚</span> BTS Logistics</div>
-            <div class="modal-option" onclick="setDelivery('Uzum Dostavka')"><span class="modal-icon">📦</span> Uzum Dostavka</div>
-            <button class="btn-close" onclick="closeModal('deliveryModal')" id="btn-close-1">Yopish</button>
-        </div>
-    </div>
-
-    <div id="paymentModal" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header" id="mod-pay-title">To'lov usulini tanlang</div>
-            <div class="modal-option" onclick="setPayment('Naqd Pul')"><span class="modal-icon">💵</span> Naqd pul (Kuryerga)</div>
-            <div class="modal-option" onclick="setPayment('Click / Payme')"><span class="modal-icon">💳</span> Click / Payme</div>
-            <div class="modal-option" onclick="setPayment('Uzum To\'lov')"><span class="modal-icon">🟣</span> Uzum To'lov</div>
-            <button class="btn-close" onclick="closeModal('paymentModal')" id="btn-close-2">Yopish</button>
         </div>
     </div>
 
     <nav class="bottom-nav">
-        <div class="nav-item active" onclick="switchPage('home', this)"><span class="nav-icon">🏠</span><span id="nav-shop">Do'kon</span></div>
-        <div class="nav-item" onclick="switchPage('catalog', this)"><span class="nav-icon">🗂</span><span id="nav-cat">Katalog</span></div>
-        <div class="nav-item" onclick="switchPage('cart', this)"><span class="nav-icon">🛒</span><span id="nav-cart">Savat</span></div>
-        <div class="nav-item" onclick="switchPage('profile', this)"><span class="nav-icon">👤</span><span id="nav-prof">Profil</span></div>
+        <div onclick="switchPage('home')" class="flex flex-col items-center text-purple-600">
+            <span class="text-xl">🏠</span><span class="text-[10px] font-bold">Do'kon</span>
+        </div>
+        <div onclick="switchPage('game')" class="flex flex-col items-center text-gray-400">
+            <span class="text-xl">🎮</span><span class="text-[10px] font-bold">O'yin</span>
+        </div>
+        <div onclick="switchPage('support')" class="flex flex-col items-center text-gray-400">
+            <span class="text-xl">🤖</span><span class="text-[10px] font-bold">AI Chat</span>
+        </div>
+        <div onclick="switchPage('profile')" class="flex flex-col items-center text-gray-400">
+            <span class="text-xl">👤</span><span class="text-[10px] font-bold">Profil</span>
+        </div>
     </nav>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        const API_URL = "https://firdavs-group-bot.onrender.com"; 
+        // 1. GLOBAL PHONE INPUT
+        const phoneInput = document.querySelector("#phone");
+        const iti = window.intlTelInput(phoneInput, {
+            utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.2.1/build/js/utils.js",
+            initialCountry: "uz",
+            separateDialCode: true
+        });
 
-        const dict = {
-            uz: { 
-                shop: "Do'kon", cat: "Katalog", cart: "Savat", prof: "Profil", rec: "Tavsiya", empty: "Savatingiz bo'sh", 
-                auth: "Tizimga kirish", phone: "Telefon raqam", getCode: "Kod olish",
-                codeLbl: "SMS Kodni kiriting", verify: "Tasdiqlash",
-                fname: "Ism", lname: "Familiya", dob: "Tug'ilgan sana", save: "Saqlash",
-                del: "📍 Dastavka manzili", pay: "💳 To'lov usuli", modDel: "Yetkazib berish", modPay: "To'lov usuli", close: "Yopish"
-            },
-            ru: { 
-                shop: "Магазин", cat: "Каталог", cart: "Корзина", prof: "Профиль", rec: "Рекомендуем", empty: "Корзина пуста", 
-                auth: "Войти", phone: "Ваш номер", getCode: "Получить код",
-                codeLbl: "Введите SMS код", verify: "Подтвердить",
-                fname: "Имя", lname: "Фамилия", dob: "Дата рождения", save: "Сохранить",
-                del: "📍 Адрес доставки", pay: "💳 Способ оплаты", modDel: "Доставка", modPay: "Оплата", close: "Закрыть"
-            }
-        };
-
-        const urlParams = new URLSearchParams(window.location.search);
-        let currentLang = urlParams.get('lang') || 'uz';
-        let uid = urlParams.get('uid') || ''; 
-
-        if (!dict[currentLang]) currentLang = 'uz';
-
-        function applyLanguage() {
-            let t = dict[currentLang];
-            document.getElementById('nav-shop').innerText = t.shop;
-            document.getElementById('nav-cat').innerText = t.cat;
-            document.getElementById('nav-cart').innerText = t.cart;
-            document.getElementById('nav-prof').innerText = t.prof;
-            document.getElementById('txt-recommend').innerText = t.rec;
-            document.getElementById('txt-catalog-title').innerText = t.cat;
-            document.getElementById('txt-cart-empty').innerText = t.empty;
-            document.getElementById('txt-auth').innerText = t.auth;
-            document.getElementById('txt-phone-lbl').innerText = t.phone;
-            document.getElementById('btn-get-code').innerText = t.getCode;
-            
-            document.getElementById('txt-code-lbl').innerText = t.codeLbl;
-            document.getElementById('btn-verify').innerText = t.verify;
-            document.getElementById('txt-fname-lbl').innerText = t.fname;
-            document.getElementById('txt-lname-lbl').innerText = t.lname;
-            document.getElementById('txt-dob-lbl').innerText = t.dob;
-            document.getElementById('btn-save-info').innerText = t.save;
-
-            document.getElementById('txt-delivery').innerText = t.del;
-            document.getElementById('txt-payment').innerText = t.pay;
-            document.getElementById('mod-del-title').innerText = t.modDel;
-            document.getElementById('mod-pay-title').innerText = t.modPay;
-            document.getElementById('btn-close-1').innerText = t.close;
-            document.getElementById('btn-close-2').innerText = t.close;
-        }
-
-        const categories = [
-            { icon: '🛍️', name: 'Ayollar kiyimlari' }, { icon: '👠', name: 'Ayollar oyoq kiyimlari' },
-            { icon: '💄', name: 'Ayollar kosmetikasi' }, { icon: '👜', name: 'Ayollar taqinchoqlari' },
-            { icon: '👞', name: 'Erkaklar oyoq kiyimlari' }, { icon: '👔', name: 'Erkaklar kiyimlari' },
-            { icon: '👶', name: 'Bolalar uchun' }, { icon: '📱', name: 'Telefon aksessuarlar' }
-        ];
-
-        async function fetchCategoriesAndRender() {
-            try {
-                let resp = await fetch(API_URL + '/api/categories');
-                let dbCats = await resp.json();
-                let catHtml = '';
-                categories.forEach(c => {
-                    let found = dbCats.find(x => x.name === c.name);
-                    let imgContent = (found && found.image_url) ? `<img src="${found.image_url}">` : c.icon;
-                    catHtml += `<div class="cat-card" onclick="openCategory('${c.name}')"><div class="cat-img">${imgContent}</div><div class="cat-name">${c.name}</div></div>`;
-                });
-                document.getElementById('cat-grid').innerHTML = catHtml;
-            } catch(e) {
-                let catHtml = '';
-                categories.forEach(c => { catHtml += `<div class="cat-card" onclick="openCategory('${c.name}')"><div class="cat-img">${c.icon}</div><div class="cat-name">${c.name}</div></div>`; });
-                document.getElementById('cat-grid').innerHTML = catHtml;
-            }
-        }
-
-        async function openCategory(categoryName) {
-            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-            document.getElementById('category-products').classList.add('active');
-            document.getElementById('backBtn').style.display = 'block';
-            document.getElementById('cat-prod-title').innerText = categoryName;
-            document.getElementById('prod-grid').innerHTML = '<div class="loader">Yuklanmoqda...</div>';
-
-            try {
-                let response = await fetch(`${API_URL}/api/products?category=${categoryName}`);
-                let products = await response.json();
-                
-                if (products.length === 0) {
-                    document.getElementById('prod-grid').innerHTML = '<div class="loader">Hozircha bo\'sh</div>';
-                    return;
-                }
-
-                let html = '';
-                products.forEach(p => {
-                    let imgHtml = p.image_url && p.image_url.startsWith('http') ? `<img src="${p.image_url}">` : '🛍';
-                    html += `
-                        <div class="product-card">
-                            <div class="p-img">${imgHtml}</div>
-                            <div class="p-info">
-                                <h3 class="p-title">${p.name}</h3>
-                                <div style="font-size: 11px; color:#888; margin-bottom:5px;">${p.size} | ${p.color}</div>
-                                <div class="p-price">${p.price.toLocaleString()} UZS</div>
-                                <button class="btn-add" onclick="tg.showAlert('Savatga tushdi!')">Savatga</button>
-                            </div>
-                        </div>`;
-                });
-                document.getElementById('prod-grid').innerHTML = html;
-            } catch (error) {
-                document.getElementById('prod-grid').innerHTML = '<div class="loader">Xatolik: Server uxlab qolgan bo\'lishi mumkin</div>';
-            }
-        }
-
-        function goBack() {
-            document.getElementById('category-products').classList.remove('active');
-            document.getElementById('catalog').classList.add('active');
-            document.getElementById('backBtn').style.display = 'none';
-        }
-
-        function switchPage(pageId, element) {
-            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+        // 2. PAGE SWITCHER
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
-            element.classList.add('active');
-            document.getElementById('backBtn').style.display = 'none';
-        }
-
-        // --- REGISTRATSIYA LOGIKASI ---
-        function switchAuthStep(step) {
-            document.querySelectorAll('.auth-step').forEach(s => s.classList.remove('active'));
-            document.getElementById('step-' + step).classList.add('active');
-        }
-
-        async function sendCode() {
-            let phone = document.getElementById("phoneInput").value;
-            let btn = document.getElementById("btn-get-code");
             
-            if (phone.length < 12) {
-                tg.showAlert("Raqam xato! +998... formatida yozing");
-                return;
-            }
-            if (!uid) {
-                tg.showAlert("Botdan /start ni bosib qaytadan kiring.");
-                return;
-            }
-
-            btn.innerText = "⏳..."; 
-            try {
-                let resp = await fetch(`${API_URL}/api/send_code?uid=${uid}&phone=${encodeURIComponent(phone)}`);
-                let result = await resp.json();
-                
-                            if(result.success) {
-                    tg.showAlert("✅ Kod yuborildi!");
-                    switchAuthStep(2); // 2-qadamga (Kod kiritishga) o'tamiz
-                } else {
-                    tg.showAlert("❌ " + (result.error || "Xatolik"));
-                }
-            } catch(e) {
-                tg.showAlert("❌ Server xatosi yuz berdi. Qaytadan urinib ko'ring.");
-            }
-            btn.innerText = dict[currentLang].getCode;
+            document.querySelectorAll('.bottom-nav div').forEach(nav => nav.classList.replace('text-purple-600', 'text-gray-400'));
+            event.currentTarget.classList.replace('text-gray-400', 'text-purple-600');
         }
 
-        // --- KODNI TASDIQLASH ---
-        function verifyCode() {
-            let code = document.getElementById("codeInput").value;
-            if(code.length >= 4) { 
-                switchAuthStep(3); // 3-qadamga (Ism-familiya kiritishga) o'tamiz
+        // 3. AI CHAT LOGIC
+        async function sendToAI() {
+            const input = document.getElementById('ai-input');
+            const chatBox = document.getElementById('chat-box');
+            if(!input.value) return;
+
+            chatBox.innerHTML += `<div class="bg-purple-600 text-white p-3 rounded-tl-2xl rounded-bl-2xl rounded-br-2xl shadow-sm max-w-[80%] self-end ml-auto">${input.value}</div>`;
+            
+            // Bu yerda keyinchalik haqiqiy OpenAI/Gemini ulaymiz
+            setTimeout(() => {
+                chatBox.innerHTML += `<div class="bg-white p-3 rounded-tr-2xl rounded-bl-2xl rounded-br-2xl shadow-sm max-w-[80%]">Sizning so'rovingiz bo'yicha ma'lumot qidiryapman...</div>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 1000);
+            
+            input.value = "";
+        }
+
+        // 4. TREND CLICKER GAME
+        let coins = localStorage.getItem('coins') || 0;
+        document.getElementById('balance').innerText = coins;
+
+        function clickCoin(e) {
+            coins++;
+            document.getElementById('balance').innerText = coins;
+            localStorage.setItem('coins', coins);
+            
+            // Animatsiya (+1 effekti)
+            const x = e.clientX;
+            const y = e.clientY;
+            const plus = document.createElement('div');
+            plus.innerText = "+1";
+            plus.className = "fixed text-purple-600 font-black text-xl pointer-events-none animation-float";
+            plus.style.left = x + 'px';
+            plus.style.top = y + 'px';
+            document.body.appendChild(plus);
+            
+            setTimeout(() => plus.remove(), 800);
+            
+            if(coins % 50 === 0) tg.HapticFeedback.notificationOccurred('success');
+            else tg.HapticFeedback.impactOccurred('light');
+        }
+
+        // 5. AUTH LOGIC
+        function handleAuth() {
+            const number = iti.getNumber();
+            if(iti.isValidNumber()) {
+                document.getElementById('auth-section').classList.add('hidden');
+                document.getElementById('user-info').classList.remove('hidden');
+                document.getElementById('user-phone').innerText = number;
+                tg.showAlert("Muvaffaqiyatli kirdingiz!");
             } else {
-                tg.showAlert("Kodni to'liq kiriting!");
+                tg.showScanQrPopup({text: "Raqam noto'g'ri!"});
             }
         }
-
-        // --- MA'LUMOTLARNI SAQLASH ---
-        function saveUserInfo() {
-            let fname = document.getElementById("fnameInput").value;
-            let lname = document.getElementById("lnameInput").value;
-            let dob = document.getElementById("dobInput").value;
-            let phone = document.getElementById("phoneInput").value;
-
-            if(!fname || !lname || !dob) {
-                tg.showAlert("Hamma maydonlarni to'ldiring!");
-                return;
-            }
-
-            // Tayyor profilni ko'rsatish
-            document.getElementById("txt-auth").innerText = dict[currentLang].prof; 
-            document.getElementById("display-name").innerText = fname + " " + lname;
-            document.getElementById("display-phone").innerText = phone;
-            switchAuthStep(4); 
-            tg.showAlert("✅ Ro'yxatdan o'tdingiz!");
-        }
-
-        // --- MODALLAR (DASTAVKA VA TO'LOV OYNALARI) ---
-        function openModal(id) { document.getElementById(id).classList.add('active'); }
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-
-        function setDelivery(name) {
-            document.getElementById('val-delivery').innerText = name + " >";
-            closeModal('deliveryModal');
-        }
-        function setPayment(name) {
-            document.getElementById('val-payment').innerText = name + " >";
-            closeModal('paymentModal');
-        }
-
-        // Ishga tushirish funksiyalari
-        applyLanguage();
-        fetchCategoriesAndRender();
-        
-        // Tavsiya bo'limi uchun vaqtinchalik yozuv
-        document.getElementById('home-grid').innerHTML = '<div style="grid-column: span 2; text-align:center; padding: 20px; color: #888;">Katalogdan tanlang</div>';
     </script>
+
+    <style>
+        .animation-float { animation: floatUp 0.8s forwards; opacity: 0; }
+        @keyframes floatUp { 
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-100px); opacity: 0; }
+        }
+    </style>
 </body>
 </html>
