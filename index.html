@@ -22,34 +22,40 @@
             padding: 15px; text-align: center; font-weight: bold; font-size: 18px; z-index: 100;
         }
 
-        /* Sahifalar (Tablar) */
+        /* Sahifalar */
         .page { display: none; padding: 15px; animation: fadeIn 0.3s; }
         .page.active { display: block; }
 
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Mahsulotlar */
+        /* Mahsulotlar (Do'kon) */
         .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
         .product-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .p-img { width: 100%; height: 140px; background: #eee; display: flex; align-items: center; justify-content: center; }
+        .p-img { width: 100%; height: 140px; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 40px;}
         .p-info { padding: 10px; }
         .p-title { font-size: 13px; font-weight: bold; color: var(--text-dark); margin: 0 0 5px 0; }
         .p-price { font-size: 15px; color: #e91e63; font-weight: bold; margin-bottom: 10px; }
         .btn-add { background: var(--wb-main); color: #fff; border: none; padding: 8px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-        /* PROFIL VA REGISTRATSIYA DIZAYNI */
+        /* KATALOG GRID (Ninioshop uslubidagi dumaloq kategoriyalar) */
+        .category-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px 5px; margin-top: 15px; }
+        .cat-card { display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer; }
+        .cat-img { width: 65px; height: 65px; background: #fff; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center; font-size: 30px; margin-bottom: 6px; overflow: hidden; border: 2px solid transparent; transition: border 0.2s;}
+        .cat-card:active .cat-img { border-color: var(--wb-main); }
+        .cat-img img { width: 100%; height: 100%; object-fit: cover; }
+        .cat-name { font-size: 11px; color: var(--text-dark); font-weight: bold; line-height: 1.2; padding: 0 2px;}
+
+        /* PROFIL VA REGISTRATSIYA */
         .profile-container { background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); text-align: center; }
         .profile-icon { font-size: 50px; margin-bottom: 10px; }
         .auth-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: var(--text-dark); }
         .input-group { margin-bottom: 15px; text-align: left; }
         .input-group label { font-size: 12px; color: #777; font-weight: bold; margin-bottom: 5px; display: block; }
         .input-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; outline: none; }
-        .input-group input:focus { border-color: var(--wb-main); }
         .btn-primary { background: var(--wb-main); color: #fff; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px;}
         
-        /* Sozlamalar ro'yxati */
         .settings-list { margin-top: 20px; background: #fff; border-radius: 12px; overflow: hidden; }
-        .setting-item { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; font-weight: bold; color: var(--text-dark); }
+        .setting-item { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; font-weight: bold; color: var(--text-dark); cursor: pointer;}
 
         /* Bottom Nav */
         .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 60px; background: #fff; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #ddd; z-index: 1000; }
@@ -63,9 +69,10 @@
     <div class="header">FIRDAVS GROUP</div>
 
     <div id="home" class="page active">
+        <h3 style="margin-top:0; color: #555;">Tavsiya etamiz</h3>
         <div class="product-grid">
             <div class="product-card">
-                <div class="p-img">📸 Rasm</div>
+                <div class="p-img">👟</div>
                 <div class="p-info">
                     <h3 class="p-title">Puma Krossovka</h3>
                     <div class="p-price">250 000 UZS</div>
@@ -73,7 +80,7 @@
                 </div>
             </div>
             <div class="product-card">
-                <div class="p-img">📸 Rasm</div>
+                <div class="p-img">👗</div>
                 <div class="p-info">
                     <h3 class="p-title">Ayollar ko'ylagi</h3>
                     <div class="p-price">180 000 UZS</div>
@@ -84,16 +91,46 @@
     </div>
 
     <div id="catalog" class="page">
-        <h2 style="margin-top:0;">Katalog</h2>
-        <div class="settings-list">
-            <div class="setting-item">🛍 Ayollar kiyimlari <span>></span></div>
-            <div class="setting-item">👞 Erkaklar kiyimlari <span>></span></div>
-            <div class="setting-item">💄 Kosmetika <span>></span></div>
+        <h2 style="margin-top:0; color: #333;">Katalog</h2>
+        
+        <div class="category-grid">
+            <div class="cat-card" onclick="tg.showAlert('Ayollar kiyimlari bo\'limi')">
+                <div class="cat-img">🛍️</div>
+                <div class="cat-name">Ayollar kiyimlari</div>
+            </div>
+            <div class="cat-card" onclick="tg.showAlert('Ayollar oyoq kiyimlari bo\'limi')">
+                <div class="cat-img">👠</div>
+                <div class="cat-name">Ayollar oyoq kiyimlari</div>
+            </div>
+            <div class="cat-card" onclick="tg.showAlert('Ayollar kosmetikasi bo\'limi')">
+                <div class="cat-img">💄</div>
+                <div class="cat-name">Ayollar kosmetikasi</div>
+            </div>
+            <div class="cat-card" onclick="tg.showAlert('Ayollar taqinchoqlari bo\'limi')">
+                <div class="cat-img">👜</div>
+                <div class="cat-name">Ayollar taqinchoqlari</div>
+            </div>
+            <div class="cat-card" onclick="tg.showAlert('Erkaklar oyoq kiyimlari bo\'limi')">
+                <div class="cat-img">👞</div>
+                <div class="cat-name">Erkaklar oyoq kiyimlari</div>
+            </div>
+            <div class="cat-card" onclick="tg.showAlert('Erkaklar kiyimlari bo\'limi')">
+                <div class="cat-img">👔</div>
+                <div class="cat-name">Erkaklar kiyimlari</div>
+            </div>
+            <div class="cat-card" onclick="tg.showAlert('Bolalar uchun bo\'limi')">
+                <div class="cat-img">👶</div>
+                <div class="cat-name">Bolalar uchun</div>
+            </div>
+            <div class="cat-card" onclick="tg.showAlert('Telefon aksessuarlar bo\'limi')">
+                <div class="cat-img">📱</div>
+                <div class="cat-name">Telefon aksessuarlar</div>
+            </div>
         </div>
     </div>
 
     <div id="cart" class="page" style="text-align: center; padding-top: 50px;">
-        <span style="font-size: 50px;">🛒</span>
+        <span style="font-size: 60px;">🛒</span>
         <h3>Savatingiz bo'sh</h3>
         <p style="color: #777; font-size: 14px;">Do'kondan mahsulot tanlang</p>
     </div>
@@ -112,8 +149,8 @@
         </div>
 
         <div class="settings-list">
-            <div class="setting-item">📍 Dastavka manzili <span>O'rnatilmagan ></span></div>
-            <div class="setting-item">💳 To'lov usuli <span>Naqd ></span></div>
+            <div class="setting-item">📍 Dastavka manzili <span style="color:#aaa;">O'rnatilmagan ></span></div>
+            <div class="setting-item">💳 To'lov usuli <span style="color:#aaa;">Naqd ></span></div>
         </div>
     </div>
 
@@ -134,28 +171,22 @@
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Ekranni to'liq ochish
+        tg.expand();
 
-        // Sahifalarni almashtirish funksiyasi (JS)
         function switchPage(pageId, element) {
-            // Hamma sahifalarni yashirish
             document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-            // Hamma tugmalardan 'active' rangini olib tashlash
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
             
-            // Tanlangan sahifani ko'rsatish
             document.getElementById(pageId).classList.add('active');
             element.classList.add('active');
         }
 
-        // Kod olish tugmasi bosilganda
         function sendCode() {
             let phone = document.getElementById("phoneInput").value;
             if (phone.length < 13) {
                 tg.showAlert("Iltimos, to'g'ri raqam kiriting!");
             } else {
-                tg.showAlert("Kod " + phone + " raqamiga (yoki Telegramingizga) yuborildi!");
-                // Keyingi bosqichda buni Python bot bilan ulaymiz
+                tg.showAlert("Kod " + phone + " raqamiga yuborildi!");
             }
         }
     </script>
