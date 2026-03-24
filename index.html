@@ -6,25 +6,30 @@
     <title>Firdavs Group</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://api-maps.yandex.ru/2.1/?lang=uz_UZ&apikey=YOUR_API_KEY" type="text/javascript"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+
     <style>
-        :root { --main: #9c27b0; --bg: #f4f6f9; --text: #2c3e50; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; outline: none; }
+        :root { --main: #7b1fa2; --bg: #f8f9fa; --text: #2c3e50; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; -webkit-tap-highlight-color: transparent; outline: none; }
         body { background-color: var(--bg); color: var(--text); padding-bottom: 70px; user-select: none; }
         
-        .header { position: sticky; top: 0; background: var(--main); color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 18px; z-index: 100; }
-        .back-btn { position: absolute; left: 15px; top: 15px; font-size: 18px; cursor: pointer; display: none; }
+        .header { position: sticky; top: 0; background: #fff; padding: 15px; text-align: center; font-weight: bold; font-size: 17px; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .back-btn { position: absolute; left: 15px; top: 15px; font-size: 18px; cursor: pointer; display: none; color: #555; }
         
         .page { display: none; padding: 15px; animation: fadeIn 0.2s; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Do'kon */
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .card { background: #fff; border-radius: 12px; padding: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #eee; }
         .p-img { width: 100%; height: 140px; background: #f8f9fa; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-size: 40px; overflow: hidden; }
         .p-img img { width: 100%; height: 100%; object-fit: cover; }
         .p-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .p-price { font-size: 14px; color: var(--main); font-weight: 700; margin-bottom: 10px; }
-        .btn { background: var(--main); color: white; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn { background: var(--main); color: white; border: none; padding: 12px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 15px;}
         .btn:active { transform: scale(0.96); opacity: 0.9; }
 
         .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 25px; }
@@ -33,14 +38,20 @@
         .cat-icon img { width: 100%; height: 100%; object-fit: cover; }
         .cat-text { font-size: 10px; font-weight: 600; color: #555; }
 
-        /* Profil / Ninioshop Style */
-        .auth-step { display: none; }
+        /* Profil / Ninioshop Style (YANGI DIZAYN) */
+        .auth-step { display: none; background: white; padding: 25px 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-top: 10px; }
         .auth-step.active { display: block; }
-        .input-group { margin-bottom: 15px; text-align: left; }
-        .input-group label { font-size: 12px; color: #888; font-weight: bold; margin-bottom: 5px; display: block; }
-        .input-group input, .input-group select { width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 12px; font-size: 15px; background: #f9f9f9;}
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group label { font-size: 12px; color: #888; font-weight: bold; margin-bottom: 7px; display: block; }
+        .input-group input, .input-group select { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 12px; font-size: 15px; background: #fafafa; transition: 0.2s;}
         .input-group input:focus { border-color: var(--main); background: #fff;}
+        .iti { width: 100%; }
         
+        /* Jinsni tanlash tugmalari (Rasmdagidek) */
+        .gender-group { display: flex; gap: 15px; margin-top: 5px; }
+        .gender-btn { flex: 1; padding: 15px; border: 2px solid #ddd; border-radius: 12px; background: #f9f9f9; text-align: center; font-weight: bold; color: #888; cursor: pointer; transition: 0.2s; }
+        .gender-btn.active { border-color: var(--main); color: #333; background: #fff; }
+
         .list-item { padding: 18px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; font-weight: 600; cursor: pointer; background: #fff; margin-bottom: 10px; border-radius: 12px;}
         
         .modal { display: none; position: fixed; bottom: -100%; left: 0; width: 100%; background: white; border-radius: 20px 20px 0 0; padding: 20px; transition: 0.3s; z-index: 2000; box-shadow: 0 -5px 20px rgba(0,0,0,0.15); }
@@ -53,7 +64,6 @@
         .radio-circle { width: 20px; height: 20px; border: 2px solid #ddd; border-radius: 50%; transition: 0.2s;}
         .pay-card.active .radio-circle { border-color: var(--main); background: var(--main); box-shadow: inset 0 0 0 4px white; }
 
-        /* O'yin */
         #game-app { display: none; text-align: center; padding: 50px 20px; }
         .click-coin { font-size: 90px; background: #FFD700; width: 220px; height: 220px; display: flex; align-items: center; justify-content: center; border-radius: 50%; margin: 0 auto 40px auto; box-shadow: 0 15px 30px rgba(255, 215, 0, 0.4); border: 8px solid #F5B041; transition: 0.1s; cursor: pointer;}
         .click-coin:active { transform: scale(0.9); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4); }
@@ -93,7 +103,7 @@
 
         <div id="profile" class="page">
             
-            <div id="step-1" class="auth-step active" style="background: white; padding: 20px; border-radius: 16px; text-align: center;">
+            <div id="step-1" class="auth-step active" style="text-align: center;">
                 <div style="font-size: 50px; margin-bottom: 15px;">👤</div>
                 <h3 style="margin-bottom: 15px;">Tizimga kirish</h3>
                 <div class="input-group">
@@ -103,7 +113,7 @@
                 <button class="btn" id="btn-get-code" onclick="sendCode()">Kod olish</button>
             </div>
             
-            <div id="step-2" class="auth-step" style="background: white; padding: 20px; border-radius: 16px; text-align: center;">
+            <div id="step-2" class="auth-step" style="text-align: center;">
                 <h3 style="margin-bottom: 15px;">SMS Kodni kiriting</h3>
                 <div class="input-group">
                     <input type="number" id="codeInput" placeholder="----" style="text-align: center; font-size: 20px; letter-spacing: 10px;">
@@ -111,21 +121,38 @@
                 <button class="btn" onclick="verifyCode()">Tasdiqlash</button>
             </div>
 
-            <div id="step-3" class="auth-step" style="background: white; padding: 20px; border-radius: 16px;">
-                <h3 style="margin-bottom: 15px; text-align: center;">Mening ma'lumotlarim</h3>
-                <div class="input-group"><label>Ism va familiya</label><input type="text" id="fnameInput" placeholder="Ism Familiya"></div>
-                <div class="input-group"><label>Telefon raqami</label><input type="tel" id="regPhone" disabled style="background: #eee;"></div>
-                <div class="input-group"><label>Elektron pochta</label><input type="email" id="emailInput" placeholder="Misol@gmail.com"></div>
-                <div class="input-group"><label>Tug'ilgan sana</label><input type="date" id="dobInput"></div>
-                <div style="text-align: left; margin-bottom: 20px; font-weight: bold; color: #555; font-size: 14px;">
-                    <label style="font-size: 12px; color: #888; display: block; margin-bottom: 5px;">Jins</label>
-                    <input type="radio" name="gender" value="Erkak" id="g1"> <label for="g1" style="display:inline; color:#333; font-size:14px;">Erkak</label>
-                    <input type="radio" name="gender" value="Ayol" id="g2" style="margin-left: 20px;"> <label for="g2" style="display:inline; color:#333; font-size:14px;">Ayol</label>
+            <div id="step-3" class="auth-step">
+                <h3 style="margin-bottom: 25px; text-align: center; color: #333;">Mening ma'lumotlarim</h3>
+                <div class="input-group">
+                    <label>Ism va familiya</label>
+                    <input type="text" id="fnameInput" placeholder="Ism Familiya">
                 </div>
-                <button class="btn" onclick="saveInfo()">Saqlash</button>
+                <div class="input-group">
+                    <label>Telefon raqami</label>
+                    <input type="tel" id="regPhone" disabled style="background: #eee; color: #777;">
+                </div>
+                <div class="input-group">
+                    <label>Elektron pochta</label>
+                    <input type="email" id="emailInput" placeholder="Misol@gmail.com">
+                </div>
+                <div class="input-group">
+                    <label>Tug'ilgan sana</label>
+                    <input type="date" id="dobInput">
+                </div>
+                <div class="input-group">
+                    <label>Jins</label>
+                    <div class="gender-group">
+                        <div class="gender-btn active" id="gender_male" onclick="setGender('Erkak')">Erkak</div>
+                        <div class="gender-btn" id="gender_female" onclick="setGender('Ayol')">Ayol</div>
+                    </div>
+                    <input type="hidden" id="genderInput" value="Erkak">
+                </div>
+                <div style="margin-top: 30px;">
+                    <button class="btn" onclick="saveInfo()">Saqlash</button>
+                </div>
             </div>
 
-            <div id="step-4" class="auth-step" style="background: transparent; padding: 0;">
+            <div id="step-4" class="auth-step" style="background: transparent; padding: 0; box-shadow: none;">
                 <div style="background: white; padding: 20px; border-radius: 16px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between;">
                     <div style="display: flex; align-items: center;">
                         <div style="font-size: 40px; margin-right: 15px; background: #f0f0f0; border-radius: 50%; width: 60px; height: 60px; display:flex; justify-content:center; align-items:center;">👤</div>
@@ -161,9 +188,9 @@
 
     <div id="game-app">
         <h2 style="font-size: 28px; margin-bottom: 10px; color: #333;">Firdavs Clicker</h2>
-        <p style="color: #888; margin-bottom: 40px; font-weight: bold;">Tangalar yig'ing!</p>
-        <div class="click-coin" onclick="clickCoin()">🪙</div>
-        <div style="background: white; padding: 15px 40px; border-radius: 16px; display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+        <p style="color: #888; margin-bottom: 40px; font-weight: bold;">Tanganing ustiga bosing!</p>
+        <div class="coin" onclick="clickCoin()">🪙</div>
+        <div style="background: white; padding: 15px 40px; border-radius: 20px; display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
             <p style="color: #aaa; font-size: 11px; text-transform: uppercase; font-weight: bold; margin-bottom: 5px;">Balans</p>
             <h1 id="balance" style="font-size: 45px; color: var(--main); margin: 0;">0</h1>
         </div>
@@ -237,7 +264,7 @@
                 }
             }
             fetchCats();
-            checkLogin(); // Saytga kirganda ma'lumotni tekshiramiz
+            checkLogin(); 
         }
 
         function switchPage(id, el) {
@@ -279,7 +306,7 @@
             document.getElementById('header-title').innerText = "FIRDAVS GROUP";
         }
 
-        // MA'LUMOTLARNI SAQLASH (LOCALSTORAGE)
+            // --- AUTH & LOCALSTORAGE ---
         function checkLogin() {
             if(localStorage.getItem('fg_logged') === 'true') {
                 document.getElementById('p-name').innerText = localStorage.getItem('fg_name');
@@ -291,6 +318,17 @@
         function setStep(step) {
             document.querySelectorAll('.auth-step').forEach(s => s.classList.remove('active'));
             document.getElementById('step-' + step).classList.add('active');
+            
+            // "Mening ma'lumotlarim" oynasiga kirganda sarlavhani o'zgartiramiz
+            if(step === 3) {
+                document.getElementById('header-title').innerText = "Ma'lumotlar";
+                document.getElementById('backBtn').style.display = 'block';
+                document.getElementById('backBtn').onclick = function() { setStep(4); } // Profilga qaytish
+            } else if(step === 4) {
+                document.getElementById('header-title').innerText = "FIRDAVS GROUP";
+                document.getElementById('backBtn').style.display = 'none';
+                document.getElementById('backBtn').onclick = goBack; // Standart back
+            }
         }
 
         async function sendCode() {
@@ -311,11 +349,24 @@
 
         function verifyCode() { setStep(3); }
         
+        // Jinsni tanlash (Rasmdagidek vizual effekt)
+        function setGender(value) {
+            document.getElementById('genderInput').value = value;
+            if(value === 'Erkak') {
+                document.getElementById('gender_male').classList.add('active');
+                document.getElementById('gender_female').classList.remove('active');
+            } else {
+                document.getElementById('gender_female').classList.add('active');
+                document.getElementById('gender_male').classList.remove('active');
+            }
+        }
+
         function saveInfo() {
             let fname = document.getElementById("fnameInput").value;
             let phone = document.getElementById("regPhone").value;
             let email = document.getElementById("emailInput").value;
             let dob = document.getElementById("dobInput").value;
+            let gender = document.getElementById("genderInput").value;
             
             if(!fname) { tg.showAlert("Ismni kiriting"); return; }
             
@@ -325,16 +376,19 @@
             localStorage.setItem('fg_phone', phone);
             localStorage.setItem('fg_email', email);
             localStorage.setItem('fg_dob', dob);
+            localStorage.setItem('fg_gender', gender);
             
             document.getElementById("p-name").innerText = fname;
             document.getElementById("p-phone").innerText = phone;
             setStep(4);
+            tg.showAlert("✅ Ma'lumotlar saqlandi!");
         }
 
         function editProfile() {
             document.getElementById("fnameInput").value = localStorage.getItem('fg_name') || '';
             document.getElementById("emailInput").value = localStorage.getItem('fg_email') || '';
             document.getElementById("dobInput").value = localStorage.getItem('fg_dob') || '';
+            setGender(localStorage.getItem('fg_gender') || 'Erkak');
             setStep(3);
         }
 
@@ -344,6 +398,7 @@
             setStep(1);
         }
 
+        // --- MODALLAR ---
         function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
