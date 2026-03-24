@@ -5,365 +5,197 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Firdavs Group</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://api-maps.yandex.ru/2.1/?lang=uz_UZ&apikey=YOUR_API_KEY" type="text/javascript"></script>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css"/>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
-
     <style>
-        :root { --main: #7b1fa2; --bg: #ffffff; --bg-gray: #f5f6f8; --text: #2c3e50; }
+        :root { --main: #7b1fa2; --bg: #f5f6f8; --text: #333; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; outline: none; }
-        body { background-color: var(--bg-gray); color: var(--text); padding-bottom: 75px; overflow-x: hidden;}
+        body { background-color: var(--bg); color: var(--text); padding-bottom: 80px; overflow-x: hidden; }
         
-        .header { position: sticky; top: 0; background: #fff; padding: 12px 15px; display: flex; align-items: center; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
-        .back-btn { font-size: 22px; cursor: pointer; display: none; margin-right: 15px; color: #333; }
-        .header-title { font-weight: 800; font-size: 18px; color: #333; flex-grow: 1; text-align: center; }
+        .header { position: sticky; top: 0; background: #fff; padding: 15px; display: flex; align-items: center; z-index: 100; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .back-btn { font-size: 20px; cursor: pointer; display: none; margin-right: 15px; color: #555; }
+        .header-title { font-weight: 700; font-size: 18px; color: #333; flex-grow: 1; text-align: center; }
         
         .page { display: none; animation: fadeIn 0.2s; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .banner { width: 100%; height: 180px; background: url('https://via.placeholder.com/400x200/9c27b0/ffffff?text=FIRDAVS+GROUP') center/cover; margin-bottom: 15px; }
+        /* Asosiy Sahifa */
+        .search-bar { background: #f0f2f5; margin: 15px; padding: 12px 15px; border-radius: 12px; display: flex; align-items: center; }
+        .search-bar input { border: none; background: transparent; width: 100%; font-size: 14px; margin-left: 10px; }
         
-        .search-container { padding: 0 15px; margin-bottom: 20px; }
-        .search-bar { background: #f0f2f5; padding: 12px 15px; border-radius: 16px; display: flex; align-items: center; }
-        .search-bar span { margin-right: 10px; font-size: 18px; color: #888; }
-        .search-bar input { border: none; background: transparent; width: 100%; font-size: 14px; color: #333; }
-
-        .scroll-wrapper { display: flex; overflow-x: auto; gap: 15px; padding: 0 15px; margin-bottom: 25px; scrollbar-width: none; }
+        .scroll-wrapper { display: flex; overflow-x: auto; gap: 15px; padding: 0 15px; margin-bottom: 20px; scrollbar-width: none; }
         .scroll-wrapper::-webkit-scrollbar { display: none; }
-        .scroll-item { display: flex; flex-direction: column; align-items: center; min-width: 65px; cursor: pointer;}
-        .scroll-item div { width: 65px; height: 65px; border-radius: 18px; background: #fff; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 6px; font-size: 30px;}
-        .scroll-item span { font-size: 11px; color: #555; font-weight: 600; text-align: center; line-height: 1.2;}
+        .scroll-item { display: flex; flex-direction: column; align-items: center; min-width: 70px; cursor: pointer;}
+        .scroll-item div { width: 65px; height: 65px; border-radius: 50%; background: #fff; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.05); margin-bottom: 6px; font-size: 28px;}
+        .scroll-item span { font-size: 11px; color: #555; font-weight: 600; text-align: center;}
 
-        .section-header { display: flex; justify-content: space-between; align-items: center; padding: 0 15px; margin-bottom: 12px; }
-        .section-header h2 { font-size: 18px; font-weight: 800; display: flex; align-items: center; }
-        .more-btn { color: var(--main); font-size: 13px; font-weight: bold; cursor: pointer;}
+        /* Grid */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 15px; margin-bottom: 20px; }
+        .card { background: #fff; border-radius: 16px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); position: relative; }
+        .heart { position: absolute; top: 10px; right: 10px; width: 28px; height: 28px; background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #ccc; font-size: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); z-index: 10;}
+        .p-img { width: 100%; height: 120px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: center; align-items: center; font-size: 40px; }
+        .p-title { font-size: 13px; font-weight: 600; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .p-price { font-size: 14px; color: #111; font-weight: 800; margin-bottom: 10px; }
+        .btn { background: var(--main); color: white; border: none; padding: 12px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.2s;}
 
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 15px; margin-bottom: 20px; }
-        .card { background: #fff; border-radius: 16px; padding: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); position: relative; }
-        .heart-icon { position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #ccc; font-size: 18px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 10;}
-        .heart-icon.active { color: #e74c3c; }
-        .p-img { width: 100%; height: 130px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; font-size: 40px; overflow: hidden; }
-        .p-img img { width: 100%; height: 100%; object-fit: cover; }
-        .p-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #333; }
-        .p-price { font-size: 15px; color: #111; font-weight: 800; margin-bottom: 10px; }
-        .btn { background: var(--main); color: white; border: none; padding: 10px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 13px;}
-        .btn:active { transform: scale(0.96); opacity: 0.9; }
+        /* SAVAT */
+        .cart-item { background: #fff; padding: 15px; margin: 10px 15px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; }
+        .checkout-bar { position: fixed; bottom: 65px; width: 100%; background: #fff; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; z-index: 99;}
+
+        /* PROFIL (NINIOSHOP STYLE) */
+        .profile-header { background: #fff; padding: 20px; border-radius: 20px; margin: 15px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+        .p-avatar { width: 60px; height: 60px; border-radius: 50%; background: #eee; display: flex; justify-content: center; align-items: center; font-size: 30px; margin-right: 15px; }
+        .p-info h3 { font-size: 18px; margin-bottom: 3px; }
+        .p-info p { color: #888; font-size: 13px; }
+        .p-edit { width: 36px; height: 36px; background: #e8f5e9; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--main); font-size: 16px; }
         
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 65px; background: #fff; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eee; z-index: 1000; padding: 0 5px; }
-        .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #999; font-size: 10px; font-weight: 600; cursor: pointer; width: 20%; transition: 0.2s;}
+        .menu-group { background: #fff; border-radius: 20px; margin: 0 15px 15px 15px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+        .menu-item { padding: 18px 20px; border-bottom: 1px solid #f5f5f5; display: flex; justify-content: space-between; align-items: center; font-weight: 600; color: #333; font-size: 14px;}
+        .menu-item:last-child { border: none; }
+        .menu-item i { color: #ccc; font-style: normal; font-weight: bold; }
+        .badge { background: #e8f5e9; color: #2e7d32; font-size: 11px; padding: 3px 8px; border-radius: 10px; }
+
+        /* CHECKOUT (Yangi Buyurtma berish sahifasi) */
+        .chk-box { background: #fff; border-radius: 16px; padding: 15px; margin: 15px; }
+        .chk-option { display: flex; align-items: center; justify-content: space-between; padding: 15px; border: 1px solid #eee; border-radius: 12px; margin-bottom: 10px; font-weight: 600;}
+        .chk-option.active { border-color: var(--main); background: #fafafa; }
+        .radio { width: 20px; height: 20px; border: 2px solid #ddd; border-radius: 50%; }
+        .chk-option.active .radio { border-color: var(--main); border-width: 6px; }
+
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 65px; background: #fff; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eee; z-index: 100; }
+        .nav-btn { display: flex; flex-direction: column; align-items: center; color: #999; font-size: 10px; font-weight: 600; width: 20%; }
         .nav-btn.active { color: var(--main); }
         .nav-icon { font-size: 22px; margin-bottom: 2px; }
 
-        .auth-step { display: none; background: white; padding: 25px 20px; border-radius: 20px; margin: 15px; }
+        /* Login Step */
+        .auth-step { display: none; background: #fff; margin: 15px; padding: 25px 20px; border-radius: 20px; }
         .auth-step.active { display: block; }
-        .input-group { margin-bottom: 18px; text-align: left; }
-        .input-group label { font-size: 12px; color: #666; font-weight: bold; margin-bottom: 8px; display: block; }
-        .input-group input { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 12px; font-size: 15px; background: #fafafa; }
-        .input-group input:focus { border-color: var(--main); background: #fff;}
-        .iti { width: 100%; } 
-        
-        .gender-group { display: flex; gap: 15px; margin-top: 5px; }
-        .gender-btn { flex: 1; padding: 15px; border: 2px solid #ddd; border-radius: 12px; background: #f9f9f9; text-align: center; font-weight: bold; color: #888; cursor: pointer; transition: 0.2s; }
-        .gender-btn.active { border-color: var(--main); color: #333; background: #fff; }
-        
-        .profile-avatar-container { position: relative; width: 80px; height: 80px; margin: 0 auto 20px auto; border-radius: 50%; background: #f0f0f0; display: flex; justify-content: center; align-items: center; overflow: hidden; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1);}
-        .profile-avatar-container img { width: 100%; height: 100%; object-fit: cover; }
-        .profile-avatar-container .camera-icon { position: absolute; bottom: 0; background: rgba(0,0,0,0.5); width: 100%; text-align: center; color: white; font-size: 10px; padding: 2px 0; }
-        
-        .list-item { padding: 18px; border-bottom: 1px solid #f5f5f5; display: flex; justify-content: space-between; align-items: center; font-weight: 600; background: #fff; margin: 0 15px 10px 15px; border-radius: 16px;}
-        .modal { display: none; position: fixed; bottom: -100%; left: 0; width: 100%; background: white; border-radius: 24px 24px 0 0; padding: 20px; transition: 0.3s; z-index: 2000; box-shadow: 0 -5px 25px rgba(0,0,0,0.1); }
-        .modal.active { display: block; bottom: 0; }
-        
-        #map { width: 100%; height: 300px; border-radius: 16px; margin: 10px 0; background: #e0e0e0; }
-        .pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .pay-card { border: 2px solid #eee; border-radius: 12px; padding: 15px; display: flex; align-items: center; justify-content: space-between; font-weight: 700; cursor: pointer; transition: 0.2s;}
-        .pay-card.active { border-color: var(--main); background-color: #f3e5f5; }
-        .radio-circle { width: 20px; height: 20px; border: 2px solid #ddd; border-radius: 50%; transition: 0.2s;}
-        .pay-card.active .radio-circle { border-color: var(--main); background: var(--main); box-shadow: inset 0 0 0 4px white; }
+        .inp { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 12px; margin-bottom: 15px; font-size: 15px; background: #fafafa; }
     </style>
 </head>
 <body>
 
-    <div id="shop-app">
-        <div class="header">
-            <span class="back-btn" id="backBtn" onclick="goBack()">✕</span>
-            <span class="header-title" id="header-title">FIRDAVS GROUP</span>
-        </div>
+    <div class="header">
+        <span class="back-btn" id="backBtn" onclick="goBack()">✕</span>
+        <span class="header-title" id="headerTitle">FIRDAVS GROUP</span>
+    </div>
 
-        <div id="home" class="page active">
-            <div class="banner"></div>
+    <div id="home" class="page active">
+        <div class="search-bar"><span>🔍</span><input type="text" id="search" placeholder="Qidirish..."></div>
+        <div class="scroll-wrapper" id="cat-list">
+            <div class="scroll-item" onclick="openCat('Ayollar')"><div>👗</div><span>Ayollar</span></div>
+            <div class="scroll-item" onclick="openCat('Erkaklar')"><div>👔</div><span>Erkaklar</span></div>
+            <div class="scroll-item" onclick="openCat('Bolalar')"><div>👶</div><span>Bolalar</span></div>
+            <div class="scroll-item" onclick="openCat('Kosmetika')"><div>💄</div><span>Kosmetika</span></div>
+        </div>
+        <h3 style="padding: 0 15px; margin-bottom: 10px;">Tavsiya etamiz</h3>
+        <div class="grid-2" id="home-prods">
+            <div class="card"><div class="heart">♡</div><div class="p-img">👟</div><div class="p-title">Premium Krossovka</div><div class="p-price">450,000 UZS</div><button class="btn" onclick="addToCart('Premium Krossovka', 450000)">Savatga</button></div>
+        </div>
+    </div>
+
+    <div id="cat-detail" class="page"><div class="grid-2" id="cat-prods"></div></div>
+
+    <div id="cart" class="page">
+        <div id="cart-items">
+            <div style="text-align: center; padding: 50px 0; color:#888;">Savatingiz bo'sh</div>
+        </div>
+        <div class="checkout-bar" id="checkout-bar" style="display: none;">
+            <div>
+                <p style="font-size: 11px; color:#888;">Umumiy narx</p>
+                <h3 id="cart-total">0 UZS</h3>
+            </div>
+            <button class="btn" style="width: auto; padding: 12px 25px;" onclick="openCheckout()">Buyurtma berish</button>
+        </div>
+    </div>
+
+    <div id="checkout" class="page">
+        <div class="chk-box">
+            <h4 style="margin-bottom: 10px;">Yetkazib berish turi</h4>
+            <div class="chk-option active" onclick="setOpt(this)">Do'kon filialidan olib ketish <div class="radio"></div></div>
+            <div class="chk-option" onclick="setOpt(this)">Kuryer orqali yetkazish <div class="radio"></div></div>
             
-            <div class="search-container">
-                <div class="search-bar">
-                    <span>🔍</span><input type="text" id="searchInput" placeholder="Mahsulot qidirish..." onkeyup="searchProducts()">
-                </div>
-            </div>
-
-            <div class="scroll-wrapper" id="cat-scroll"></div>
-
-            <div class="section-header">
-                <h2 id="txt-popular">Mashhur</h2><div class="more-btn" id="txt-more">Hammasi ></div>
-            </div>
-            
-            <div class="grid-2" id="home-products">
-                <div style="grid-column: span 2; text-align:center; padding: 20px; color: #888;" id="txt-loading">Yuklanmoqda...</div>
-            </div>
+            <h4 style="margin: 20px 0 10px 0;">Manzil (Xarita)</h4>
+            <button class="btn" style="background:#f0f2f5; color:#333; margin-bottom: 10px;" onclick="loadMap()">📍 Xaritadan tanlash</button>
+            <div id="map" style="display:none;"></div>
+            <p id="addressTxt" style="font-size: 12px; color: var(--main);"></p>
         </div>
 
-        <div id="catalog" class="page">
-            <h2 style="padding: 15px; font-size: 20px;" id="txt-catalog-title">Katalog</h2>
-            <div class="scroll-wrapper" style="flex-wrap: wrap; justify-content: center; gap: 20px;" id="cat-grid-full"></div>
+        <div class="chk-box">
+            <h4 style="margin-bottom: 10px;">To'lov usuli</h4>
+            <div class="chk-option active" onclick="setOpt(this)">💵 Naqd pul <div class="radio"></div></div>
+            <div class="chk-option" onclick="setOpt(this)">🔵 Click <div class="radio"></div></div>
+            <div class="chk-option" onclick="setOpt(this)">🟢 Payme <div class="radio"></div></div>
+            <div class="chk-option" onclick="setOpt(this)">🟣 Uzum <div class="radio"></div></div>
         </div>
 
-        <div id="cat-detail" class="page"><div class="grid-2" id="cat-products"></div></div>
+        <div style="padding: 15px;">
+            <button class="btn" style="padding: 15px; font-size: 16px;" onclick="tg.showAlert('Buyurtma qabul qilindi!')">Buyurtmani tasdiqlash</button>
+        </div>
+    </div>
 
-        <div id="cart" class="page" style="text-align: center; padding-top: 80px;">
-            <div style="font-size: 80px; margin-bottom: 20px;">🛒</div>
-            <h3 style="color: #333; font-weight: 800;" id="txt-cart-empty">Savatingiz bo'sh</h3>
+    <div id="favorites" class="page" style="text-align: center; padding-top: 80px;">
+        <div style="font-size: 60px; margin-bottom: 10px; color:#ccc;">🤍</div>
+        <h3 style="color: #333;">Sevimlilar ro'yxati bo'sh</h3>
+    </div>
+
+    <div id="profile" class="page">
+        <div id="auth-box" class="auth-step active">
+            <h2 style="text-align: center; margin-bottom: 20px;">Tizimga kirish</h2>
+            <div id="phone-container"></div> <input type="text" id="fname" class="inp" placeholder="Ism va familiyangiz" style="margin-top:15px;">
+            <button class="btn" onclick="saveUser()">Kirish</button>
         </div>
 
-        <div id="favorites" class="page" style="text-align: center; padding-top: 80px;">
-            <div style="font-size: 80px; margin-bottom: 20px; color:#ccc;">🤍</div>
-            <h3 style="color: #333; font-weight: 800;" id="txt-fav-empty">Sevimlilar bo'sh</h3>
-        </div>
-
-        <div id="profile" class="page">
-            <div id="step-1" class="auth-step active" style="text-align: center; background: transparent; box-shadow: none;">
-                <div style="font-size: 70px; margin-bottom: 10px; color: var(--main);">👤</div>
-                <h2 style="margin-bottom: 25px;" id="txt-login">Tizimga kirish</h2>
-                <div style="background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-                    <input type="tel" id="loginPhone">
-                    <button class="btn" id="btn-get-code" onclick="sendCode()" style="margin-top: 20px;">Kod olish</button>
-                </div>
-            </div>
-            
-            <div id="step-2" class="auth-step" style="text-align: center;">
-                <h3 style="margin-bottom: 15px;" id="txt-enter-code">Kodni kiriting</h3>
-                <div class="input-group">
-                    <input type="number" id="codeInput" placeholder="----" style="text-align: center; font-size: 24px; letter-spacing: 15px;">
-                </div>
-                <button class="btn" onclick="verifyCode()" id="txt-verify">Tasdiqlash</button>
-            </div>
-
-            <div id="step-3" class="auth-step">
-                <h3 style="margin-bottom: 20px; text-align: center;" id="txt-my-info">Mening ma'lumotlarim</h3>
-                
-                <div class="profile-avatar-container" onclick="document.getElementById('avatarUpload').click()">
-                    <img id="avatarPreview" src="https://via.placeholder.com/80?text=👤">
-                    <div class="camera-icon">📷</div>
-                </div>
-                <input type="file" id="avatarUpload" accept="image/*" style="display: none;" onchange="previewAvatar(event)">
-
-                <div class="input-group"><label id="lbl-name">Ism va familiya</label><input type="text" id="fnameInput"></div>
-                <div class="input-group"><label id="lbl-email">Elektron pochta</label><input type="email" id="emailInput"></div>
-                <div class="input-group"><label>Tug'ilgan sana</label><input type="date" id="dobInput"></div>
-                <div class="input-group">
-                    <label>Jins</label>
-                    <div class="gender-group">
-                        <div class="gender-btn active" id="gender_male" onclick="setGender('Erkak')">Erkak</div>
-                        <div class="gender-btn" id="gender_female" onclick="setGender('Ayol')">Ayol</div>
+        <div id="profile-box" style="display:none;">
+            <div class="profile-header">
+                <div style="display:flex; align-items:center;">
+                    <div class="p-avatar">👤</div>
+                    <div class="p-info">
+                        <h3 id="p-name">Ism</h3>
+                        <p id="p-phone">+998</p>
                     </div>
-                    <input type="hidden" id="genderInput" value="Erkak">
                 </div>
-                <button class="btn" onclick="saveInfo()" id="txt-save">Saqlash</button>
+                <div class="p-edit" onclick="editUser()">✏️</div>
             </div>
 
-            <div id="step-4" class="auth-step" style="background: transparent; padding: 0; box-shadow: none;">
-                <div style="background: white; padding: 20px; border-radius: 20px; margin: 0 15px 15px 15px; display: flex; align-items: center; justify-content: space-between;">
-                    <div style="display: flex; align-items: center;">
-                        <img id="p-avatar" src="https://via.placeholder.com/65?text=👤" style="width: 65px; height: 65px; border-radius: 50%; margin-right: 15px; object-fit: cover;">
-                        <div>
-                            <h2 id="p-name" style="color: #333; font-size: 18px; margin-bottom: 5px;">Ism</h2>
-                            <p id="p-phone" style="color: #888; font-size: 13px; font-weight: bold;">+998</p>
-                        </div>
-                    </div>
-                    <div style="color: var(--main); cursor: pointer; font-size: 20px;" onclick="editProfile()">✏️</div>
-                </div>
-                
-                <div class="list-item" onclick="tg.showAlert('Tez orada')">
-                    <span id="txt-my-orders">📦 Buyurtmalarim</span><span style="color: #bbb;">></span>
-                </div>
-                <div class="list-item" onclick="openMapModal()">
-                    <span>📍 Yetkazib berish manzili</span><span id="v-del" style="color: var(--main); font-size: 13px;">Tanlang ></span>
-                </div>
-                <div class="list-item" onclick="openModal('paymentModal')">
-                    <span>💳 To'lov usuli</span><span id="v-pay" style="color: var(--main); font-size: 13px;">Tanlang ></span>
-                </div>
-                <div class="list-item" onclick="logout()">
-                    <span id="txt-logout" style="color: #e74c3c;">🚪 Profildan chiqish</span>
-                </div>
+            <div class="menu-group">
+                <div class="menu-item" onclick="tg.showAlert('Bo\\'sh')"><div style="display:flex; align-items:center;"><span style="font-size:20px; margin-right:10px; color:#999;">📦</span> Buyurtmalarim</div> <i>></i></div>
+                <div class="menu-item" onclick="tg.showAlert('Bo\\'sh')"><div style="display:flex; align-items:center;"><span style="font-size:20px; margin-right:10px; color:#999;">💬</span> Sharhlarim</div> <i>></i></div>
+            </div>
+
+            <div class="menu-group">
+                <div class="menu-item"><div><span style="font-size:20px; margin-right:10px; color:#999;">⚙️</span> Sozlamalar</div> <span class="badge">Tez orada</span></div>
+                <div class="menu-item"><div><span style="font-size:20px; margin-right:10px; color:#999;">🌐</span> Til</div> <span style="color:#888; font-weight:normal;">O'zbekcha <i>></i></span></div>
+                <div class="menu-item"><div><span style="font-size:20px; margin-right:10px; color:#999;">ℹ️</span> Biz haqimizda</div> <i>></i></div>
+                <div class="menu-item"><div><span style="font-size:20px; margin-right:10px; color:#999;">✉️</span> Biz bilan bog'lanish</div> <i>></i></div>
+            </div>
+
+            <button class="btn" style="background: transparent; color: #e74c3c; border: 1px solid #fadbd8; margin: 15px; width: calc(100% - 30px);" onclick="logout()">Chiqish</button>
+            
+            <div style="text-align:center; margin-top:20px; color:#888; font-size:12px;">
+                <p>Ijtimoiy tarmoqlar:</p>
+                <div style="font-size:24px; margin:5px 0;">📸 ✈️</div>
+                <p>Firdavs Group tomonidan taqdim etilgan</p>
             </div>
         </div>
-
-        <nav class="bottom-nav">
-            <div onclick="switchPage('home', this)" class="nav-btn active"><span class="nav-icon">⌂</span><span id="nav-home">Bosh sahifa</span></div>
-            <div onclick="switchPage('catalog', this)" class="nav-btn"><span class="nav-icon">🗂</span><span id="nav-cat">Katalog</span></div>
-            <div onclick="switchPage('cart', this)" class="nav-btn"><span class="nav-icon">🛒</span><span id="nav-cart">Savat</span></div>
-            <div onclick="switchPage('favorites', this)" class="nav-btn"><span class="nav-icon">♡</span><span id="nav-fav">Sevimlilar</span></div>
-            <div onclick="switchPage('profile', this)" class="nav-btn"><span class="nav-icon">👤</span><span id="nav-prof">Profil</span></div>
-        </nav>
     </div>
 
-    <div id="game-app" style="display: none; text-align: center; padding: 50px 20px; height: 100vh; background: #fff;">
-        <h2 style="font-size: 30px; margin-bottom: 10px; color: #333;">Firdavs Clicker</h2>
-        <p style="color: #888; margin-bottom: 50px; font-weight: bold;" id="txt-game-sub">Tanganing ustiga bosing!</p>
-        <div style="font-size: 100px; background: linear-gradient(135deg, #FFD700, #F5B041); width: 220px; height: 220px; display: flex; align-items: center; justify-content: center; border-radius: 50%; margin: 0 auto 40px auto; border: 8px solid #F39C12; cursor: pointer; user-select: none;" onclick="clickCoin()">🪙</div>
-        <h1 id="balance" style="font-size: 50px; color: #7b1fa2; margin: 0;">0</h1>
-    </div>
-
-    <div id="mapModal" class="modal">
-        <h3 style="text-align: center; margin-bottom: 8px;">Manzilni belgilang</h3>
-        <p id="addressText" style="font-size: 12px; color: var(--main); text-align: center; font-weight: bold;">Xaritadan bosing</p>
-        <div id="map"></div>
-        <button class="btn" onclick="closeMapModal()">Shu manzilga yetkazish</button>
-    </div>
-    <div id="paymentModal" class="modal">
-        <h3 style="text-align: center; margin-bottom: 15px;">To'lov usuli</h3>
-        <div class="pay-grid">
-            <div class="pay-card active" onclick="setPay(this, 'Naqd pul')"><span>💵 Naqd</span><div class="radio-circle"></div></div>
-            <div class="pay-card" onclick="setPay(this, 'Click')"><span style="color: #00a5ff;">🔵 Click</span><div class="radio-circle"></div></div>
-            <div class="pay-card" onclick="setPay(this, 'Payme')"><span style="color: #33cccc;">🟢 Payme</span><div class="radio-circle"></div></div>
-            <div class="pay-card" onclick="setPay(this, 'Uzum To\'lov')"><span style="color: #7b1fa2;">🟣 Uzum</span><div class="radio-circle"></div></div>
-        </div>
-        <button class="btn" style="background: #eee; color: #555;" onclick="closeModal('paymentModal')">Yopish</button>
-    </div>
+    <nav class="bottom-nav">
+        <div onclick="switchPage('home', this)" class="nav-btn active"><span class="nav-icon">⌂</span><span>Bosh sahifa</span></div>
+        <div onclick="switchPage('home', this)" class="nav-btn"><span class="nav-icon">🗂</span><span>Katalog</span></div>
+        <div onclick="switchPage('cart', this)" class="nav-btn"><span class="nav-icon">🛒</span><span>Savat</span></div>
+        <div onclick="switchPage('favorites', this)" class="nav-btn"><span class="nav-icon">♡</span><span>Sevimlilar</span></div>
+        <div onclick="switchPage('profile', this)" class="nav-btn"><span class="nav-icon">👤</span><span>Profil</span></div>
+    </nav>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
-        const API_URL = "https://firdavs-group-bot.onrender.com";
-        const urlParams = new URLSearchParams(window.location.search);
-        const appMode = urlParams.get('app') || 'shop';
-        const userLang = urlParams.get('lang') || 'uz';
-        let uid = urlParams.get('uid') || '';
+        
+        let cart = [];
+        let total = 0;
 
-        // TILLAR
-        const dict = {
-            uz: { search: "Qidirish...", pop: "Mashhur", more: "Hammasi >", cat: "Katalog", cartEmpty: "Savatingiz bo'sh", favEmpty: "Sevimlilar bo'sh", login: "Tizimga kirish", getCode: "Kod olish", enterCode: "Kodni kiriting", verify: "Tasdiqlash", myInfo: "Mening ma'lumotlarim", name: "Ism va familiya", email: "Elektron pochta", save: "Saqlash", orders: "📦 Buyurtmalarim", logout: "🚪 Profildan chiqish", navHome: "Bosh sahifa", navCat: "Katalog", navCart: "Savat", navFav: "Sevimlilar", navProf: "Profil", load: "Yuklanmoqda...", addCart: "Savatga" },
-            ru: { search: "Поиск...", pop: "Популярное", more: "Все >", cat: "Каталог", cartEmpty: "Корзина пуста", favEmpty: "Избранное пусто", login: "Войти", getCode: "Получить код", enterCode: "Введите код", verify: "Подтвердить", myInfo: "Мои данные", name: "Имя и фамилия", email: "Эл. почта", save: "Сохранить", orders: "📦 Мои заказы", logout: "🚪 Выйти", navHome: "Главная", navCat: "Каталог", navCart: "Корзина", navFav: "Избранное", navProf: "Профиль", load: "Загрузка...", addCart: "В корзину" },
-            en: { search: "Search...", pop: "Popular", more: "All >", cat: "Catalog", cartEmpty: "Cart is empty", favEmpty: "Favorites empty", login: "Login", getCode: "Get Code", enterCode: "Enter Code", verify: "Verify", myInfo: "My Information", name: "Full Name", email: "Email", save: "Save", orders: "📦 My Orders", logout: "🚪 Logout", navHome: "Home", navCat: "Catalog", navCart: "Cart", navFav: "Favorites", navProf: "Profile", load: "Loading...", addCart: "Add" }
-        };
-
-        function applyLang() {
-            const t = dict[userLang] || dict['uz'];
-            document.getElementById('searchInput').placeholder = t.search;
-            document.getElementById('txt-popular').innerText = t.pop;
-            document.getElementById('txt-more').innerText = t.more;
-            document.getElementById('txt-catalog-title').innerText = t.cat;
-            document.getElementById('txt-cart-empty').innerText = t.cartEmpty;
-            document.getElementById('txt-fav-empty').innerText = t.favEmpty;
-            document.getElementById('txt-login').innerText = t.login;
-            document.getElementById('btn-get-code').innerText = t.getCode;
-            document.getElementById('txt-enter-code').innerText = t.enterCode;
-            document.getElementById('txt-verify').innerText = t.verify;
-            document.getElementById('txt-my-info').innerText = t.myInfo;
-            document.getElementById('lbl-name').innerText = t.name;
-            document.getElementById('lbl-email').innerText = t.email;
-            document.getElementById('txt-save').innerText = t.save;
-            document.getElementById('txt-my-orders').innerText = t.orders;
-            document.getElementById('txt-logout').innerText = t.logout;
-            document.getElementById('nav-home').innerText = t.navHome;
-            document.getElementById('nav-cat').innerText = t.navCat;
-            document.getElementById('nav-cart').innerText = t.navCart;
-            document.getElementById('nav-fav').innerText = t.navFav;
-            document.getElementById('nav-prof').innerText = t.navProf;
-            if(document.getElementById('txt-loading')) document.getElementById('txt-loading').innerText = t.load;
-        }
-
-        const phoneInputInfo = window.intlTelInput(document.querySelector("#loginPhone"), {
-            initialCountry: "auto",
-            geoIpLookup: function(cb) { fetch("https://ipapi.co/json").then(res => res.json()).then(data => cb(data.country_code)).catch(() => cb("uz")); },
-            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
-        });
-
-        let globalProducts = []; 
-
-        if(appMode === 'game') {
-            document.getElementById('shop-app').style.display = 'none';
-            document.getElementById('game-app').style.display = 'block';
-            
-            // TANGALARNI BAZADAN TORTIB OLISH
-            async function initGame() {
-                if(uid) {
-                    try {
-                        let res = await fetch(`${API_URL}/api/get_user?uid=${uid}`);
-                        let json = await res.json();
-                        if(json.success && json.data.coins) {
-                            document.getElementById('balance').innerText = json.data.coins;
-                            localStorage.setItem('fg_coins', json.data.coins);
-                        }
-                    } catch(e) {}
-                }
-            }
-            initGame();
-
-            window.clickCoin = function() {
-                let current = parseInt(document.getElementById('balance').innerText) || 0;
-                current++;
-                document.getElementById('balance').innerText = current;
-                localStorage.setItem('fg_coins', current);
-                // BAZAGA JO'NATISH
-                if(uid) fetch(`${API_URL}/api/save_coins`, { method: 'POST', body: JSON.stringify({uid: uid, coins: current}), headers: {'Content-Type': 'application/json'}});
-                try { tg.HapticFeedback.impactOccurred('medium'); } catch(e){}
-            }
-        } else {
-            applyLang();
-            fetchData();
-            checkDbLogin();
-        }
-
-        async function fetchData() {
-            try {
-                let resCat = await fetch(API_URL + '/api/categories');
-                let dbCats = await resCat.json();
-                let html = '';
-                dbCats.forEach(c => {
-                    let img = c.image_url ? `<img src="${c.image_url}">` : '🛍';
-                    html += `<div class="scroll-item" onclick="openCat('${c.name}')"><div>${img}</div><span>${c.name}</span></div>`;
-                });
-                document.getElementById('cat-scroll').innerHTML = html;
-                document.getElementById('cat-grid-full').innerHTML = html;
-
-                let resProd = await fetch(API_URL + '/api/products'); 
-                globalProducts = await resProd.json();
-                renderProducts(globalProducts.slice(0, 6), 'home-products'); 
-            } catch(e) {
-                document.getElementById('home-products').innerHTML = `<div style="grid-column: span 2; text-align:center; color:red;">Server Xatosi</div>`;
-            }
-        }
-
-        function renderProducts(productsArray, containerId) {
-            const t = dict[userLang] || dict['uz'];
-            let html = '';
-            if(productsArray.length === 0) { html = `<div style="grid-column: span 2; text-align:center; color:#888;">Topilmadi</div>`; }
-            productsArray.forEach(p => {
-                let img = p.image_url ? `<img src="${p.image_url}">` : '🛍';
-                html += `
-                <div class="card">
-                    <div class="heart-icon" onclick="toggleFav(this)">♡</div>
-                    <div class="p-img">${img}</div>
-                    <div class="p-title">${p.name}</div>
-                    <div class="p-price">${p.price.toLocaleString()} UZS</div>
-                    <button class="btn" onclick="tg.showAlert('${t.addCart} ✅')">${t.addCart}</button>
-                </div>`;
-            });
-            document.getElementById(containerId).innerHTML = html;
-        }
-
-        function searchProducts() {
-            let query = document.getElementById('searchInput').value.toLowerCase();
-            if(!query) { renderProducts(globalProducts.slice(0, 6), 'home-products'); return; }
-            let filtered = globalProducts.filter(p => p.name.toLowerCase().includes(query));
-            renderProducts(filtered, 'home-products');
-        }
-
-        function toggleFav(el) {
-            el.classList.toggle('active'); el.innerText = el.classList.contains('active') ? '❤️' : '♡';
-            try { tg.HapticFeedback.selectionChanged(); } catch(e){}
-        }
-
+        // Asosiy sahifalarni almashtirish
         function switchPage(id, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -371,147 +203,109 @@
                 document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
                 el.classList.add('active');
             }
-            document.getElementById('backBtn').style.display = 'none';
+            document.getElementById('backBtn').style.display = id === 'home' ? 'none' : 'block';
+            
+            const titles = {'home':'FIRDAVS GROUP', 'cart':'Savat', 'favorites':'Sevimlilar', 'profile':'Profil'};
+            document.getElementById('headerTitle').innerText = titles[id] || 'FIRDAVS GROUP';
             try { tg.HapticFeedback.selectionChanged(); } catch(e){}
         }
 
-        async function openCat(name) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById('cat-detail').classList.add('active');
-            document.getElementById('backBtn').style.display = 'block';
-            document.getElementById('header-title').innerText = name;
-            let list = document.getElementById('cat-products');
-            list.innerHTML = `<div style="grid-column: span 2; text-align:center; padding:40px; color:#888;">${dict[userLang].load}</div>`;
-            let filtered = globalProducts.filter(p => p.category === name);
-            renderProducts(filtered, 'cat-products');
+        function goBack() { switchPage('home', document.querySelectorAll('.nav-btn')[0]); }
+
+        function openCat(name) {
+            switchPage('cat-detail');
+            document.getElementById('headerTitle').innerText = name;
+            document.getElementById('cat-prods').innerHTML = `<div style="grid-column:span 2; text-align:center; padding:30px; color:#888;">Tez orada...</div>`;
         }
 
-        function goBack() {
-            document.getElementById('cat-detail').classList.remove('active');
-            document.getElementById('home').classList.add('active'); 
-            document.getElementById('backBtn').style.display = 'none';
-            document.getElementById('header-title').innerText = "FIRDAVS GROUP";
-            document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
-            document.querySelectorAll('.nav-btn')[0].classList.add('active');
+        // SAVAT MANTIQI
+        function addToCart(name, price) {
+            cart.push({name, price});
+            total += price;
+            updateCartUI();
+            tg.showAlert("Savatga qo'shildi!");
+            try { tg.HapticFeedback.impactOccurred('light'); } catch(e){}
         }
 
-        // --- BAZA BILAN ISHLAYDIGAN PROFIL TIZIMI ---
-        async function checkDbLogin() {
-            if(!uid) { setStep(1); return; }
-            try {
-                let res = await fetch(`${API_URL}/api/get_user?uid=${uid}`);
-                let json = await res.json();
-                if(json.success) {
-                    // Bazada bor ekan, chizib beramiz
-                    let d = json.data;
-                    document.getElementById('p-name').innerText = d.name;
-                    document.getElementById('p-phone').innerText = d.phone;
-                    if(localStorage.getItem('fg_avatar')) document.getElementById('p-avatar').src = localStorage.getItem('fg_avatar');
-                    setStep(4);
-                } else {
-                    // Bazada yo'q bo'lsa
-                    if(localStorage.getItem('fg_logged') === 'true') setStep(4); else setStep(1);
-                }
-            } catch(e) { setStep(1); }
-        }
-
-        function setStep(step) {
-            document.querySelectorAll('.auth-step').forEach(s => s.classList.remove('active'));
-            document.getElementById('step-' + step).classList.add('active');
-        }
-
-        function previewAvatar(event) {
-            const file = event.target.files[0];
-            if(file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('avatarPreview').src = e.target.result;
-                    localStorage.setItem('fg_avatar', e.target.result);
-                }
-                reader.readAsDataURL(file);
+        function updateCartUI() {
+            let box = document.getElementById('cart-items');
+            if(cart.length === 0) {
+                box.innerHTML = `<div style="text-align: center; padding: 50px 0; color:#888;">Savatingiz bo'sh</div>`;
+                document.getElementById('checkout-bar').style.display = 'none';
+                return;
             }
-        }
-
-        async function sendCode() {
-            let phone = phoneInputInfo.getNumber();
-            if(!phoneInputInfo.isValidNumber()) { tg.showAlert("Raqam xato!"); return; }
-            localStorage.setItem('temp_phone', phone);
-            document.getElementById("btn-get-code").innerText = "⏳...";
-            try {
-                let res = await fetch(`${API_URL}/api/send_code?uid=${uid}&phone=${encodeURIComponent(phone)}`);
-                let json = await res.json();
-                if(json.success) setStep(2);
-            } catch(e) {}
-            document.getElementById("btn-get-code").innerText = "Kod olish";
-        }
-
-        function verifyCode() { 
-            if(localStorage.getItem('fg_avatar')) document.getElementById('avatarPreview').src = localStorage.getItem('fg_avatar');
-            setStep(3); 
-        }
-
-        function setGender(value) {
-            document.getElementById('genderInput').value = value;
-            if(value === 'Erkak') {
-                document.getElementById('gender_male').classList.add('active'); document.getElementById('gender_female').classList.remove('active');
-            } else {
-                document.getElementById('gender_female').classList.add('active'); document.getElementById('gender_male').classList.remove('active');
-            }
-        }
-        
-        async function saveInfo() {
-            let fname = document.getElementById("fnameInput").value;
-            let email = document.getElementById("emailInput").value;
-            let dob = document.getElementById("dobInput").value;
-            let gender = document.getElementById("genderInput").value;
-            let phone = localStorage.getItem('temp_phone');
-            if(!fname) { tg.showAlert("Ismni kiriting!"); return; }
+            document.getElementById('checkout-bar').style.display = 'flex';
+            document.getElementById('cart-total').innerText = total.toLocaleString() + " UZS";
             
-            // BAZAGA JO'NATAMIZ (MANGU SAQLASH)
-            try {
-                await fetch(`${API_URL}/api/save_user`, {
-                    method: 'POST',
-                    body: JSON.stringify({uid: uid, name: fname, phone: phone, email: email, dob: dob, gender: gender}),
-                    headers: {'Content-Type': 'application/json'}
-                });
-            } catch(e) {}
-
-            localStorage.setItem('fg_logged', 'true');
-            document.getElementById("p-name").innerText = fname;
-            document.getElementById("p-phone").innerText = phone;
-            if(localStorage.getItem('fg_avatar')) document.getElementById('p-avatar').src = localStorage.getItem('fg_avatar');
-            setStep(4);
+            let html = '';
+            cart.forEach(c => { html += `<div class="cart-item"><div><b>${c.name}</b><p style="color:var(--main);">${c.price.toLocaleString()} UZS</p></div></div>`; });
+            box.innerHTML = html;
         }
 
-        function editProfile() {
-            setStep(3);
+        function openCheckout() {
+            document.getElementById('cart').classList.remove('active');
+            document.getElementById('checkout').classList.add('active');
+            document.getElementById('headerTitle').innerText = "Buyurtmani rasmiylashtirish";
         }
 
-        function logout() { localStorage.clear(); setStep(1); }
-
-        function openModal(id) { document.getElementById(id).classList.add('active'); }
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-        window.setPay = function(el, name) {
-            document.querySelectorAll('.pay-card').forEach(i => i.classList.remove('active'));
+        function setOpt(el) {
+            el.parentElement.querySelectorAll('.chk-option').forEach(i => i.classList.remove('active'));
             el.classList.add('active');
-            document.getElementById('v-pay').innerText = name + " >";
-            setTimeout(() => closeModal('paymentModal'), 200);
         }
-        let myMap;
-        window.openMapModal = function() {
-            openModal('mapModal');
-            if(myMap) return;
-            ymaps.ready(() => {
-                myMap = new ymaps.Map("map", { center: [41.2995, 69.2401], zoom: 12, controls: ['zoomControl'] });
-                myMap.events.add('click', function (e) {
-                    let coords = e.get('coords');
-                    myMap.geoObjects.removeAll();
-                    myMap.geoObjects.add(new ymaps.Placemark(coords, {}, { preset: 'islands#violetDotIcon' }));
-                    ymaps.geocode(coords).then(function (res) { document.getElementById('addressText').innerText = res.geoObjects.get(0).getAddressLine(); });
+
+        // KESH (Tez ishlashi uchun skriptlarni keyin yuklaymiz)
+        window.onload = () => {
+            // Telefon bayroqlarini yuklash
+            let s1 = document.createElement('script'); s1.src = "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js";
+            s1.onload = () => {
+                document.getElementById('phone-container').innerHTML = `<input type="tel" id="phone" class="inp" style="width:100%;">`;
+                window.intlTelInput(document.getElementById('phone'), { initialCountry: "uz", separateDialCode: true });
+            };
+            document.head.appendChild(s1);
+
+            // Profil tekshirish
+            if(localStorage.getItem('f_logged') === 'true') {
+                document.getElementById('auth-box').classList.remove('active');
+                document.getElementById('profile-box').style.display = 'block';
+                document.getElementById('p-name').innerText = localStorage.getItem('f_name');
+                document.getElementById('p-phone').innerText = localStorage.getItem('f_phone');
+            }
+        }
+
+        // PROFIL
+        function saveUser() {
+            let name = document.getElementById('fname').value;
+            let phone = document.getElementById('phone').value;
+            if(!name || phone.length < 5) { tg.showAlert("To'ldiring!"); return; }
+            localStorage.setItem('f_logged', 'true'); localStorage.setItem('f_name', name); localStorage.setItem('f_phone', phone);
+            document.getElementById('auth-box').classList.remove('active');
+            document.getElementById('profile-box').style.display = 'block';
+            document.getElementById('p-name').innerText = name; document.getElementById('p-phone').innerText = phone;
+        }
+        function editUser() { document.getElementById('auth-box').classList.add('active'); document.getElementById('profile-box').style.display = 'none'; }
+        function logout() { localStorage.clear(); editUser(); }
+
+        // YANDEX MAP DYNAMIC LOAD
+        function loadMap() {
+            let mapDiv = document.getElementById('map');
+            if(mapDiv.style.display === 'block') return;
+            mapDiv.style.display = 'block';
+            document.getElementById('addressTxt').innerText = "Yuklanmoqda...";
+            
+            let s2 = document.createElement('script'); s2.src = "https://api-maps.yandex.ru/2.1/?lang=uz_UZ&apikey=YOUR_API_KEY";
+            s2.onload = () => {
+                ymaps.ready(() => {
+                    let map = new ymaps.Map("map", { center: [41.311081, 69.240562], zoom: 12, controls: [] });
+                    map.events.add('click', function (e) {
+                        let coords = e.get('coords'); map.geoObjects.removeAll();
+                        map.geoObjects.add(new ymaps.Placemark(coords, {}, { preset: 'islands#violetDotIcon' }));
+                        ymaps.geocode(coords).then(res => document.getElementById('addressTxt').innerText = res.geoObjects.get(0).getAddressLine() );
+                    });
+                    document.getElementById('addressTxt').innerText = "Xaritadan nuqtani bosing";
                 });
-            });
+            };
+            document.head.appendChild(s2);
         }
-        window.closeMapModal = function() { document.getElementById('v-del').innerText = "Manzil belgilandi >"; closeModal('mapModal'); }
     </script>
 </body>
 </html>
