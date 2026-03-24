@@ -11,134 +11,154 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
 
     <style>
-        :root { --main: #7b1fa2; --bg: #f8f9fa; --text: #2c3e50; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; -webkit-tap-highlight-color: transparent; outline: none; }
-        body { background-color: var(--bg); color: var(--text); padding-bottom: 70px; user-select: none; }
+        :root { --main: #7b1fa2; --bg: #ffffff; --bg-gray: #f5f6f8; --text: #2c3e50; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, sans-serif; -webkit-tap-highlight-color: transparent; outline: none; }
+        body { background-color: var(--bg-gray); color: var(--text); padding-bottom: 75px; overflow-x: hidden;}
         
-        .header { position: sticky; top: 0; background: #fff; padding: 15px; text-align: center; font-weight: bold; font-size: 17px; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .back-btn { position: absolute; left: 15px; top: 15px; font-size: 18px; cursor: pointer; display: none; color: #555; }
+        .header { position: sticky; top: 0; background: #fff; padding: 12px 15px; display: flex; align-items: center; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
+        .back-btn { font-size: 22px; cursor: pointer; display: none; margin-right: 15px; color: #333; }
+        .header-title { font-weight: 800; font-size: 18px; color: #333; flex-grow: 1; text-align: center; }
         
-        .page { display: none; padding: 15px; animation: fadeIn 0.2s; }
+        .page { display: none; animation: fadeIn 0.2s; }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Do'kon */
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .card { background: #fff; border-radius: 12px; padding: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); border: 1px solid #eee; }
-        .p-img { width: 100%; height: 140px; background: #f8f9fa; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-size: 40px; overflow: hidden; }
-        .p-img img { width: 100%; height: 100%; object-fit: cover; }
-        .p-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .p-price { font-size: 14px; color: var(--main); font-weight: 700; margin-bottom: 10px; }
-        .btn { background: var(--main); color: white; border: none; padding: 12px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 15px;}
-        .btn:active { transform: scale(0.96); opacity: 0.9; }
-
-        .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 25px; }
-        .cat-item { display: flex; flex-direction: column; align-items: center; text-align: center; cursor: pointer; }
-        .cat-icon { width: 60px; height: 60px; background: #fff; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 6px; overflow: hidden; }
-        .cat-icon img { width: 100%; height: 100%; object-fit: cover; }
-        .cat-text { font-size: 10px; font-weight: 600; color: #555; }
-
-        /* Profil / Ninioshop Style (YANGI DIZAYN) */
-        .auth-step { display: none; background: white; padding: 25px 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-top: 10px; }
-        .auth-step.active { display: block; }
-        .input-group { margin-bottom: 20px; text-align: left; }
-        .input-group label { font-size: 12px; color: #888; font-weight: bold; margin-bottom: 7px; display: block; }
-        .input-group input, .input-group select { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 12px; font-size: 15px; background: #fafafa; transition: 0.2s;}
-        .input-group input:focus { border-color: var(--main); background: #fff;}
-        .iti { width: 100%; }
+        .banner { width: 100%; height: 180px; background: url('https://via.placeholder.com/400x200/9c27b0/ffffff?text=FIRDAVS+GROUP') center/cover; margin-bottom: 15px; }
         
-        /* Jinsni tanlash tugmalari (Rasmdagidek) */
+        .search-container { padding: 0 15px; margin-bottom: 20px; }
+        .search-bar { background: #f0f2f5; padding: 12px 15px; border-radius: 16px; display: flex; align-items: center; }
+        .search-bar span { margin-right: 10px; font-size: 18px; color: #888; }
+        .search-bar input { border: none; background: transparent; width: 100%; font-size: 14px; color: #333; }
+
+        .scroll-wrapper { display: flex; overflow-x: auto; gap: 15px; padding: 0 15px; margin-bottom: 25px; scrollbar-width: none; }
+        .scroll-wrapper::-webkit-scrollbar { display: none; }
+        .scroll-item { display: flex; flex-direction: column; align-items: center; min-width: 65px; cursor: pointer;}
+        .scroll-item div { width: 65px; height: 65px; border-radius: 18px; background: #fff; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 6px; font-size: 30px;}
+        .scroll-item span { font-size: 11px; color: #555; font-weight: 600; text-align: center; line-height: 1.2;}
+
+        .section-header { display: flex; justify-content: space-between; align-items: center; padding: 0 15px; margin-bottom: 12px; }
+        .section-header h2 { font-size: 18px; font-weight: 800; display: flex; align-items: center; }
+        .more-btn { color: var(--main); font-size: 13px; font-weight: bold; cursor: pointer;}
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 15px; margin-bottom: 20px; }
+        .card { background: #fff; border-radius: 16px; padding: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); position: relative; }
+        .heart-icon { position: absolute; top: 10px; right: 10px; width: 30px; height: 30px; background: rgba(255,255,255,0.9); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #ccc; font-size: 18px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 10;}
+        .heart-icon.active { color: #e74c3c; }
+        .p-img { width: 100%; height: 130px; background: #f8f9fa; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; font-size: 40px; overflow: hidden; }
+        .p-img img { width: 100%; height: 100%; object-fit: cover; }
+        .p-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #333; }
+        .p-price { font-size: 15px; color: #111; font-weight: 800; margin-bottom: 10px; }
+        .btn { background: var(--main); color: white; border: none; padding: 10px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 13px;}
+        .btn:active { transform: scale(0.96); opacity: 0.9; }
+        
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 65px; background: #fff; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eee; z-index: 1000; padding: 0 5px; }
+        .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #999; font-size: 10px; font-weight: 600; cursor: pointer; width: 20%; transition: 0.2s;}
+        .nav-btn.active { color: var(--main); }
+        .nav-icon { font-size: 22px; margin-bottom: 2px; }
+
+        .auth-step { display: none; background: white; padding: 25px 20px; border-radius: 20px; margin: 15px; }
+        .auth-step.active { display: block; }
+        .input-group { margin-bottom: 18px; text-align: left; }
+        .input-group label { font-size: 12px; color: #666; font-weight: bold; margin-bottom: 8px; display: block; }
+        .input-group input { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 12px; font-size: 15px; background: #fafafa; }
+        .input-group input:focus { border-color: var(--main); background: #fff;}
+        .iti { width: 100%; } 
+        
         .gender-group { display: flex; gap: 15px; margin-top: 5px; }
         .gender-btn { flex: 1; padding: 15px; border: 2px solid #ddd; border-radius: 12px; background: #f9f9f9; text-align: center; font-weight: bold; color: #888; cursor: pointer; transition: 0.2s; }
         .gender-btn.active { border-color: var(--main); color: #333; background: #fff; }
-
-        .list-item { padding: 18px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; font-weight: 600; cursor: pointer; background: #fff; margin-bottom: 10px; border-radius: 12px;}
         
-        .modal { display: none; position: fixed; bottom: -100%; left: 0; width: 100%; background: white; border-radius: 20px 20px 0 0; padding: 20px; transition: 0.3s; z-index: 2000; box-shadow: 0 -5px 20px rgba(0,0,0,0.15); }
+        .profile-avatar-container { position: relative; width: 80px; height: 80px; margin: 0 auto 20px auto; border-radius: 50%; background: #f0f0f0; display: flex; justify-content: center; align-items: center; overflow: hidden; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1);}
+        .profile-avatar-container img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-avatar-container .camera-icon { position: absolute; bottom: 0; background: rgba(0,0,0,0.5); width: 100%; text-align: center; color: white; font-size: 10px; padding: 2px 0; }
+        
+        .list-item { padding: 18px; border-bottom: 1px solid #f5f5f5; display: flex; justify-content: space-between; align-items: center; font-weight: 600; background: #fff; margin: 0 15px 10px 15px; border-radius: 16px;}
+        .modal { display: none; position: fixed; bottom: -100%; left: 0; width: 100%; background: white; border-radius: 24px 24px 0 0; padding: 20px; transition: 0.3s; z-index: 2000; box-shadow: 0 -5px 25px rgba(0,0,0,0.1); }
         .modal.active { display: block; bottom: 0; }
-        #map { width: 100%; height: 300px; border-radius: 12px; margin: 10px 0; background: #e0e0e0; }
         
+        #map { width: 100%; height: 300px; border-radius: 16px; margin: 10px 0; background: #e0e0e0; }
         .pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .pay-card { border: 2px solid #eee; border-radius: 12px; padding: 15px; display: flex; align-items: center; justify-content: space-between; font-weight: 700; cursor: pointer; transition: 0.2s;}
-        .pay-card.active { border-color: var(--main); background-color: #fcf4ff; }
+        .pay-card.active { border-color: var(--main); background-color: #f3e5f5; }
         .radio-circle { width: 20px; height: 20px; border: 2px solid #ddd; border-radius: 50%; transition: 0.2s;}
         .pay-card.active .radio-circle { border-color: var(--main); background: var(--main); box-shadow: inset 0 0 0 4px white; }
-
-        #game-app { display: none; text-align: center; padding: 50px 20px; }
-        .click-coin { font-size: 90px; background: #FFD700; width: 220px; height: 220px; display: flex; align-items: center; justify-content: center; border-radius: 50%; margin: 0 auto 40px auto; box-shadow: 0 15px 30px rgba(255, 215, 0, 0.4); border: 8px solid #F5B041; transition: 0.1s; cursor: pointer;}
-        .click-coin:active { transform: scale(0.9); box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4); }
-
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 60px; background: rgba(255,255,255,0.98); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #eaeaea; z-index: 1000; }
-        .nav-btn { display: flex; flex-direction: column; align-items: center; color: #a0a0a0; font-size: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; }
-        .nav-btn.active { color: var(--main); transform: translateY(-2px); }
-        .nav-icon { font-size: 22px; margin-bottom: 3px; }
     </style>
 </head>
 <body>
 
     <div id="shop-app">
         <div class="header">
-            <span class="back-btn" id="backBtn" onclick="goBack()">⬅️</span>
-            <span id="header-title">FIRDAVS GROUP</span>
+            <span class="back-btn" id="backBtn" onclick="goBack()">✕</span>
+            <span class="header-title" id="header-title">FIRDAVS GROUP</span>
         </div>
 
         <div id="home" class="page active">
-            <h3 style="margin-bottom: 12px; font-size: 15px;">Katalog</h3>
-            <div class="cat-grid" id="cat-grid"></div>
+            <div class="banner"></div>
+            
+            <div class="search-container">
+                <div class="search-bar">
+                    <span>🔍</span><input type="text" id="searchInput" placeholder="Mahsulot qidirish..." onkeyup="searchProducts()">
+                </div>
+            </div>
 
-            <h3 style="margin-bottom: 12px; font-size: 15px;">Tavsiya etamiz</h3>
+            <div class="scroll-wrapper" id="cat-scroll"></div>
+
+            <div class="section-header">
+                <h2 id="txt-popular">Mashhur</h2><div class="more-btn" id="txt-more">Hammasi ></div>
+            </div>
+            
             <div class="grid-2" id="home-products">
-                <div style="grid-column: span 2; text-align:center; padding: 20px; color: #888;">Yuklanmoqda...</div>
+                <div style="grid-column: span 2; text-align:center; padding: 20px; color: #888;" id="txt-loading">Yuklanmoqda...</div>
             </div>
         </div>
 
-        <div id="cat-detail" class="page">
-            <div class="grid-2" id="cat-products"></div>
+        <div id="catalog" class="page">
+            <h2 style="padding: 15px; font-size: 20px;" id="txt-catalog-title">Katalog</h2>
+            <div class="scroll-wrapper" style="flex-wrap: wrap; justify-content: center; gap: 20px;" id="cat-grid-full"></div>
         </div>
 
-        <div id="cart" class="page" style="text-align: center; padding-top: 60px;">
-            <div style="font-size: 70px; margin-bottom: 15px;">🛒</div>
-            <h3 style="color: #555;">Savatingiz bo'sh</h3>
+        <div id="cat-detail" class="page"><div class="grid-2" id="cat-products"></div></div>
+
+        <div id="cart" class="page" style="text-align: center; padding-top: 80px;">
+            <div style="font-size: 80px; margin-bottom: 20px;">🛒</div>
+            <h3 style="color: #333; font-weight: 800;" id="txt-cart-empty">Savatingiz bo'sh</h3>
+        </div>
+
+        <div id="favorites" class="page" style="text-align: center; padding-top: 80px;">
+            <div style="font-size: 80px; margin-bottom: 20px; color:#ccc;">🤍</div>
+            <h3 style="color: #333; font-weight: 800;" id="txt-fav-empty">Sevimlilar bo'sh</h3>
         </div>
 
         <div id="profile" class="page">
-            
-            <div id="step-1" class="auth-step active" style="text-align: center;">
-                <div style="font-size: 50px; margin-bottom: 15px;">👤</div>
-                <h3 style="margin-bottom: 15px;">Tizimga kirish</h3>
-                <div class="input-group">
-                    <label>Telefon raqamingiz</label>
-                    <input type="tel" id="loginPhone" value="+998">
+            <div id="step-1" class="auth-step active" style="text-align: center; background: transparent; box-shadow: none;">
+                <div style="font-size: 70px; margin-bottom: 10px; color: var(--main);">👤</div>
+                <h2 style="margin-bottom: 25px;" id="txt-login">Tizimga kirish</h2>
+                <div style="background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                    <input type="tel" id="loginPhone">
+                    <button class="btn" id="btn-get-code" onclick="sendCode()" style="margin-top: 20px;">Kod olish</button>
                 </div>
-                <button class="btn" id="btn-get-code" onclick="sendCode()">Kod olish</button>
             </div>
             
             <div id="step-2" class="auth-step" style="text-align: center;">
-                <h3 style="margin-bottom: 15px;">SMS Kodni kiriting</h3>
+                <h3 style="margin-bottom: 15px;" id="txt-enter-code">Kodni kiriting</h3>
                 <div class="input-group">
-                    <input type="number" id="codeInput" placeholder="----" style="text-align: center; font-size: 20px; letter-spacing: 10px;">
+                    <input type="number" id="codeInput" placeholder="----" style="text-align: center; font-size: 24px; letter-spacing: 15px;">
                 </div>
-                <button class="btn" onclick="verifyCode()">Tasdiqlash</button>
+                <button class="btn" onclick="verifyCode()" id="txt-verify">Tasdiqlash</button>
             </div>
 
             <div id="step-3" class="auth-step">
-                <h3 style="margin-bottom: 25px; text-align: center; color: #333;">Mening ma'lumotlarim</h3>
-                <div class="input-group">
-                    <label>Ism va familiya</label>
-                    <input type="text" id="fnameInput" placeholder="Ism Familiya">
+                <h3 style="margin-bottom: 20px; text-align: center;" id="txt-my-info">Mening ma'lumotlarim</h3>
+                
+                <div class="profile-avatar-container" onclick="document.getElementById('avatarUpload').click()">
+                    <img id="avatarPreview" src="https://via.placeholder.com/80?text=👤">
+                    <div class="camera-icon">📷</div>
                 </div>
-                <div class="input-group">
-                    <label>Telefon raqami</label>
-                    <input type="tel" id="regPhone" disabled style="background: #eee; color: #777;">
-                </div>
-                <div class="input-group">
-                    <label>Elektron pochta</label>
-                    <input type="email" id="emailInput" placeholder="Misol@gmail.com">
-                </div>
-                <div class="input-group">
-                    <label>Tug'ilgan sana</label>
-                    <input type="date" id="dobInput">
-                </div>
+                <input type="file" id="avatarUpload" accept="image/*" style="display: none;" onchange="previewAvatar(event)">
+
+                <div class="input-group"><label id="lbl-name">Ism va familiya</label><input type="text" id="fnameInput"></div>
+                <div class="input-group"><label id="lbl-email">Elektron pochta</label><input type="email" id="emailInput"></div>
+                <div class="input-group"><label>Tug'ilgan sana</label><input type="date" id="dobInput"></div>
                 <div class="input-group">
                     <label>Jins</label>
                     <div class="gender-group">
@@ -147,25 +167,23 @@
                     </div>
                     <input type="hidden" id="genderInput" value="Erkak">
                 </div>
-                <div style="margin-top: 30px;">
-                    <button class="btn" onclick="saveInfo()">Saqlash</button>
-                </div>
+                <button class="btn" onclick="saveInfo()" id="txt-save">Saqlash</button>
             </div>
 
             <div id="step-4" class="auth-step" style="background: transparent; padding: 0; box-shadow: none;">
-                <div style="background: white; padding: 20px; border-radius: 16px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between;">
+                <div style="background: white; padding: 20px; border-radius: 20px; margin: 0 15px 15px 15px; display: flex; align-items: center; justify-content: space-between;">
                     <div style="display: flex; align-items: center;">
-                        <div style="font-size: 40px; margin-right: 15px; background: #f0f0f0; border-radius: 50%; width: 60px; height: 60px; display:flex; justify-content:center; align-items:center;">👤</div>
+                        <img id="p-avatar" src="https://via.placeholder.com/65?text=👤" style="width: 65px; height: 65px; border-radius: 50%; margin-right: 15px; object-fit: cover;">
                         <div>
-                            <h2 id="p-name" style="color: var(--text); font-size: 18px; margin-bottom: 2px;">Ism Familiya</h2>
-                            <p id="p-phone" style="color: #888; font-size: 13px;">+998 -- --- -- --</p>
+                            <h2 id="p-name" style="color: #333; font-size: 18px; margin-bottom: 5px;">Ism</h2>
+                            <p id="p-phone" style="color: #888; font-size: 13px; font-weight: bold;">+998</p>
                         </div>
                     </div>
-                    <div style="color: var(--main); cursor: pointer; padding: 10px; background: #fcf4ff; border-radius: 8px;" onclick="editProfile()">✏️</div>
+                    <div style="color: var(--main); cursor: pointer; font-size: 20px;" onclick="editProfile()">✏️</div>
                 </div>
                 
-                <div class="list-item" onclick="tg.showAlert('Sizda hozircha buyurtmalar yo\\'q')">
-                    <span>📦 Buyurtmalarim</span><span style="color: #bbb;">></span>
+                <div class="list-item" onclick="tg.showAlert('Tez orada')">
+                    <span id="txt-my-orders">📦 Buyurtmalarim</span><span style="color: #bbb;">></span>
                 </div>
                 <div class="list-item" onclick="openMapModal()">
                     <span>📍 Yetkazib berish manzili</span><span id="v-del" style="color: var(--main); font-size: 13px;">Tanlang ></span>
@@ -173,27 +191,26 @@
                 <div class="list-item" onclick="openModal('paymentModal')">
                     <span>💳 To'lov usuli</span><span id="v-pay" style="color: var(--main); font-size: 13px;">Tanlang ></span>
                 </div>
-
-                <button class="btn" style="background: white; color: red; margin-top: 15px; border: 1px solid #ffcccc;" onclick="logout()">Chiqish</button>
+                <div class="list-item" onclick="logout()">
+                    <span id="txt-logout" style="color: #e74c3c;">🚪 Profildan chiqish</span>
+                </div>
             </div>
         </div>
 
         <nav class="bottom-nav">
-            <div onclick="switchPage('home', this)" class="nav-btn active"><span class="nav-icon">🏠</span><span>Do'kon</span></div>
-            <div onclick="switchPage('cat-detail', this)" class="nav-btn" style="display:none;"><span class="nav-icon">🗂</span><span>Katalog</span></div>
-            <div onclick="switchPage('cart', this)" class="nav-btn"><span class="nav-icon">🛒</span><span>Savat</span></div>
-            <div onclick="switchPage('profile', this)" class="nav-btn"><span class="nav-icon">👤</span><span>Profil</span></div>
+            <div onclick="switchPage('home', this)" class="nav-btn active"><span class="nav-icon">⌂</span><span id="nav-home">Bosh sahifa</span></div>
+            <div onclick="switchPage('catalog', this)" class="nav-btn"><span class="nav-icon">🗂</span><span id="nav-cat">Katalog</span></div>
+            <div onclick="switchPage('cart', this)" class="nav-btn"><span class="nav-icon">🛒</span><span id="nav-cart">Savat</span></div>
+            <div onclick="switchPage('favorites', this)" class="nav-btn"><span class="nav-icon">♡</span><span id="nav-fav">Sevimlilar</span></div>
+            <div onclick="switchPage('profile', this)" class="nav-btn"><span class="nav-icon">👤</span><span id="nav-prof">Profil</span></div>
         </nav>
     </div>
 
-    <div id="game-app">
-        <h2 style="font-size: 28px; margin-bottom: 10px; color: #333;">Firdavs Clicker</h2>
-        <p style="color: #888; margin-bottom: 40px; font-weight: bold;">Tanganing ustiga bosing!</p>
-        <div class="coin" onclick="clickCoin()">🪙</div>
-        <div style="background: white; padding: 15px 40px; border-radius: 20px; display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
-            <p style="color: #aaa; font-size: 11px; text-transform: uppercase; font-weight: bold; margin-bottom: 5px;">Balans</p>
-            <h1 id="balance" style="font-size: 45px; color: var(--main); margin: 0;">0</h1>
-        </div>
+    <div id="game-app" style="display: none; text-align: center; padding: 50px 20px; height: 100vh; background: #fff;">
+        <h2 style="font-size: 30px; margin-bottom: 10px; color: #333;">Firdavs Clicker</h2>
+        <p style="color: #888; margin-bottom: 50px; font-weight: bold;" id="txt-game-sub">Tanganing ustiga bosing!</p>
+        <div style="font-size: 100px; background: linear-gradient(135deg, #FFD700, #F5B041); width: 220px; height: 220px; display: flex; align-items: center; justify-content: center; border-radius: 50%; margin: 0 auto 40px auto; border: 8px solid #F39C12; cursor: pointer; user-select: none;" onclick="clickCoin()">🪙</div>
+        <h1 id="balance" style="font-size: 50px; color: #7b1fa2; margin: 0;">0</h1>
     </div>
 
     <div id="mapModal" class="modal">
@@ -202,7 +219,6 @@
         <div id="map"></div>
         <button class="btn" onclick="closeMapModal()">Shu manzilga yetkazish</button>
     </div>
-
     <div id="paymentModal" class="modal">
         <h3 style="text-align: center; margin-bottom: 15px;">To'lov usuli</h3>
         <div class="pay-grid">
@@ -211,7 +227,7 @@
             <div class="pay-card" onclick="setPay(this, 'Payme')"><span style="color: #33cccc;">🟢 Payme</span><div class="radio-circle"></div></div>
             <div class="pay-card" onclick="setPay(this, 'Uzum To\'lov')"><span style="color: #7b1fa2;">🟣 Uzum</span><div class="radio-circle"></div></div>
         </div>
-        <button class="btn" style="background: #f0f0f0; color: #555;" onclick="closeModal('paymentModal')">Yopish</button>
+        <button class="btn" style="background: #eee; color: #555;" onclick="closeModal('paymentModal')">Yopish</button>
     </div>
 
     <script>
@@ -220,51 +236,132 @@
         const API_URL = "https://firdavs-group-bot.onrender.com";
         const urlParams = new URLSearchParams(window.location.search);
         const appMode = urlParams.get('app') || 'shop';
+        const userLang = urlParams.get('lang') || 'uz';
         let uid = urlParams.get('uid') || '';
 
-        // O'YIN
+        // TILLAR
+        const dict = {
+            uz: { search: "Qidirish...", pop: "Mashhur", more: "Hammasi >", cat: "Katalog", cartEmpty: "Savatingiz bo'sh", favEmpty: "Sevimlilar bo'sh", login: "Tizimga kirish", getCode: "Kod olish", enterCode: "Kodni kiriting", verify: "Tasdiqlash", myInfo: "Mening ma'lumotlarim", name: "Ism va familiya", email: "Elektron pochta", save: "Saqlash", orders: "📦 Buyurtmalarim", logout: "🚪 Profildan chiqish", navHome: "Bosh sahifa", navCat: "Katalog", navCart: "Savat", navFav: "Sevimlilar", navProf: "Profil", load: "Yuklanmoqda...", addCart: "Savatga" },
+            ru: { search: "Поиск...", pop: "Популярное", more: "Все >", cat: "Каталог", cartEmpty: "Корзина пуста", favEmpty: "Избранное пусто", login: "Войти", getCode: "Получить код", enterCode: "Введите код", verify: "Подтвердить", myInfo: "Мои данные", name: "Имя и фамилия", email: "Эл. почта", save: "Сохранить", orders: "📦 Мои заказы", logout: "🚪 Выйти", navHome: "Главная", navCat: "Каталог", navCart: "Корзина", navFav: "Избранное", navProf: "Профиль", load: "Загрузка...", addCart: "В корзину" },
+            en: { search: "Search...", pop: "Popular", more: "All >", cat: "Catalog", cartEmpty: "Cart is empty", favEmpty: "Favorites empty", login: "Login", getCode: "Get Code", enterCode: "Enter Code", verify: "Verify", myInfo: "My Information", name: "Full Name", email: "Email", save: "Save", orders: "📦 My Orders", logout: "🚪 Logout", navHome: "Home", navCat: "Catalog", navCart: "Cart", navFav: "Favorites", navProf: "Profile", load: "Loading...", addCart: "Add" }
+        };
+
+        function applyLang() {
+            const t = dict[userLang] || dict['uz'];
+            document.getElementById('searchInput').placeholder = t.search;
+            document.getElementById('txt-popular').innerText = t.pop;
+            document.getElementById('txt-more').innerText = t.more;
+            document.getElementById('txt-catalog-title').innerText = t.cat;
+            document.getElementById('txt-cart-empty').innerText = t.cartEmpty;
+            document.getElementById('txt-fav-empty').innerText = t.favEmpty;
+            document.getElementById('txt-login').innerText = t.login;
+            document.getElementById('btn-get-code').innerText = t.getCode;
+            document.getElementById('txt-enter-code').innerText = t.enterCode;
+            document.getElementById('txt-verify').innerText = t.verify;
+            document.getElementById('txt-my-info').innerText = t.myInfo;
+            document.getElementById('lbl-name').innerText = t.name;
+            document.getElementById('lbl-email').innerText = t.email;
+            document.getElementById('txt-save').innerText = t.save;
+            document.getElementById('txt-my-orders').innerText = t.orders;
+            document.getElementById('txt-logout').innerText = t.logout;
+            document.getElementById('nav-home').innerText = t.navHome;
+            document.getElementById('nav-cat').innerText = t.navCat;
+            document.getElementById('nav-cart').innerText = t.navCart;
+            document.getElementById('nav-fav').innerText = t.navFav;
+            document.getElementById('nav-prof').innerText = t.navProf;
+            if(document.getElementById('txt-loading')) document.getElementById('txt-loading').innerText = t.load;
+        }
+
+        const phoneInputInfo = window.intlTelInput(document.querySelector("#loginPhone"), {
+            initialCountry: "auto",
+            geoIpLookup: function(cb) { fetch("https://ipapi.co/json").then(res => res.json()).then(data => cb(data.country_code)).catch(() => cb("uz")); },
+            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
+        });
+
+        let globalProducts = []; 
+
         if(appMode === 'game') {
             document.getElementById('shop-app').style.display = 'none';
             document.getElementById('game-app').style.display = 'block';
-            let coins = localStorage.getItem('fg_coins') || 0;
-            document.getElementById('balance').innerText = coins;
             
+            // TANGALARNI BAZADAN TORTIB OLISH
+            async function initGame() {
+                if(uid) {
+                    try {
+                        let res = await fetch(`${API_URL}/api/get_user?uid=${uid}`);
+                        let json = await res.json();
+                        if(json.success && json.data.coins) {
+                            document.getElementById('balance').innerText = json.data.coins;
+                            localStorage.setItem('fg_coins', json.data.coins);
+                        }
+                    } catch(e) {}
+                }
+            }
+            initGame();
+
             window.clickCoin = function() {
-                let current = parseInt(localStorage.getItem('fg_coins')) || 0;
+                let current = parseInt(document.getElementById('balance').innerText) || 0;
                 current++;
                 document.getElementById('balance').innerText = current;
                 localStorage.setItem('fg_coins', current);
+                // BAZAGA JO'NATISH
+                if(uid) fetch(`${API_URL}/api/save_coins`, { method: 'POST', body: JSON.stringify({uid: uid, coins: current}), headers: {'Content-Type': 'application/json'}});
                 try { tg.HapticFeedback.impactOccurred('medium'); } catch(e){}
             }
-        } 
-        // DO'KON
-        else {
-            const categories = [
-                { icon: '🛍️', name: 'Ayollar kiyimlari' }, { icon: '👠', name: 'Ayollar oyoq kiyimlari' },
-                { icon: '💄', name: 'Ayollar kosmetikasi' }, { icon: '👜', name: 'Ayollar taqinchoqlari' },
-                { icon: '👔', name: 'Erkaklar kiyimlari' }, { icon: '👞', name: 'Erkaklar oyoq kiyimlari' },
-                { icon: '👶', name: 'Bolalar uchun' }, { icon: '📱', name: 'Telefon aksessuarlar' }
-            ];
+        } else {
+            applyLang();
+            fetchData();
+            checkDbLogin();
+        }
 
-            async function fetchCats() {
-                try {
-                    let res = await fetch(API_URL + '/api/categories');
-                    let dbCats = await res.json();
-                    let html = '';
-                    categories.forEach(c => {
-                        let found = dbCats.find(x => x.name === c.name);
-                        let img = (found && found.image_url) ? `<img src="${found.image_url}">` : c.icon;
-                        html += `<div class="cat-item" onclick="openCat('${c.name}')"><div class="cat-icon">${img}</div><div class="cat-text">${c.name}</div></div>`;
-                    });
-                    document.getElementById('cat-grid').innerHTML = html;
-                } catch(e) {
-                    let html = '';
-                    categories.forEach(c => { html += `<div class="cat-item" onclick="openCat('${c.name}')"><div class="cat-icon">${c.icon}</div><div class="cat-text">${c.name}</div></div>`; });
-                    document.getElementById('cat-grid').innerHTML = html;
-                }
+        async function fetchData() {
+            try {
+                let resCat = await fetch(API_URL + '/api/categories');
+                let dbCats = await resCat.json();
+                let html = '';
+                dbCats.forEach(c => {
+                    let img = c.image_url ? `<img src="${c.image_url}">` : '🛍';
+                    html += `<div class="scroll-item" onclick="openCat('${c.name}')"><div>${img}</div><span>${c.name}</span></div>`;
+                });
+                document.getElementById('cat-scroll').innerHTML = html;
+                document.getElementById('cat-grid-full').innerHTML = html;
+
+                let resProd = await fetch(API_URL + '/api/products'); 
+                globalProducts = await resProd.json();
+                renderProducts(globalProducts.slice(0, 6), 'home-products'); 
+            } catch(e) {
+                document.getElementById('home-products').innerHTML = `<div style="grid-column: span 2; text-align:center; color:red;">Server Xatosi</div>`;
             }
-            fetchCats();
-            checkLogin(); 
+        }
+
+        function renderProducts(productsArray, containerId) {
+            const t = dict[userLang] || dict['uz'];
+            let html = '';
+            if(productsArray.length === 0) { html = `<div style="grid-column: span 2; text-align:center; color:#888;">Topilmadi</div>`; }
+            productsArray.forEach(p => {
+                let img = p.image_url ? `<img src="${p.image_url}">` : '🛍';
+                html += `
+                <div class="card">
+                    <div class="heart-icon" onclick="toggleFav(this)">♡</div>
+                    <div class="p-img">${img}</div>
+                    <div class="p-title">${p.name}</div>
+                    <div class="p-price">${p.price.toLocaleString()} UZS</div>
+                    <button class="btn" onclick="tg.showAlert('${t.addCart} ✅')">${t.addCart}</button>
+                </div>`;
+            });
+            document.getElementById(containerId).innerHTML = html;
+        }
+
+        function searchProducts() {
+            let query = document.getElementById('searchInput').value.toLowerCase();
+            if(!query) { renderProducts(globalProducts.slice(0, 6), 'home-products'); return; }
+            let filtered = globalProducts.filter(p => p.name.toLowerCase().includes(query));
+            renderProducts(filtered, 'home-products');
+        }
+
+        function toggleFav(el) {
+            el.classList.toggle('active'); el.innerText = el.classList.contains('active') ? '❤️' : '♡';
+            try { tg.HapticFeedback.selectionChanged(); } catch(e){}
         }
 
         function switchPage(id, el) {
@@ -275,140 +372,131 @@
                 el.classList.add('active');
             }
             document.getElementById('backBtn').style.display = 'none';
-            document.getElementById('header-title').innerText = "FIRDAVS GROUP";
+            try { tg.HapticFeedback.selectionChanged(); } catch(e){}
         }
 
         async function openCat(name) {
-            document.getElementById('home').classList.remove('active');
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('cat-detail').classList.add('active');
             document.getElementById('backBtn').style.display = 'block';
             document.getElementById('header-title').innerText = name;
             let list = document.getElementById('cat-products');
-            list.innerHTML = '<div style="grid-column: span 2; text-align:center; padding:30px; color:#888;">Yuklanmoqda...</div>';
-            
-            try {
-                let res = await fetch(`${API_URL}/api/products?category=${name}`);
-                let products = await res.json();
-                if(products.length === 0) { list.innerHTML = '<div style="grid-column: span 2; text-align:center; padding:30px; color:#888;">Bo\'sh</div>'; return; }
-                let html = '';
-                products.forEach(p => {
-                    let img = p.image_url ? `<img src="${p.image_url}">` : '🛍';
-                    html += `<div class="card"><div class="p-img">${img}</div><div class="p-title">${p.name}</div><div class="p-price">${p.price.toLocaleString()} UZS</div><button class="btn" onclick="tg.showAlert('Savatga tushdi')">Savatga</button></div>`;
-                });
-                list.innerHTML = html;
-            } catch(e) { list.innerHTML = '<div style="grid-column: span 2; text-align:center; color:red;">Xato</div>'; }
+            list.innerHTML = `<div style="grid-column: span 2; text-align:center; padding:40px; color:#888;">${dict[userLang].load}</div>`;
+            let filtered = globalProducts.filter(p => p.category === name);
+            renderProducts(filtered, 'cat-products');
         }
 
         function goBack() {
             document.getElementById('cat-detail').classList.remove('active');
-            document.getElementById('home').classList.add('active');
+            document.getElementById('home').classList.add('active'); 
             document.getElementById('backBtn').style.display = 'none';
             document.getElementById('header-title').innerText = "FIRDAVS GROUP";
+            document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
+            document.querySelectorAll('.nav-btn')[0].classList.add('active');
         }
 
-            // --- AUTH & LOCALSTORAGE ---
-        function checkLogin() {
-            if(localStorage.getItem('fg_logged') === 'true') {
-                document.getElementById('p-name').innerText = localStorage.getItem('fg_name');
-                document.getElementById('p-phone').innerText = localStorage.getItem('fg_phone');
-                setStep(4);
-            } else { setStep(1); }
+        // --- BAZA BILAN ISHLAYDIGAN PROFIL TIZIMI ---
+        async function checkDbLogin() {
+            if(!uid) { setStep(1); return; }
+            try {
+                let res = await fetch(`${API_URL}/api/get_user?uid=${uid}`);
+                let json = await res.json();
+                if(json.success) {
+                    // Bazada bor ekan, chizib beramiz
+                    let d = json.data;
+                    document.getElementById('p-name').innerText = d.name;
+                    document.getElementById('p-phone').innerText = d.phone;
+                    if(localStorage.getItem('fg_avatar')) document.getElementById('p-avatar').src = localStorage.getItem('fg_avatar');
+                    setStep(4);
+                } else {
+                    // Bazada yo'q bo'lsa
+                    if(localStorage.getItem('fg_logged') === 'true') setStep(4); else setStep(1);
+                }
+            } catch(e) { setStep(1); }
         }
 
         function setStep(step) {
             document.querySelectorAll('.auth-step').forEach(s => s.classList.remove('active'));
             document.getElementById('step-' + step).classList.add('active');
-            
-            // "Mening ma'lumotlarim" oynasiga kirganda sarlavhani o'zgartiramiz
-            if(step === 3) {
-                document.getElementById('header-title').innerText = "Ma'lumotlar";
-                document.getElementById('backBtn').style.display = 'block';
-                document.getElementById('backBtn').onclick = function() { setStep(4); } // Profilga qaytish
-            } else if(step === 4) {
-                document.getElementById('header-title').innerText = "FIRDAVS GROUP";
-                document.getElementById('backBtn').style.display = 'none';
-                document.getElementById('backBtn').onclick = goBack; // Standart back
+        }
+
+        function previewAvatar(event) {
+            const file = event.target.files[0];
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('avatarPreview').src = e.target.result;
+                    localStorage.setItem('fg_avatar', e.target.result);
+                }
+                reader.readAsDataURL(file);
             }
         }
 
         async function sendCode() {
-            let phone = document.getElementById("loginPhone").value;
-            if(phone.length < 9) { tg.showAlert("Raqam xato!"); return; }
-            if(!uid) { tg.showAlert("Bot orqali kiring!"); return; }
+            let phone = phoneInputInfo.getNumber();
+            if(!phoneInputInfo.isValidNumber()) { tg.showAlert("Raqam xato!"); return; }
+            localStorage.setItem('temp_phone', phone);
             document.getElementById("btn-get-code").innerText = "⏳...";
             try {
                 let res = await fetch(`${API_URL}/api/send_code?uid=${uid}&phone=${encodeURIComponent(phone)}`);
                 let json = await res.json();
-                if(json.success) { 
-                    document.getElementById('regPhone').value = phone;
-                    setStep(2); 
-                }
+                if(json.success) setStep(2);
             } catch(e) {}
             document.getElementById("btn-get-code").innerText = "Kod olish";
         }
 
-        function verifyCode() { setStep(3); }
-        
-        // Jinsni tanlash (Rasmdagidek vizual effekt)
+        function verifyCode() { 
+            if(localStorage.getItem('fg_avatar')) document.getElementById('avatarPreview').src = localStorage.getItem('fg_avatar');
+            setStep(3); 
+        }
+
         function setGender(value) {
             document.getElementById('genderInput').value = value;
             if(value === 'Erkak') {
-                document.getElementById('gender_male').classList.add('active');
-                document.getElementById('gender_female').classList.remove('active');
+                document.getElementById('gender_male').classList.add('active'); document.getElementById('gender_female').classList.remove('active');
             } else {
-                document.getElementById('gender_female').classList.add('active');
-                document.getElementById('gender_male').classList.remove('active');
+                document.getElementById('gender_female').classList.add('active'); document.getElementById('gender_male').classList.remove('active');
             }
         }
-
-        function saveInfo() {
+        
+        async function saveInfo() {
             let fname = document.getElementById("fnameInput").value;
-            let phone = document.getElementById("regPhone").value;
             let email = document.getElementById("emailInput").value;
             let dob = document.getElementById("dobInput").value;
             let gender = document.getElementById("genderInput").value;
+            let phone = localStorage.getItem('temp_phone');
+            if(!fname) { tg.showAlert("Ismni kiriting!"); return; }
             
-            if(!fname) { tg.showAlert("Ismni kiriting"); return; }
-            
-            // Xotiraga yozamiz
+            // BAZAGA JO'NATAMIZ (MANGU SAQLASH)
+            try {
+                await fetch(`${API_URL}/api/save_user`, {
+                    method: 'POST',
+                    body: JSON.stringify({uid: uid, name: fname, phone: phone, email: email, dob: dob, gender: gender}),
+                    headers: {'Content-Type': 'application/json'}
+                });
+            } catch(e) {}
+
             localStorage.setItem('fg_logged', 'true');
-            localStorage.setItem('fg_name', fname);
-            localStorage.setItem('fg_phone', phone);
-            localStorage.setItem('fg_email', email);
-            localStorage.setItem('fg_dob', dob);
-            localStorage.setItem('fg_gender', gender);
-            
             document.getElementById("p-name").innerText = fname;
             document.getElementById("p-phone").innerText = phone;
+            if(localStorage.getItem('fg_avatar')) document.getElementById('p-avatar').src = localStorage.getItem('fg_avatar');
             setStep(4);
-            tg.showAlert("✅ Ma'lumotlar saqlandi!");
         }
 
         function editProfile() {
-            document.getElementById("fnameInput").value = localStorage.getItem('fg_name') || '';
-            document.getElementById("emailInput").value = localStorage.getItem('fg_email') || '';
-            document.getElementById("dobInput").value = localStorage.getItem('fg_dob') || '';
-            setGender(localStorage.getItem('fg_gender') || 'Erkak');
             setStep(3);
         }
 
-        function logout() {
-            localStorage.removeItem('fg_logged');
-            document.getElementById("loginPhone").value = "+998";
-            setStep(1);
-        }
+        function logout() { localStorage.clear(); setStep(1); }
 
-        // --- MODALLAR ---
         function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-
         window.setPay = function(el, name) {
             document.querySelectorAll('.pay-card').forEach(i => i.classList.remove('active'));
             el.classList.add('active');
             document.getElementById('v-pay').innerText = name + " >";
             setTimeout(() => closeModal('paymentModal'), 200);
         }
-
         let myMap;
         window.openMapModal = function() {
             openModal('mapModal');
@@ -419,16 +507,11 @@
                     let coords = e.get('coords');
                     myMap.geoObjects.removeAll();
                     myMap.geoObjects.add(new ymaps.Placemark(coords, {}, { preset: 'islands#violetDotIcon' }));
-                    ymaps.geocode(coords).then(function (res) {
-                        document.getElementById('addressText').innerText = res.geoObjects.get(0).getAddressLine();
-                    });
+                    ymaps.geocode(coords).then(function (res) { document.getElementById('addressText').innerText = res.geoObjects.get(0).getAddressLine(); });
                 });
             });
         }
-        window.closeMapModal = function() {
-            document.getElementById('v-del').innerText = "Belgilandi >";
-            closeModal('mapModal');
-        }
+        window.closeMapModal = function() { document.getElementById('v-del').innerText = "Manzil belgilandi >"; closeModal('mapModal'); }
     </script>
 </body>
 </html>
