@@ -6,6 +6,7 @@ def init_db():
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     
+    # 1. MAHSULOTLAR
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS products (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -13,6 +14,7 @@ def init_db():
             size TEXT, color TEXT, image_url TEXT
         )
     """)
+    # 2. SAVAT
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS cart (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -20,12 +22,14 @@ def init_db():
             quantity INTEGER DEFAULT 1
         )
     """)
+    # 3. SEVIMLILAR
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS wishlist (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id TEXT, product_id INTEGER
         )
     """)
+    # 4. FOYDALANUVCHILAR
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
             user_id TEXT PRIMARY KEY,
@@ -33,11 +37,13 @@ def init_db():
             dob TEXT, gender TEXT, lang TEXT DEFAULT 'uz'
         )
     """)
+    # 5. KATEGORIYALAR
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS categories (
             name TEXT PRIMARY KEY, image_url TEXT
         )
     """)
+    # 6. BUYURTMALAR
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS orders (
             id INTEGER PRIMARY KEY AUTOINCREMENT, 
@@ -49,6 +55,9 @@ def init_db():
     conn.commit()
     conn.close()
 
+# ==========================================
+#    KATEGORIYALAR VA MAHSULOTLAR (YANGI QO'SHILDI)
+# ==========================================
 def get_all_categories():
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
@@ -56,6 +65,13 @@ def get_all_categories():
     cats = cursor.fetchall()
     conn.close()
     return [{"name": row[0], "image_url": row[1]} for row in cats]
+
+def set_category_image(name, image_url):
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute("INSERT OR REPLACE INTO categories (name, image_url) VALUES (?, ?)", (name, image_url))
+    conn.commit()
+    conn.close()
 
 def get_products_by_category(category_name):
     conn = sqlite3.connect(DB_NAME)
@@ -68,6 +84,19 @@ def get_products_by_category(category_name):
     conn.close()
     return res
 
+def add_product(category, name, price, size, color, image_url):
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO products (category, name, price, size, color, image_url)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, (category, name, price, size, color, image_url))
+    conn.commit()
+    conn.close()
+
+# ==========================================
+#     FOYDALANUVCHILAR VA TIL
+# ==========================================
 def set_user_lang(user_id, lang):
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
