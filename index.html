@@ -26,14 +26,15 @@
         .search-bar { background: #EFEFF4; margin: 15px; padding: 10px 15px; border-radius: 10px; display: flex; align-items: center; }
         .search-bar input { border: none; background: transparent; width: 100%; font-size: 15px; margin-left: 10px; }
 
-        /* KATEGORIYALAR (YONIGA SURILADIGAN) */
+        /* KATEGORIYALAR */
         .cat-scroll { display: flex; overflow-x: auto; gap: 15px; padding: 0 15px; margin-bottom: 20px; scrollbar-width: none; }
         .cat-scroll::-webkit-scrollbar { display: none; }
+        .cat-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 15px; }
         .cat-item { display: flex; flex-direction: column; align-items: center; min-width: 65px; cursor: pointer; }
         .cat-icon { width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 30px; margin-bottom: 8px; }
         .cat-name { font-size: 11px; color: var(--text); font-weight: 500; text-align: center; }
 
-        /* MAHSULOTLAR (YONIGA SURILADIGAN) */
+        /* MAHSULOTLAR */
         .section-header { display: flex; justify-content: space-between; align-items: center; padding: 0 15px; margin-bottom: 12px; }
         .section-header h2 { font-size: 18px; font-weight: 700; }
         .section-header span { font-size: 14px; color: var(--main); font-weight: 500; cursor: pointer;}
@@ -49,9 +50,9 @@
         .btn-buy { background: #F2EAFB; color: var(--main); border: none; padding: 8px; width: 100%; border-radius: 8px; font-weight: 600; font-size: 13px; display: flex; justify-content: center; align-items: center; gap: 5px; cursor: pointer; transition: background 0.2s;}
         .btn-buy:active { background: #E0D4F5; }
         
-        /* 3 TA PASTKI MENYU */
+        /* 5 TA PASTKI MENYU */
         .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 60px; background: #fff; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #E5E5EA; z-index: 1000; }
-        .nav-btn { display: flex; flex-direction: column; align-items: center; color: var(--gray); font-size: 10px; font-weight: 500; cursor: pointer; width: 33%;}
+        .nav-btn { display: flex; flex-direction: column; align-items: center; color: var(--gray); font-size: 10px; font-weight: 500; cursor: pointer; width: 20%;}
         .nav-btn.active { color: var(--main); }
         .nav-icon { font-size: 24px; margin-bottom: 3px; transition: transform 0.2s;}
         .nav-btn.active .nav-icon { transform: scale(1.1); }
@@ -83,7 +84,7 @@
         .radio-item.active .radio-circle { border-color: var(--main); }
         .radio-item.active .radio-circle::after { content:''; position:absolute; top:4px; left:4px; width:10px; height:10px; background:var(--main); border-radius:50%;}
         
-        /* NOTIFICATION (Tepadagi kod) */
+        /* NOTIFICATION */
         #notification { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 15px 20px; border-radius: 10px; z-index: 2000; transition: top 0.4s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; font-weight: 500;}
         #notification.show { top: 20px; }
     </style>
@@ -102,11 +103,14 @@
         <div class="search-bar">
             <span>🔍</span><input type="text" placeholder="Mahsulotlar va toifalarni qidirish" id="searchInput" onkeyup="search()">
         </div>
-
         <div class="cat-scroll" id="cat-container"></div>
-
-        <div class="section-header"><h2 id="txt-rec">Tavsiya etamiz</h2><span id="txt-all" onclick="tg.showAlert('Katalog ochiladi')">Barchasi ></span></div>
+        <div class="section-header"><h2 id="txt-rec">Tavsiya etamiz</h2><span id="txt-all" onclick="switchPage('catalog', document.querySelectorAll('.nav-btn')[1])">Barchasi ></span></div>
         <div class="prod-scroll" id="prod-container"></div>
+    </div>
+
+    <div id="catalog" class="page">
+        <div class="section-header" style="margin-top: 15px;"><h2 id="txt-cat-title">Katalog</h2></div>
+        <div class="cat-grid" id="catalog-container"></div>
     </div>
 
     <div id="cart" class="page">
@@ -134,23 +138,27 @@
         </div>
     </div>
 
+    <div id="favorites" class="page">
+        <div style="text-align: center; padding-top: 80px;">
+            <div style="font-size: 60px; margin-bottom: 10px; color:#ccc;">❤️</div>
+            <h3 style="color: #333; font-weight: 600;" id="txt-fav-empty">Sevimlilar bo'sh</h3>
+        </div>
+    </div>
+
     <div id="checkout" class="page">
         <div class="check-block">
             <div class="check-title">Yetkazib berish turi</div>
             <div class="radio-item active" onclick="setRadio(this, 'del')"><span>Kuryer orqali manzilga</span><div class="radio-circle"></div></div>
             <div class="radio-item" onclick="setRadio(this, 'del')"><span>Filialdan olib ketish</span><div class="radio-circle"></div></div>
         </div>
-        
         <div class="check-block">
             <div class="check-title">To'lov usuli</div>
             <div class="radio-item active" onclick="setRadio(this, 'pay')"><span>💵 Naqd pul</span><div class="radio-circle"></div></div>
             <div class="radio-item" onclick="setRadio(this, 'pay')"><span style="color:#00a5ff; font-weight:bold;">🔵 Click</span><div class="radio-circle"></div></div>
             <div class="radio-item" onclick="setRadio(this, 'pay')"><span style="color:#33cccc; font-weight:bold;">🟢 Payme</span><div class="radio-circle"></div></div>
+            <div class="radio-item" onclick="setRadio(this, 'pay')"><span style="color:#7b1fa2; font-weight:bold;">🟣 Uzum</span><div class="radio-circle"></div></div>
         </div>
-
-        <div style="padding: 15px;">
-            <button class="btn-main" onclick="finishOrder()">Buyurtma berish</button>
-        </div>
+        <div style="padding: 15px;"><button class="btn-main" onclick="finishOrder()">Buyurtma berish</button></div>
     </div>
 
     <div id="profile" class="page">
@@ -175,8 +183,7 @@
         <div id="profile-view" style="display: none;">
             <div style="padding: 20px; display: flex; align-items: center; background: #fff; margin-bottom: 10px;">
                 <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 15px; background: #F4F5F7; border-radius: 50%; padding: 10px;">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle>
                 </svg>
                 <div style="flex-grow: 1;">
                     <div style="font-weight: 700; font-size: 18px;" id="p-name">Ism Familiya</div>
@@ -187,13 +194,10 @@
 
             <div class="profile-list">
                 <div class="p-item" onclick="tg.showAlert('Sizda hozircha buyurtmalar yo\\'q')"><span id="txt-my-orders">📦 Buyurtmalarim</span><span class="chevron">></span></div>
-                <div class="p-item" onclick="tg.showAlert('Tez orada ishga tushadi')"><span>💬 Sharhlarim</span><span class="chevron">></span></div>
             </div>
             
             <div class="profile-list">
-                <div class="p-item"><span>⚙️ Sozlamalar</span><span style="color: var(--main); font-size: 12px;">Tez orada</span></div>
                 <div class="p-item" onclick="tg.showAlert('Tilni bot orqali o\\'zgartiring')"><span>🌐 Til</span><span class="chevron">O'zbekcha ></span></div>
-                <div class="p-item" onclick="tg.showAlert('Do\\'kon haqida ma\\'lumot')"><span>ℹ️ Biz haqimizda</span><span class="chevron">></span></div>
                 <div class="p-item" onclick="tg.showAlert('@admin')"><span>✉️ Biz bilan bog'lanish</span><span class="chevron">></span></div>
             </div>
 
@@ -207,8 +211,14 @@
         <div class="nav-btn active" onclick="switchPage('home', this)">
             <div class="nav-icon">🏠</div><span id="nav-home">Do'kon</span>
         </div>
+        <div class="nav-btn" onclick="switchPage('catalog', this)">
+            <div class="nav-icon">🗂️</div><span id="nav-cat">Katalog</span>
+        </div>
         <div class="nav-btn" onclick="switchPage('cart', this)">
             <div class="nav-icon">🛒</div><span id="nav-cart">Savat</span>
+        </div>
+        <div class="nav-btn" onclick="switchPage('favorites', this)">
+            <div class="nav-icon">❤️</div><span id="nav-fav">Sevimlilar</span>
         </div>
         <div class="nav-btn" onclick="switchPage('profile', this)">
             <div class="nav-icon">👤</div><span id="nav-prof">Profil</span>
@@ -221,13 +231,12 @@
         const API_URL = "https://firdavs-group-bot.onrender.com";
         const urlParams = new URLSearchParams(window.location.search);
         const userLang = urlParams.get('lang') || 'uz';
-        let uid = urlParams.get('uid') || '';
 
-        // Tillar lug'ati
+        // 3 ta Til lug'ati
         const dict = {
-            uz: { search: "Mahsulotlar va toifalarni qidirish", rec: "Tavsiya etamiz", all: "Barchasi >", cartEmpty: "Savatingiz bo'sh", total: "Umumiy narx:", checkout: "To'lovga o'tish", loginTitle: "Tizimga kirish", lblPhone: "Telefon raqamingiz", getCode: "Kod olish", orders: "📦 Buyurtmalarim", logout: "Chiqish", navHome: "Do'kon", navCart: "Savat", navProf: "Profil", buy: "🛒 Sotib olish" },
-            ru: { search: "Поиск товаров и категорий", rec: "Рекомендуем", all: "Все >", cartEmpty: "Корзина пуста", total: "Итого:", checkout: "К оплате", loginTitle: "Войти", lblPhone: "Номер телефона", getCode: "Получить код", orders: "📦 Мои заказы", logout: "Выйти", navHome: "Магазин", navCart: "Корзина", navProf: "Профиль", buy: "🛒 Купить" },
-            en: { search: "Search products and categories", rec: "Recommended", all: "All >", cartEmpty: "Cart is empty", total: "Total:", checkout: "Checkout", loginTitle: "Login", lblPhone: "Phone number", getCode: "Get code", orders: "📦 My Orders", logout: "Logout", navHome: "Shop", navCart: "Cart", navProf: "Profile", buy: "🛒 Buy" }
+            uz: { search: "Mahsulotlar va toifalarni qidirish", rec: "Tavsiya etamiz", all: "Barchasi >", cartEmpty: "Savatingiz bo'sh", favEmpty: "Sevimlilar bo'sh", catTitle: "Katalog", total: "Umumiy narx:", checkout: "To'lovga o'tish", loginTitle: "Tizimga kirish", lblPhone: "Telefon raqamingiz", getCode: "Kod olish", orders: "📦 Buyurtmalarim", logout: "Chiqish", navHome: "Do'kon", navCat: "Katalog", navCart: "Savat", navFav: "Sevimlilar", navProf: "Profil", buy: "🛒 Sotib olish" },
+            ru: { search: "Поиск товаров и категорий", rec: "Рекомендуем", all: "Все >", cartEmpty: "Корзина пуста", favEmpty: "Избранное пусто", catTitle: "Каталог", total: "Итого:", checkout: "К оплате", loginTitle: "Войти", lblPhone: "Номер телефона", getCode: "Получить код", orders: "📦 Мои заказы", logout: "Выйти", navHome: "Магазин", navCat: "Каталог", navCart: "Корзина", navFav: "Избранное", navProf: "Профиль", buy: "🛒 Купить" },
+            en: { search: "Search products and categories", rec: "Recommended", all: "All >", cartEmpty: "Cart is empty", favEmpty: "Favorites empty", catTitle: "Catalog", total: "Total:", checkout: "Checkout", loginTitle: "Login", lblPhone: "Phone number", getCode: "Get code", orders: "📦 My Orders", logout: "Logout", navHome: "Shop", navCat: "Catalog", navCart: "Cart", navFav: "Favorites", navProf: "Profile", buy: "🛒 Buy" }
         };
 
         function applyLang() {
@@ -236,6 +245,8 @@
             document.getElementById('txt-rec').innerText = t.rec;
             document.getElementById('txt-all').innerText = t.all;
             document.getElementById('txt-cart-empty').innerText = t.cartEmpty;
+            document.getElementById('txt-fav-empty').innerText = t.favEmpty;
+            document.getElementById('txt-cat-title').innerText = t.catTitle;
             document.getElementById('txt-total').innerText = t.total;
             document.getElementById('btn-checkout').innerText = t.checkout;
             document.getElementById('txt-login-title').innerText = t.loginTitle;
@@ -244,11 +255,13 @@
             document.getElementById('txt-my-orders').innerText = t.orders;
             document.getElementById('txt-logout').innerText = t.logout;
             document.getElementById('nav-home').innerText = t.navHome;
+            document.getElementById('nav-cat').innerText = t.navCat;
             document.getElementById('nav-cart').innerText = t.navCart;
+            document.getElementById('nav-fav').innerText = t.navFav;
             document.getElementById('nav-prof').innerText = t.navProf;
         }
 
-        // Xalqaro raqam kiritish
+        // Xalqaro raqam
         const phoneInput = window.intlTelInput(document.querySelector("#loginPhone"), {
             initialCountry: "uz", separateDialCode: true, preferredCountries: ["uz", "ru", "kz"]
         });
@@ -283,6 +296,7 @@
                          </div>`;
             });
             document.getElementById('cat-container').innerHTML = html;
+            document.getElementById('catalog-container').innerHTML = html;
         }
 
         async function fetchData() {
@@ -290,9 +304,7 @@
                 let resProd = await fetch(API_URL + '/api/products'); 
                 globalProducts = await resProd.json();
                 renderProducts(globalProducts); 
-            } catch(e) {
-                renderProducts([]);
-            }
+            } catch(e) { renderProducts([]); }
         }
 
         function renderProducts(arr) {
@@ -327,7 +339,7 @@
             setTimeout(() => { notif.classList.remove('show'); }, 3000);
         }
 
-        // --- SAHIFALAR UCHUN YUMSHOQ O'TISHLAR ---
+        // --- SAHIFALAR ---
         function switchPage(id, el) {
             document.querySelectorAll('.page').forEach(p => { p.classList.remove('active'); p.style.opacity = 0; });
             
@@ -341,7 +353,9 @@
             }
             
             let title = "FIRDAVS GROUP";
+            if(id === 'catalog') title = dict[userLang].navCat || "Katalog";
             if(id === 'cart') title = dict[userLang].navCart || "Savat";
+            if(id === 'favorites') title = dict[userLang].navFav || "Sevimlilar";
             if(id === 'profile') title = dict[userLang].navProf || "Profil";
             if(id === 'checkout') title = "Buyurtma";
             
@@ -357,9 +371,8 @@
             try { tg.HapticFeedback.selectionChanged(); } catch(e){}
         }
 
-        function goBack() { switchPage('cart', document.querySelectorAll('.nav-btn')[1]); }
+        function goBack() { switchPage('cart', document.querySelectorAll('.nav-btn')[2]); }
 
-        // --- SAVAT LOGIKASI ---
         function addToCart() {
             tg.HapticFeedback.impactOccurred('medium');
             document.getElementById('cart-empty').style.display = 'none';
@@ -375,7 +388,7 @@
         function openCheckout() {
             if(localStorage.getItem('fg_logged') !== 'true') {
                 tg.showAlert("Buyurtma berish uchun avval tizimga kiring.");
-                switchPage('profile', document.querySelectorAll('.nav-btn')[2]);
+                switchPage('profile', document.querySelectorAll('.nav-btn')[4]);
             } else { switchPage('checkout'); }
         }
 
@@ -392,13 +405,11 @@
             goBack();
         }
 
-        // --- PROFIL LOGIKASI ---
         function checkLogin() {
             if(localStorage.getItem('fg_logged') === 'true') {
                 document.getElementById('login-view').style.display = 'none';
                 document.getElementById('code-view').style.display = 'none';
                 document.getElementById('profile-view').style.display = 'block';
-                document.getElementById('p-name').innerText = localStorage.getItem('fg_name') || "Hurmatli Mijoz";
                 document.getElementById('p-phone').innerText = localStorage.getItem('fg_phone');
             } else {
                 document.getElementById('login-view').style.display = 'block';
@@ -407,12 +418,10 @@
             }
         }
 
-        async function doLogin() {
+        function doLogin() {
             let phone = phoneInput.getNumber();
             if(!phoneInput.isValidNumber()) { tg.showAlert("Raqamni to'g'ri kiriting!"); return; }
             localStorage.setItem('temp_phone', phone);
-            
-            // Xuddi Nino Shop kabi kod jo'natilganda tepadan yozuv chiqadi
             showNotification("Kod yuborildi");
             document.getElementById('login-view').style.display = 'none';
             document.getElementById('code-view').style.display = 'block';
@@ -421,17 +430,13 @@
         function verifyCode() {
             let code = document.getElementById('codeInput').value;
             if(code.length < 4) { tg.showAlert("Kodni to'liq kiriting"); return; }
-            
             localStorage.setItem('fg_logged', 'true');
             localStorage.setItem('fg_phone', localStorage.getItem('temp_phone'));
             showNotification("Tizimga kirdingiz");
             checkLogin();
         }
 
-        function doLogout() {
-            localStorage.clear();
-            checkLogin();
-        }
+        function doLogout() { localStorage.clear(); checkLogin(); }
     </script>
 </body>
 </html>
