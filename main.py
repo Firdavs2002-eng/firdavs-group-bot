@@ -73,7 +73,7 @@ async def cmd_start(message: types.Message):
     lang = get_lang(message.from_user.id)
     await message.answer(LANGS[lang]['welcome'].format(name=message.from_user.first_name), reply_markup=get_main_menu(message.from_user.id, lang), parse_mode="HTML")
 
-# --- 3 TA TIL TUGMASI (TO'G'RILANDI) ---
+# --- 3 TA TIL TUGMASI ---
 @dp.message(F.text.in_(["⚙️ Til", "⚙️ Язык", "⚙️ Language"]))
 async def change_lang_cmd(message: types.Message):
     lang = get_lang(message.from_user.id)
@@ -200,7 +200,6 @@ async def add_prod_photo(message: types.Message, state: FSMContext):
                 res = await resp.json()
                 photo_url = "https://telegra.ph" + res[0]['src']
                 
-        # Bazaga saqlash
         add_product(data['category'], data['name'], data['price'], "", "", photo_url)
         await wait_msg.edit_text(f"✅ <b>{data['name']}</b> mahsuloti muvaffaqiyatli qo'shildi!\nWeb App do'koningizga kirib ko'rishingiz mumkin.", parse_mode="HTML")
     except Exception as e:
