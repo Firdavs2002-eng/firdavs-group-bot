@@ -263,7 +263,6 @@ async def api_create_order(request):
         await bot.send_message(chat_id=ADMIN_ID, text=text, parse_mode="HTML", disable_web_page_preview=True)
         return web.json_response({"success": True}, headers=set_cors())
     except: return web.json_response({"error": "Xato"}, status=500, headers=set_cors())
-
 async def main():
     init_db()
     app = web.Application()
@@ -278,6 +277,10 @@ async def main():
     runner = web.AppRunner(app)
     await runner.setup()
     await web.TCPSite(runner, '0.0.0.0', int(os.environ.get("PORT", 10000))).start()
+    
+    # 🛑 MANA SHU KOD BARCHA CONFLICT XATOLARINI YO'Q QILADI:
+    await bot.delete_webhook(drop_pending_updates=True)
+    
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
