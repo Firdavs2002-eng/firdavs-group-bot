@@ -20,7 +20,7 @@ ADMIN_ID = "7723220237"
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
-# --- FSM (Holatlar) ---
+# --- HOLATLAR (FSM) ---
 class AdminCatImage(StatesGroup):
     category_name = State()
     photo = State()
@@ -59,10 +59,7 @@ async def cmd_start(message: types.Message):
 # --- 3 TA TIL TUGMASI ---
 @dp.message(F.text.in_(["⚙️ Til", "⚙️ Язык", "⚙️ Language"]))
 async def change_lang_cmd(message: types.Message):
-    menu = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="🇺🇿 O'zbekcha", callback_data="setlang_uz"), InlineKeyboardButton(text="🇷🇺 Русский", callback_data="setlang_ru")], 
-        [InlineKeyboardButton(text="🇬🇧 English", callback_data="setlang_en")]
-    ])
+    menu = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="🇺🇿 O'zbekcha", callback_data="setlang_uz"), InlineKeyboardButton(text="🇷🇺 Русский", callback_data="setlang_ru")], [InlineKeyboardButton(text="🇬🇧 English", callback_data="setlang_en")]])
     await message.answer(LANGS[get_lang(message.from_user.id)]['choose_lang'], reply_markup=menu)
 
 @dp.callback_query(F.data.startswith("setlang_"))
@@ -72,34 +69,25 @@ async def set_lang_handler(callback: types.CallbackQuery):
     await callback.message.delete()
     await callback.message.answer(LANGS[new_lang]['welcome'], reply_markup=get_main_menu(callback.from_user.id, new_lang), parse_mode="HTML")
 
-# --- AQLLI AI CHAT VA BOG'LANISH ---
+# --- AI CHAT VA BOG'LANISH ---
 @dp.message(F.text.in_(["💬 Chat (AI)", "💬 Чат (ИИ)"]))
 async def chat_cmd(message: types.Message):
-    await message.answer("🤖 <b>Firdavs AI</b>: Assalomu alaykum! Men sun'iy intellekt yordamchisiman. Sizga nima qidirishga yordam beray?", parse_mode="HTML")
+    await message.answer("🤖 <b>AI:</b> Assalomu alaykum! Men sun'iy intellekt yordamchisiman. Sizga nima qidirishga yordam beray?", parse_mode="HTML")
 
 @dp.message(F.text)
 async def ai_handler(message: types.Message):
-    # Menyudagi tugmalarni e'tiborsiz qoldirish
-    if message.text.startswith("🏪") or message.text.startswith("⚙️") or message.text.startswith("📦") or message.text.startswith("💬") or message.text.startswith("🛒") or message.text.startswith("🖼") or message.text.startswith("🗑") or message.text.startswith("⬅️"): 
-        return
-    
+    if message.text.startswith("🏪") or message.text.startswith("⚙️") or message.text.startswith("📦") or message.text.startswith("🛒") or message.text.startswith("🖼") or message.text.startswith("⬅️") or message.text.startswith("🗑"): return
     text = message.text.lower()
     reply = ""
-    if "salom" in text: 
-        reply = "Assalomu alaykum! Firdavs Group do'konida qanday mahsulot qidiryapsiz?"
-    elif "dastavka" in text or "yetkazib" in text: 
-        reply = "Bizda O'zbekiston bo'ylab Yandex va Kuryerlarimiz orqali tezkor yetkazib berish mavjud."
-    elif "narx" in text: 
-        reply = "Barcha narxlarni do'konimizga kirib, 'Katalog' bo'limidan ko'rishingiz mumkin."
+    if "salom" in text: reply = "Assalomu alaykum! Firdavs Group do'konida qanday mahsulot qidiryapsiz?"
+    elif "dastavka" in text or "yetkazib" in text: reply = "Bizda O'zbekiston bo'ylab Yandex va kuryerlarimiz orqali tezkor yetkazib berish mavjud."
+    elif "narx" in text: reply = "Barcha narxlarni do'konimizga kirib, 'Katalog' bo'limidan ko'rishingiz mumkin."
     else:
-        reply = "Kechirasiz, bu savolingizga aniq javob topa olmadim. 😔\nIltimos, tezkor yordam uchun to'g'ridan-to'g'ri Adminimiz bilan bog'laning: @FIRDAVSI_RUZIBOY"
-        
+        # AI javob topolmasa to'g'ridan-to'g'ri Admin ga yo'naltiradi
+        reply = "Kechirasiz, savolingizga aniq javob topa olmadim. Murojaatingiz bo'yicha to'g'ridan-to'g'ri Adminimiz bilan bog'laning: @FIRDAVSI_RUZIBOY"
     await message.answer(f"🤖 <b>AI:</b> {reply}", parse_mode="HTML")
 
-
-# =======================================================
-#                  ADMIN PANEL
-# =======================================================
+# --- ADMIN PANEL ---
 @dp.message(Command("admin"))
 async def cmd_admin(message: types.Message):
     if str(message.from_user.id) == ADMIN_ID:
@@ -114,14 +102,14 @@ async def cmd_admin(message: types.Message):
 async def back_main(message: types.Message):
     await message.answer("Asosiy menyu:", reply_markup=get_main_menu(message.from_user.id, get_lang(message.from_user.id)))
 
+# 1. TOIFA RASMINI ALMASHTIRISH
 admin_cat_menu = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text="🛍 Ayollar kiyimlari", callback_data="cat_Ayollar kiyimlari"), InlineKeyboardButton(text="👠 Oyoq kiyim", callback_data="cat_Ayollar oyoq kiyimi")],
-    [InlineKeyboardButton(text="💄 Kosmetika", callback_data="cat_Ayollar kosmetikasi"), InlineKeyboardButton(text="👜 Taqinchoqlar", callback_data="cat_Ayollar taqinchoqlari")],
+    [InlineKeyboardButton(text="🛍 Ayollar kiyimlari", callback_data="cat_Ayollar kiyimlari"), InlineKeyboardButton(text="👠 Oyoq kiyimi", callback_data="cat_Ayollar oyoq kiyimi")],
+    [InlineKeyboardButton(text="💄 Kosmetika", callback_data="cat_Ayollar kosmetikasi"), InlineKeyboardButton(text="👜 Taqinchoqlar", callback_data="cat_Taqinchoqlar")],
     [InlineKeyboardButton(text="👔 Erkaklar kiyimlari", callback_data="cat_Erkaklar kiyimlari"), InlineKeyboardButton(text="👞 Erkaklar oyoq kiyimi", callback_data="cat_Erkaklar oyoq kiyimi")],
     [InlineKeyboardButton(text="👶 Bolalar uchun", callback_data="cat_Bolalar uchun"), InlineKeyboardButton(text="📱 Aksessuarlar", callback_data="cat_Aksessuarlar")]
 ])
 
-# 1. TOIFA RASMINI ALMASHTIRISH
 @dp.message(F.text == "🖼 Toifa rasmini o'zgartirish")
 async def start_cat_img(message: types.Message, state: FSMContext):
     if str(message.from_user.id) == ADMIN_ID:
@@ -148,11 +136,11 @@ async def process_cat_photo(message: types.Message, state: FSMContext):
             async with session.post('https://telegra.ph/upload', data=form) as resp:
                 res = await resp.json()
                 set_category_image(data['category_name'], "https://telegra.ph" + res[0]['src'])
-        await wait_msg.edit_text("✅ Rasm o'zgardi.")
-    except: await wait_msg.edit_text("❌ Xatolik.")
+        await wait_msg.edit_text("✅ Rasm muvaffaqiyatli o'rnatildi.")
+    except: await wait_msg.edit_text("❌ Xatolik yuz berdi.")
     await state.clear()
 
-# 2. MAHSULOT QO'SHISH (Ko'p rasm va Tavsif bilan)
+# 2. MAHSULOT QO'SHISH (Ko'p rasm va tavsif)
 @dp.message(F.text == "🛒 Mahsulot qo'shish")
 async def start_add_prod(message: types.Message, state: FSMContext):
     if str(message.from_user.id) == ADMIN_ID:
@@ -183,7 +171,7 @@ async def add_prod_price(message: types.Message, state: FSMContext):
 @dp.message(AdminAddProduct.description, F.text)
 async def add_prod_desc(message: types.Message, state: FSMContext):
     await state.update_data(description=message.text)
-    await message.answer("📸 Endi mahsulot rasmlarini (bitta yoki bir nechta) yuboring.\nBarcha rasmlarni yuborib bo'lgach, <b>TAYYOR</b> deb yozing.", parse_mode="HTML")
+    await message.answer("📸 Endi mahsulot rasmlarini (birma-bir) yuboring.\nBarcha rasmlarni yuborib bo'lgach, <b>TAYYOR</b> deb yozing.", parse_mode="HTML")
     await state.set_state(AdminAddProduct.photos)
 
 @dp.message(AdminAddProduct.photos, F.photo)
@@ -268,19 +256,18 @@ async def api_create_order(request):
     text += f"💳 To'lov turi: {data.get('payment', 'Naqd')}\n"
     text += f"📍 Manzil: {data.get('address', 'Kiritilmagan')}\n"
     
-    # Agar xaritadan belgilagan bo'lsa
     if data.get('lat') and data.get('lng'):
         text += f"🗺 GPS: <a href='https://yandex.ru/maps/?pt={data.get('lng')},{data.get('lat')}&z=18&l=map'>Xaritada ko'rish</a>\n"
         
     try:
-        await bot.send_message(chat_id=ADMIN_ID, text=text, parse_mode="HTML")
+        await bot.send_message(chat_id=ADMIN_ID, text=text, parse_mode="HTML", disable_web_page_preview=True)
         return web.json_response({"success": True}, headers=set_cors())
     except: return web.json_response({"error": "Xato"}, status=500, headers=set_cors())
 
 async def main():
     init_db()
     app = web.Application()
-    app.router.add_get('/', lambda r: web.Response(text="Server OK"))
+    app.router.add_get('/', lambda r: web.Response(text="Firdavs Group API OK"))
     app.router.add_get('/api/categories', api_categories) 
     app.router.add_get('/api/products', api_products)
     app.router.add_get('/api/send_code', api_send_code) 
