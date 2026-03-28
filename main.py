@@ -11,7 +11,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 from aiohttp import web, FormData
-from database import init_db, get_products_by_category, set_user_lang, get_user_lang, get_all_categories, save_user_data, get_user_data, set_category_image, add_product
+from database import init_db, get_products_by_category, set_user_lang, get_user_lang, get_all_categories, set_category_image, add_product, delete_product
 
 load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
@@ -29,30 +29,13 @@ class AdminAddProduct(StatesGroup):
     category = State()
     name = State()
     price = State()
-    photo = State()
+    description = State()
+    photos = State()
 
 LANGS = {
-    'uz': {
-        'welcome': "Assalomu alaykum, {name}!\n<b>FIRDAVS GROUP</b> do'koniga xush kelibsiz! 🚀",
-        'shop': "🏪 Do'konni ochish", 'orders': "📦 Buyurtmalarim", 
-        'lang': "⚙️ Til", 'chat': "💬 Chat (AI)",
-        'ai_start': "🤖 <b>Firdavs AI</b>: Assalomu alaykum! Men sun'iy intellekt yordamchisiman. Sizga nima qidirishga yordam beray?",
-        'choose_lang': "🇺🇿 Tilni tanlang:"
-    },
-    'ru': {
-        'welcome': "Здравствуйте, {name}!\nДобро пожаловать в <b>FIRDAVS GROUP</b>! 🚀",
-        'shop': "🏪 Открыть магазин", 'orders': "📦 Мои заказы", 
-        'lang': "⚙️ Язык", 'chat': "💬 Чат (ИИ)",
-        'ai_start': "🤖 <b>Firdavs AI</b>: Здравствуйте! Я ИИ-помощник. Чем могу помочь?",
-        'choose_lang': "🇷🇺 Выберите язык:"
-    },
-    'en': {
-        'welcome': "Hello, {name}!\nWelcome to <b>FIRDAVS GROUP</b>! 🚀",
-        'shop': "🏪 Open Shop", 'orders': "📦 My Orders", 
-        'lang': "⚙️ Language", 'chat': "💬 Chat (AI)",
-        'ai_start': "🤖 <b>Firdavs AI</b>: Hello! I am your AI assistant. How can I help you?",
-        'choose_lang': "🇬🇧 Choose language:"
-    }
+    'uz': {'welcome': "Assalomu alaykum!\n<b>FIRDAVS GROUP</b> do'koniga xush kelibsiz! 🚀", 'shop': "🏪 Do'konni ochish", 'orders': "📦 Buyurtmalarim", 'lang': "⚙️ Til", 'chat': "💬 Chat (AI)", 'choose_lang': "🇺🇿 Tilni tanlang:"},
+    'ru': {'welcome': "Здравствуйте!\nДобро пожаловать в <b>FIRDAVS GROUP</b>! 🚀", 'shop': "🏪 Открыть магазин", 'orders': "📦 Мои заказы", 'lang': "⚙️ Язык", 'chat': "💬 Чат (ИИ)", 'choose_lang': "🇷🇺 Выберите язык:"},
+    'en': {'welcome': "Hello!\nWelcome to <b>FIRDAVS GROUP</b>! 🚀", 'shop': "🏪 Open Shop", 'orders': "📦 My Orders", 'lang': "⚙️ Language", 'chat': "💬 Chat (AI)", 'choose_lang': "🇬🇧 Choose language:"}
 }
 
 def get_main_menu(user_id, lang):
@@ -71,41 +54,58 @@ def get_lang(uid): return get_user_lang(uid) if get_user_lang(uid) in LANGS else
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
     lang = get_lang(message.from_user.id)
-    await message.answer(LANGS[lang]['welcome'].format(name=message.from_user.first_name), reply_markup=get_main_menu(message.from_user.id, lang), parse_mode="HTML")
+    await message.answer(LANGS[lang]['welcome'], reply_markup=get_main_menu(message.from_user.id, lang), parse_mode="HTML")
 
 # --- 3 TA TIL TUGMASI ---
 @dp.message(F.text.in_(["⚙️ Til", "⚙️ Язык", "⚙️ Language"]))
 async def change_lang_cmd(message: types.Message):
-    lang = get_lang(message.from_user.id)
     menu = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="🇺🇿 O'zbekcha", callback_data="setlang_uz"), 
-         InlineKeyboardButton(text="🇷🇺 Русский", callback_data="setlang_ru")],
+        [InlineKeyboardButton(text="🇺🇿 O'zbekcha", callback_data="setlang_uz"), InlineKeyboardButton(text="🇷🇺 Русский", callback_data="setlang_ru")], 
         [InlineKeyboardButton(text="🇬🇧 English", callback_data="setlang_en")]
     ])
-    await message.answer(LANGS[lang]['choose_lang'], reply_markup=menu)
+    await message.answer(LANGS[get_lang(message.from_user.id)]['choose_lang'], reply_markup=menu)
 
 @dp.callback_query(F.data.startswith("setlang_"))
 async def set_lang_handler(callback: types.CallbackQuery):
     new_lang = callback.data.split("_")[1]
     set_user_lang(callback.from_user.id, new_lang)
     await callback.message.delete()
-    await callback.message.answer(LANGS[new_lang]['welcome'].format(name=callback.from_user.first_name), reply_markup=get_main_menu(callback.from_user.id, new_lang), parse_mode="HTML")
+    await callback.message.answer(LANGS[new_lang]['welcome'], reply_markup=get_main_menu(callback.from_user.id, new_lang), parse_mode="HTML")
 
-# --- AQLLI AI CHAT ---
-@dp.message(F.text.in_(["💬 Chat (AI)", "💬 Чат (ИИ)", "💬 Chat (AI)"]))
+# --- AQLLI AI CHAT VA BOG'LANISH ---
+@dp.message(F.text.in_(["💬 Chat (AI)", "💬 Чат (ИИ)"]))
 async def chat_cmd(message: types.Message):
-    lang = get_lang(message.from_user.id)
-    await message.answer(LANGS[lang]['ai_start'], parse_mode="HTML")
+    await message.answer("🤖 <b>Firdavs AI</b>: Assalomu alaykum! Men sun'iy intellekt yordamchisiman. Sizga nima qidirishga yordam beray?", parse_mode="HTML")
+
+@dp.message(F.text)
+async def ai_handler(message: types.Message):
+    # Menyudagi tugmalarni e'tiborsiz qoldirish
+    if message.text.startswith("🏪") or message.text.startswith("⚙️") or message.text.startswith("📦") or message.text.startswith("💬") or message.text.startswith("🛒") or message.text.startswith("🖼") or message.text.startswith("🗑") or message.text.startswith("⬅️"): 
+        return
+    
+    text = message.text.lower()
+    reply = ""
+    if "salom" in text: 
+        reply = "Assalomu alaykum! Firdavs Group do'konida qanday mahsulot qidiryapsiz?"
+    elif "dastavka" in text or "yetkazib" in text: 
+        reply = "Bizda O'zbekiston bo'ylab Yandex va Kuryerlarimiz orqali tezkor yetkazib berish mavjud."
+    elif "narx" in text: 
+        reply = "Barcha narxlarni do'konimizga kirib, 'Katalog' bo'limidan ko'rishingiz mumkin."
+    else:
+        reply = "Kechirasiz, bu savolingizga aniq javob topa olmadim. 😔\nIltimos, tezkor yordam uchun to'g'ridan-to'g'ri Adminimiz bilan bog'laning: @FIRDAVSI_RUZIBOY"
+        
+    await message.answer(f"🤖 <b>AI:</b> {reply}", parse_mode="HTML")
+
 
 # =======================================================
-#                  ADMIN PANEL (MAHSULOT QO'SHISH)
+#                  ADMIN PANEL
 # =======================================================
 @dp.message(Command("admin"))
 async def cmd_admin(message: types.Message):
     if str(message.from_user.id) == ADMIN_ID:
         menu = ReplyKeyboardMarkup(keyboard=[
-            [KeyboardButton(text="🛒 Mahsulot qo'shish")],
-            [KeyboardButton(text="🖼 Toifa rasmini o'zgartirish")], 
+            [KeyboardButton(text="🛒 Mahsulot qo'shish"), KeyboardButton(text="🗑 Mahsulotni o'chirish")], 
+            [KeyboardButton(text="🖼 Toifa rasmini o'zgartirish")],
             [KeyboardButton(text="⬅️ Asosiy menyuga qaytish")]
         ], resize_keyboard=True)
         await message.answer("👨‍💻 Boshqaruv paneli:", reply_markup=menu)
@@ -114,15 +114,14 @@ async def cmd_admin(message: types.Message):
 async def back_main(message: types.Message):
     await message.answer("Asosiy menyu:", reply_markup=get_main_menu(message.from_user.id, get_lang(message.from_user.id)))
 
-# -- TOIFA VA MAHSULOT UCHUN KATEGORIYALAR MENYUSI --
 admin_cat_menu = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text="🛍 Ayollar kiyimi", callback_data="cat_Ayollar kiyimlari"), InlineKeyboardButton(text="👠 Ayollar oyoq kiyimi", callback_data="cat_Ayollar oyoq kiyimlari")],
-    [InlineKeyboardButton(text="💄 Kosmetika", callback_data="cat_Ayollar kosmetikasi"), InlineKeyboardButton(text="👜 Taqinchoq", callback_data="cat_Ayollar taqinchoqlari")],
-    [InlineKeyboardButton(text="👔 Erkaklar kiyimi", callback_data="cat_Erkaklar kiyimlari"), InlineKeyboardButton(text="👞 Erkaklar oyoq kiyimi", callback_data="cat_Erkaklar oyoq kiyimlari")],
-    [InlineKeyboardButton(text="👶 Bolalar uchun", callback_data="cat_Bolalar uchun"), InlineKeyboardButton(text="📱 Aksessuar", callback_data="cat_Telefon aksessuarlar")]
+    [InlineKeyboardButton(text="🛍 Ayollar kiyimlari", callback_data="cat_Ayollar kiyimlari"), InlineKeyboardButton(text="👠 Oyoq kiyim", callback_data="cat_Ayollar oyoq kiyimi")],
+    [InlineKeyboardButton(text="💄 Kosmetika", callback_data="cat_Ayollar kosmetikasi"), InlineKeyboardButton(text="👜 Taqinchoqlar", callback_data="cat_Ayollar taqinchoqlari")],
+    [InlineKeyboardButton(text="👔 Erkaklar kiyimlari", callback_data="cat_Erkaklar kiyimlari"), InlineKeyboardButton(text="👞 Erkaklar oyoq kiyimi", callback_data="cat_Erkaklar oyoq kiyimi")],
+    [InlineKeyboardButton(text="👶 Bolalar uchun", callback_data="cat_Bolalar uchun"), InlineKeyboardButton(text="📱 Aksessuarlar", callback_data="cat_Aksessuarlar")]
 ])
 
-# 1. TOIFA RASMINI O'ZGARTIRISH
+# 1. TOIFA RASMINI ALMASHTIRISH
 @dp.message(F.text == "🖼 Toifa rasmini o'zgartirish")
 async def start_cat_img(message: types.Message, state: FSMContext):
     if str(message.from_user.id) == ADMIN_ID:
@@ -131,9 +130,8 @@ async def start_cat_img(message: types.Message, state: FSMContext):
 
 @dp.callback_query(AdminCatImage.category_name, F.data.startswith("cat_"))
 async def process_cat_name(callback: types.CallbackQuery, state: FSMContext):
-    cat_name = callback.data.split("_")[1]
-    await state.update_data(category_name=cat_name)
-    await callback.message.answer(f"📸 <b>{cat_name}</b> uchun rasm yuboring:", parse_mode="HTML")
+    await state.update_data(category_name=callback.data.split("_")[1])
+    await callback.message.answer("📸 Rasm yuboring:")
     await state.set_state(AdminCatImage.photo)
 
 @dp.message(AdminCatImage.photo, F.photo)
@@ -150,11 +148,11 @@ async def process_cat_photo(message: types.Message, state: FSMContext):
             async with session.post('https://telegra.ph/upload', data=form) as resp:
                 res = await resp.json()
                 set_category_image(data['category_name'], "https://telegra.ph" + res[0]['src'])
-        await wait_msg.edit_text(f"✅ Rasm o'zgardi.")
+        await wait_msg.edit_text("✅ Rasm o'zgardi.")
     except: await wait_msg.edit_text("❌ Xatolik.")
     await state.clear()
 
-# 2. MAHSULOT QO'SHISH
+# 2. MAHSULOT QO'SHISH (Ko'p rasm va Tavsif bilan)
 @dp.message(F.text == "🛒 Mahsulot qo'shish")
 async def start_add_prod(message: types.Message, state: FSMContext):
     if str(message.from_user.id) == ADMIN_ID:
@@ -163,15 +161,14 @@ async def start_add_prod(message: types.Message, state: FSMContext):
 
 @dp.callback_query(AdminAddProduct.category, F.data.startswith("cat_"))
 async def add_prod_cat(callback: types.CallbackQuery, state: FSMContext):
-    cat_name = callback.data.split("_")[1]
-    await state.update_data(category=cat_name)
-    await callback.message.answer(f"Tanlandi: <b>{cat_name}</b>\n\nEndi mahsulot nomini yozing (Masalan: Premium Krossovka):", parse_mode="HTML")
+    await state.update_data(category=callback.data.split("_")[1], photos=[])
+    await callback.message.answer("📝 Mahsulot nomini yozing:")
     await state.set_state(AdminAddProduct.name)
 
 @dp.message(AdminAddProduct.name, F.text)
 async def add_prod_name(message: types.Message, state: FSMContext):
     await state.update_data(name=message.text)
-    await message.answer("Yaxshi! Endi mahsulot narxini faqat raqamlarda yozing (Masalan: 150000):")
+    await message.answer("💰 Narxini faqat raqamda yozing (Masalan: 150000):")
     await state.set_state(AdminAddProduct.price)
 
 @dp.message(AdminAddProduct.price, F.text)
@@ -180,71 +177,105 @@ async def add_prod_price(message: types.Message, state: FSMContext):
         await message.answer("Iltimos, narxni faqat raqamlarda yozing:")
         return
     await state.update_data(price=int(message.text))
-    await message.answer("Ajoyib! Oxirgi qadam: Mahsulotning chiroyli rasmini yuboring.")
-    await state.set_state(AdminAddProduct.photo)
+    await message.answer("📋 Mahsulot haqida chiroyli ta'rif (tavsif) yozing:")
+    await state.set_state(AdminAddProduct.description)
 
-@dp.message(AdminAddProduct.photo, F.photo)
-async def add_prod_photo(message: types.Message, state: FSMContext):
-    wait_msg = await message.answer("⏳ Bazaga saqlanmoqda...")
+@dp.message(AdminAddProduct.description, F.text)
+async def add_prod_desc(message: types.Message, state: FSMContext):
+    await state.update_data(description=message.text)
+    await message.answer("📸 Endi mahsulot rasmlarini (bitta yoki bir nechta) yuboring.\nBarcha rasmlarni yuborib bo'lgach, <b>TAYYOR</b> deb yozing.", parse_mode="HTML")
+    await state.set_state(AdminAddProduct.photos)
+
+@dp.message(AdminAddProduct.photos, F.photo)
+async def add_prod_photos(message: types.Message, state: FSMContext):
     data = await state.get_data()
-    
     photo_io = io.BytesIO()
     await bot.download(message.photo[-1], destination=photo_io)
     photo_io.seek(0)
     form = FormData()
     form.add_field('file', photo_io.read(), filename='image.jpg', content_type='image/jpeg')
-    
     try:
         async with aiohttp.ClientSession() as session:
             async with session.post('https://telegra.ph/upload', data=form) as resp:
                 res = await resp.json()
-                photo_url = "https://telegra.ph" + res[0]['src']
-                
-        add_product(data['category'], data['name'], data['price'], "", "", photo_url)
-        await wait_msg.edit_text(f"✅ <b>{data['name']}</b> mahsuloti muvaffaqiyatli qo'shildi!\nWeb App do'koningizga kirib ko'rishingiz mumkin.", parse_mode="HTML")
-    except Exception as e:
-        await wait_msg.edit_text("❌ Rasm yuklashda xatolik yuz berdi. Boshqa rasm bilan urinib ko'ring.")
-    
+                data['photos'].append("https://telegra.ph" + res[0]['src'])
+                await state.update_data(photos=data['photos'])
+                await message.answer(f"✅ Rasm qabul qilindi. Jami: {len(data['photos'])} ta.\nYana rasm yuboring yoki tugatish uchun <b>TAYYOR</b> deb yozing.", parse_mode="HTML")
+    except: await message.answer("❌ Rasm yuklashda xato.")
+
+@dp.message(AdminAddProduct.photos, F.text.lower() == "tayyor")
+async def add_prod_finish(message: types.Message, state: FSMContext):
+    data = await state.get_data()
+    images_str = "|".join(data['photos']) if data['photos'] else ""
+    add_product(data['category'], data['name'], data['price'], data['description'], images_str)
+    await message.answer(f"🎉 <b>{data['name']}</b> muvaffaqiyatli qo'shildi!", parse_mode="HTML")
     await state.clear()
 
-# --- CHAT AI LOGIKASI ---
-@dp.message(F.text)
-async def ai_handler(message: types.Message):
-    if message.text.startswith("🏪") or message.text.startswith("⚙️") or message.text.startswith("📦") or message.text.startswith("🛒") or message.text.startswith("🖼") or message.text.startswith("⬅️"): return
-    text = message.text.lower()
-    reply = "Kechirasiz, men do'kon yordamchisiman. Mahsulotlar haqida so'rang yoki 'Do'konni ochish' tugmasini bosing."
-    if "salom" in text: reply = "Assalomu alaykum! Firdavs Group do'konida qanday mahsulot qidiryapsiz?"
-    elif "dastavka" in text or "yetkazib" in text: reply = "Bizda O'zbekiston bo'ylab tezkor yetkazib berish mavjud."
-    elif "narx" in text: reply = "Barcha narxlarni do'konimizga kirib, 'Katalog' bo'limidan ko'rishingiz mumkin."
-    await message.answer(f"🤖 <b>AI:</b> {reply}", parse_mode="HTML")
+# 3. MAHSULOT O'CHIRISH
+@dp.message(F.text == "🗑 Mahsulotni o'chirish")
+async def start_del_prod(message: types.Message):
+    if str(message.from_user.id) == ADMIN_ID:
+        prods = get_products_by_category(None)
+        if not prods:
+            await message.answer("Bazada mahsulot yo'q.")
+            return
+        btn_list = []
+        for p in prods:
+            btn_list.append([InlineKeyboardButton(text=f"❌ {p[1]}", callback_data=f"del_{p[0]}")])
+        await message.answer("O'chirish uchun mahsulotni tanlang:", reply_markup=InlineKeyboardMarkup(inline_keyboard=btn_list))
 
-# --- API SERVER ---
+@dp.callback_query(F.data.startswith("del_"))
+async def del_prod_handler(callback: types.CallbackQuery):
+    pid = callback.data.split("_")[1]
+    delete_product(pid)
+    await callback.message.edit_text("✅ Mahsulot muvaffaqiyatli o'chirildi!")
+
+
+# ==========================================
+#          API SERVER (WEB APP UCHUN)
+# ==========================================
 def set_cors(): return {"Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "GET, POST, OPTIONS", "Access-Control-Allow-Headers": "Content-Type"}
 async def handle_options(request): return web.Response(headers=set_cors())
 
 async def api_categories(request): return web.json_response(get_all_categories(), headers=set_cors())
+
 async def api_products(request):
     cat = request.query.get('category')
-    return web.json_response([{"id": p[0], "name": p[1], "price": p[2], "image_url": p[3]} for p in get_products_by_category(cat)], headers=set_cors())
+    prods = get_products_by_category(cat)
+    res = []
+    for p in prods:
+        imgs = p[4].split('|') if p[4] else []
+        res.append({"id": p[0], "name": p[1], "price": p[2], "description": p[3], "images": imgs})
+    return web.json_response(res, headers=set_cors())
 
+# 1. KOD YUBORISH API
 async def api_send_code(request):
     uid, phone = request.query.get('uid'), request.query.get('phone')
     code = random.randint(1000, 9999) 
     try:
-        await bot.send_message(chat_id=uid, text=f"🔐 <b>FIRDAVS GROUP</b>\nKod: <b>{code}</b>", parse_mode="HTML")
-        return web.json_response({"success": True}, headers=set_cors())
+        await bot.send_message(chat_id=uid, text=f"🔐 <b>FIRDAVS GROUP</b>\nTasdiqlash kodi: <b>{code}</b>", parse_mode="HTML")
+        return web.json_response({"success": True, "code": code}, headers=set_cors())
     except: return web.json_response({"error": "Bot xatosi"}, status=500, headers=set_cors())
 
-async def api_get_user(request):
-    uid = request.query.get('uid')
-    data = get_user_data(uid)
-    if data: return web.json_response({"success": True, "data": data}, headers=set_cors())
-    return web.json_response({"success": False}, headers=set_cors())
-
-async def api_save_user(request):
+# 2. ADMINGA BUYURTMA YUBORISH API
+async def api_create_order(request):
     data = await request.json()
-    save_user_data(data.get('uid'), data.get('name'), data.get('phone'), data.get('email'), data.get('dob'), data.get('gender'))
-    return web.json_response({"success": True}, headers=set_cors())
+    text = f"🛍 <b>YANGI BUYURTMA (FIRDAVS GROUP)</b>\n\n"
+    text += f"👤 Mijoz ID: <code>{data.get('uid', 'Noma\'lum')}</code>\n"
+    text += f"📞 Telefon: {data.get('phone', 'Kiritilmagan')}\n"
+    text += f"📦 Mahsulotlar: {data.get('items', 'Kiritilmagan')}\n"
+    text += f"💰 Umumiy narx: <b>{data.get('total', '0')} UZS</b>\n"
+    text += f"💳 To'lov turi: {data.get('payment', 'Naqd')}\n"
+    text += f"📍 Manzil: {data.get('address', 'Kiritilmagan')}\n"
+    
+    # Agar xaritadan belgilagan bo'lsa
+    if data.get('lat') and data.get('lng'):
+        text += f"🗺 GPS: <a href='https://yandex.ru/maps/?pt={data.get('lng')},{data.get('lat')}&z=18&l=map'>Xaritada ko'rish</a>\n"
+        
+    try:
+        await bot.send_message(chat_id=ADMIN_ID, text=text, parse_mode="HTML")
+        return web.json_response({"success": True}, headers=set_cors())
+    except: return web.json_response({"error": "Xato"}, status=500, headers=set_cors())
 
 async def main():
     init_db()
@@ -253,9 +284,9 @@ async def main():
     app.router.add_get('/api/categories', api_categories) 
     app.router.add_get('/api/products', api_products)
     app.router.add_get('/api/send_code', api_send_code) 
-    app.router.add_get('/api/get_user', api_get_user)
-    app.router.add_post('/api/save_user', api_save_user)
-    app.router.add_options('/api/save_user', handle_options)
+    
+    app.router.add_post('/api/create_order', api_create_order)
+    app.router.add_options('/api/create_order', handle_options)
     
     runner = web.AppRunner(app)
     await runner.setup()
